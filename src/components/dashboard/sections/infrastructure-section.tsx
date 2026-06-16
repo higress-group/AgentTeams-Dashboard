@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect, useReducer } from 'react';
+import { useState, useMemo, useCallback, useEffect, useReducer, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Server,
@@ -20,6 +20,7 @@ import {
   Box,
   Shield,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -345,6 +346,15 @@ export function InfrastructureSection() {
 
   // Connection test states: per component
   const [testStates, setTestStates] = useState<Record<string, 'idle' | 'testing' | 'success' | 'failed'>>({});
+  // Track the 5s reset timers so we can clear them on unmount.
+  const testResetTimers = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+  useEffect(() => {
+    const timers = testResetTimers.current;
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+      timers.clear();
+    };
+  }, []);
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -446,7 +456,8 @@ export function InfrastructureSection() {
       }
 
       // Reset test state after 5 seconds
-      setTimeout(() => {
+      const timer = setTimeout(() => {
+        testResetTimers.current.delete(timer);
         setTestStates((prev) => {
           if (prev[name] === 'success' || prev[name] === 'failed') {
             return { ...prev, [name]: 'idle' };
@@ -454,9 +465,11 @@ export function InfrastructureSection() {
           return prev;
         });
       }, 5000);
+      testResetTimers.current.add(timer);
     } catch {
       setTestStates((prev) => ({ ...prev, [name]: 'failed' }));
-      setTimeout(() => {
+      const timer = setTimeout(() => {
+        testResetTimers.current.delete(timer);
         setTestStates((prev) => {
           if (prev[name] === 'failed') {
             return { ...prev, [name]: 'idle' };
@@ -464,12 +477,19 @@ export function InfrastructureSection() {
           return prev;
         });
       }, 5000);
+      testResetTimers.current.add(timer);
     }
   }, []);
 
   // Resource overview derived data
   const resourceItems = useMemo(() => {
-    const items = [];
+    const items: Array<{
+      icon: LucideIcon;
+      label: string;
+      value: string;
+      detail: string;
+      healthy: boolean;
+    }> = [];
 
     // Storage (MinIO)
     const minioBuckets = derivedHealth?.minio?.buckets?.length ?? 0;

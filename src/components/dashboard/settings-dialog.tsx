@@ -143,7 +143,12 @@ export function SettingsDialog() {
           </div>
 
           {connectionError && (
-            <p className="text-sm text-destructive">{connectionError}</p>
+            <p className="text-sm text-destructive">
+              {connectionError.message}
+              {connectionError.code !== 'NETWORK_ERROR' && connectionError.code !== 'UNKNOWN' && (
+                <span className="text-xs text-muted-foreground ml-2">[{connectionError.code}]</span>
+              )}
+            </p>
           )}
 
           {/* Connection Latency */}

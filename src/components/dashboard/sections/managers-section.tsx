@@ -90,7 +90,7 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 // Derive manager skills dynamically from runtime type and configuration
 function getManagerSkills(manager: ManagerResponse): string[] {
   // If the API returns an explicit skills array, use it
-  const mAny = manager as Record<string, unknown>;
+  const mAny = manager as unknown as Record<string, unknown>;
   if (Array.isArray(mAny.skills)) return mAny.skills as string[];
 
   // Otherwise derive from runtime type

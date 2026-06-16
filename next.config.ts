@@ -7,9 +7,6 @@ const devOrigins = process.env.ALLOWED_DEV_ORIGINS
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   reactStrictMode: false,
   allowedDevOrigins: devOrigins,
   // NOTE: Global wildcard CORS has been removed. CORS, if required, should be

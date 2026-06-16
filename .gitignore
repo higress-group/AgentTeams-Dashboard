@@ -52,3 +52,6 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# npm lock conflicts with bun.lock; we standardize on bun.
+package-lock.json

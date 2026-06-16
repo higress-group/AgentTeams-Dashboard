@@ -199,7 +199,7 @@ export function HumansSection() {
       name: human.name,
       displayName: human.displayName || '',
       email: human.email || '',
-      permissionLevel: human.permissionLevel || 1,
+      permissionLevel: ((human.permissionLevel ?? 1) as 1 | 2 | 3),
       accessibleTeams: human.accessibleTeams || [],
       accessibleWorkers: human.accessibleWorkers || [],
       note: human.note || '',
@@ -614,9 +614,13 @@ export function HumansSection() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              删除
+            <AlertDialogCancel disabled={deleteHuman.isPending}>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleteHuman.isPending}
+              className="bg-destructive text-destructive-foreground"
+            >
+              {deleteHuman.isPending ? '删除中…' : '删除'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

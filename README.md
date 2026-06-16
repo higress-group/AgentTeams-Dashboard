@@ -85,20 +85,26 @@ bun install
 
 ### 配置环境变量
 
-复制 `.env` 示例并修改：
+复制 `.env.example` 并按需修改：
 
 ```bash
-# 本地 SQLite 数据库路径
-DATABASE_URL="file:./db/custom.db"
-
-# HiClaw Controller 地址（开发时可以是 localhost 或集群内 Service）
-HICLAW_CONTROLLER_URL="http://localhost:8090"
-
-# Matrix Homeserver 地址
-NEXT_PUBLIC_MATRIX_API_URL="http://localhost:6167"
+cp .env.example .env.local
 ```
 
-> ⚠️ 不要将包含真实凭据的 `.env` 提交到仓库。
+主要变量：
+
+| 变量 | 用途 | 默认值 |
+|------|------|--------|
+| `DATABASE_URL` | Prisma SQLite 数据库文件 | `file:./db/custom.db` |
+| `HICLAW_CONTROLLER_URL` | Next.js 服务端访问 HiClaw Controller 的地址 | `http://hiclaw-controller.hiclaw-system:8090` |
+| `NEXT_PUBLIC_HICLAW_CONTROLLER_URL` | 浏览器直接访问 Controller 的可选地址 | 空 |
+| `HICLAW_AUTH_TOKEN` / `HICLAW_AUTH_TOKEN_FILE` | 访问 Controller 的 Bearer Token 或投影 Token 文件 | 空 |
+| `NEXT_PUBLIC_MATRIX_API_URL` | 浏览器访问 Matrix Homeserver 的基础 URL | `http://localhost:6167` |
+| `MATRIX_ALLOWED_HOSTS` | 服务端代理允许的额外 Matrix hosts，逗号分隔 | 空 |
+| `NEXT_PUBLIC_MATRIX_TOKEN_PERSIST` | Matrix token 持久化策略：`session` / `local` / `none` | `session` |
+| `ALLOWED_DEV_ORIGINS` | 逗号分隔的 `next dev` 允许来源 | 空 |
+
+> ⚠️ 不要将包含真实凭据的 `.env.local` 提交到仓库。
 
 ### 初始化数据库
 
@@ -122,26 +128,33 @@ bun run dev
 
 ### Docker 构建
 
-项目根目录（`/root/dashboard`）提供 Dockerfile：
+项目根目录提供多阶段 `Dockerfile`：
 
 ```bash
-cd /root/dashboard
 docker build -t hiclaw-dashboard:latest .
 ```
 
 构建产物为 Next.js standalone 输出，运行时基于 `node:20-alpine`，以非 root 用户运行。
 
-### k3s 部署
+镜像内置 `/healthcheck` 风格的 curl 探针，可在 Compose / k8s 中直接使用。
 
-详细部署、网络、Ingress、ServiceAccount Token、存储、安全加固等说明，请参考：
+### Kubernetes 部署
 
-📄 [`DEPLOYMENT_GUIDE.md`](../../DEPLOYMENT_GUIDE.md)
+仓库内含最小化清单：`k8s/dashboard-deployment.yaml`，覆盖：
 
-快速部署：
+- `Namespace` / `ServiceAccount`（`hiclaw-system`）
+- `Deployment`（非 root、只读根文件系统、CPU/内存限额、liveness/readiness 探针）
+- `Service`（ClusterIP）
+- `PersistentVolumeClaim`（`/app/db` 本地 SQLite）
+- projected `ServiceAccount` Token（轮转至 Controller）
+
+应用方式：
 
 ```bash
-kubectl apply -f /root/dashboard/dashboard-deployment.yaml
+kubectl apply -f k8s/dashboard-deployment.yaml
 ```
+
+通过 Ingress 暴露端口 80 时，配置 TLS 与 NetworkPolicy 即可。
 
 ---
 

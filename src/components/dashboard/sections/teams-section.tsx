@@ -902,9 +902,13 @@ export function TeamsSection() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              删除
+            <AlertDialogCancel disabled={deleteTeam.isPending}>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleteTeam.isPending}
+              className="bg-destructive text-destructive-foreground"
+            >
+              {deleteTeam.isPending ? '删除中…' : '删除'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -211,7 +211,7 @@ export function SkillsSection() {
     // Extract skills from managers - derive from the teams they lead
     managers?.forEach((m) => {
       // Derive manager skills from their actual managed teams and coordination patterns
-      const mAny = m as Record<string, unknown>;
+      const mAny = m as unknown as Record<string, unknown>;
       const managerSkills: string[] = [];
       // If the manager has an explicit skills array, use it
       if (Array.isArray(mAny.skills)) {
@@ -247,7 +247,7 @@ export function SkillsSection() {
       // Access mcpServers from worker data if available
       // The WorkerResponse type doesn't directly include mcpServers in the response,
       // but we can derive from the worker's configuration
-      const wAny = w as Record<string, unknown>;
+      const wAny = w as unknown as Record<string, unknown>;
       const mcpConfigs = wAny.mcpServers as { name: string; url: string; transport: string }[] | undefined;
       if (mcpConfigs && Array.isArray(mcpConfigs)) {
         mcpConfigs.forEach((mcp) => {

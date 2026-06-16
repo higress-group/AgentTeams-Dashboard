@@ -1,6 +1,8 @@
 // HiClaw API Client - Complete TypeScript API layer
 // All requests go through Next.js API proxy routes
 
+import { ApiClientError, type ApiErrorCode } from "./api-errors";
+
 // ============ Response Types ============
 
 export type WorkerPhase = 'Pending' | 'Running' | 'Sleeping' | 'Updating' | 'Stopped' | 'Failed' | 'Ready';
@@ -211,8 +213,7 @@ async function proxyRequest<T>(
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`API Error ${res.status}: ${text || res.statusText}`);
+    throw await ApiClientError.fromResponse(res, 'hiclaw', path);
   }
 
   if (res.status === 204) {
@@ -222,14 +223,20 @@ async function proxyRequest<T>(
   const contentType = res.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
     const text = await res.text().catch(() => '');
-    throw new Error(`API returned non-JSON response (${contentType}): ${text.slice(0, 200)}`);
+    throw new ApiClientError('INVALID_RESPONSE', `API returned non-JSON response (${contentType}): ${text.slice(0, 200)}`, {
+      service: 'hiclaw',
+      path,
+    });
   }
 
   try {
     return await res.json();
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown';
-    throw new Error(`Failed to parse API JSON response: ${message}`);
+    throw new ApiClientError('INVALID_RESPONSE', `Failed to parse API JSON response: ${message}`, {
+      service: 'hiclaw',
+      path,
+    });
   }
 }
 
@@ -237,7 +244,9 @@ async function healthRequest(controllerUrl: string): Promise<string> {
   const res = await fetch(`/api/hiclaw/healthz?controllerUrl=${encodeURIComponent(controllerUrl)}`, {
     method: 'GET',
   });
-  if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
+  if (!res.ok) {
+    throw await ApiClientError.fromResponse(res, 'hiclaw', '/healthz');
+  }
   return res.text();
 }
 

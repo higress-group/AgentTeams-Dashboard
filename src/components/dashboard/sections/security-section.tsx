@@ -52,10 +52,10 @@ function AccessMatrix({ humans, teams, workers }: {
   // Build access matrix: for each human, which teams/workers can they access
   const matrixData = useMemo(() => {
     return humans.map((human) => {
-      const groupAllowFrom = (human as Record<string, unknown>).groupAllowFrom as string[] | undefined;
-      const accessibleTeams = (human as Record<string, unknown>).accessibleTeams as string[] | undefined;
-      const accessibleWorkers = (human as Record<string, unknown>).accessibleWorkers as string[] | undefined;
-      const permLevel = (human as Record<string, unknown>).permissionLevel as number | undefined;
+      const groupAllowFrom = human.groupAllowFrom;
+      const accessibleTeams = human.accessibleTeams;
+      const accessibleWorkers = human.accessibleWorkers;
+      const permLevel = human.permissionLevel;
 
       // Determine accessible teams
       const canAccessAll = permLevel === 3 || (groupAllowFrom && groupAllowFrom.includes('*'));
@@ -200,7 +200,7 @@ export function SecuritySection() {
   const permStats = useMemo(() => {
     const stats = { admin: 0, operator: 0, observer: 0 };
     humans?.forEach((h) => {
-      const level = (h as Record<string, unknown>).permissionLevel as number | undefined;
+      const level = h.permissionLevel;
       if (level === 3) stats.admin++;
       else if (level === 2) stats.operator++;
       else stats.observer++;
@@ -369,7 +369,7 @@ export function SecuritySection() {
                 </div>
                 <p className="text-xs text-muted-foreground mb-2">可访问所有房间、所有智能体</p>
                 <div className="space-y-1">
-                  {humans.filter((h) => (h as Record<string, unknown>).permissionLevel === 3).map((h) => (
+                  {humans.filter((h) => h.permissionLevel === 3).map((h) => (
                     <div key={h.name} className="flex items-center gap-1.5 text-xs">
                       <CheckCircle2 className="w-3 h-3 text-red-500" />
                       <span>{h.displayName || h.name}</span>
@@ -386,7 +386,7 @@ export function SecuritySection() {
                 </div>
                 <p className="text-xs text-muted-foreground mb-2">指定团队 + 独立 Workers</p>
                 <div className="space-y-1">
-                  {humans.filter((h) => (h as Record<string, unknown>).permissionLevel === 2).map((h) => (
+                  {humans.filter((h) => h.permissionLevel === 2).map((h) => (
                     <div key={h.name} className="flex items-center gap-1.5 text-xs">
                       <CheckCircle2 className="w-3 h-3 text-amber-500" />
                       <span>{h.displayName || h.name}</span>
@@ -404,7 +404,7 @@ export function SecuritySection() {
                 <p className="text-xs text-muted-foreground mb-2">仅指定独立 Workers</p>
                 <div className="space-y-1">
                   {humans.filter((h) => {
-                    const level = (h as Record<string, unknown>).permissionLevel as number | undefined;
+                    const level = h.permissionLevel;
                     return !level || level === 1;
                   }).map((h) => (
                     <div key={h.name} className="flex items-center gap-1.5 text-xs">
@@ -556,7 +556,7 @@ export function SecuritySection() {
               </p>
               <p className="text-xs text-muted-foreground mt-1">可访问所有 Worker 和团队</p>
               <div className="mt-1.5">
-                {humans?.filter((h) => (h as Record<string, unknown>).permissionLevel === 3).map((h) => (
+                {humans?.filter((h) => h.permissionLevel === 3).map((h) => (
                   <Badge key={h.name} variant="outline" className="text-[10px] mr-1">{h.displayName || h.name}</Badge>
                 ))}
               </div>
@@ -568,7 +568,7 @@ export function SecuritySection() {
               </p>
               <p className="text-xs text-muted-foreground mt-1">仅可访问 team-a 下的 Worker</p>
               <div className="mt-1.5">
-                {humans?.filter((h) => (h as Record<string, unknown>).permissionLevel === 2).map((h) => (
+                {humans?.filter((h) => h.permissionLevel === 2).map((h) => (
                   <Badge key={h.name} variant="outline" className="text-[10px] mr-1">{h.displayName || h.name}</Badge>
                 ))}
               </div>
@@ -581,7 +581,7 @@ export function SecuritySection() {
               <p className="text-xs text-muted-foreground mt-1">仅可访问指定独立 Worker</p>
               <div className="mt-1.5">
                 {humans?.filter((h) => {
-                  const level = (h as Record<string, unknown>).permissionLevel as number | undefined;
+                  const level = h.permissionLevel;
                   return !level || level === 1;
                 }).map((h) => (
                   <Badge key={h.name} variant="outline" className="text-[10px] mr-1">{h.displayName || h.name}</Badge>

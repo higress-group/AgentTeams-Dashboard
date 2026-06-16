@@ -62,6 +62,7 @@ import { useNotificationStore } from '@/lib/notification-store';
 import { useSearch } from '@/lib/search-context';
 import { useHiClawStatus } from '@/hooks/use-hiclaw-status';
 import { useVersion } from '@/hooks/use-hiclaw-version';
+import { useAutoReconnect } from '@/hooks/use-auto-reconnect';
 import { useWorkers } from '@/hooks/use-hiclaw-workers';
 import { useTeams } from '@/hooks/use-hiclaw-teams';
 import { useManagers } from '@/hooks/use-hiclaw-managers';
@@ -207,7 +208,7 @@ export function HiClawDashboard() {
   const { data: managers } = useManagers();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
-  const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [lastRefreshTime, setLastRefreshTime] = useState<Date>(new Date());
 
   // Debounce search input (300ms)
@@ -226,6 +227,10 @@ export function HiClawDashboard() {
   useEffect(() => {
     checkConnection();
   }, [checkConnection]);
+
+  // Drive the auto-reconnect interval from a React lifecycle so the timer is
+  // cleared on unmount and StrictMode-safe.
+  useAutoReconnect();
 
   // Track last refresh time based on data updates
   useEffect(() => {

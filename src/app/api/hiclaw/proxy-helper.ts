@@ -1,14 +1,26 @@
 // Shared proxy helper for HiClaw API routes
 import { NextRequest, NextResponse } from 'next/server';
+import { readFileSync } from 'node:fs';
+import { jsonErrorBody, statusToCode, type ApiErrorBody } from '@/lib/api-errors';
 
 const TIMEOUT_MS = 10000;
 
 // Allowed controller URL hosts to prevent SSRF (only applies to user-supplied ?controllerUrl=)
-// In production/k3s mode the env var HICLAW_CONTROLLER_URL is authoritative.
-const ALLOWED_HOSTS = [
+// In production/k3s mode the env var HICLAW_CONTROLLER_URL is authoritative and
+// is the default the helper returns when the query parameter is missing.
+//
+// Notes:
+// - `*.svc` / `*.svc.cluster.local` are kept because they are the canonical
+//   Kubernetes service DNS suffixes and dashboard pods legitimately need to
+//   reach the Controller service by name.
+// - `*.local` is intentionally NOT in the wildcard list. mDNS reserves the
+//   `.local` TLD but in docker-compose, dev hostnames, and unmanaged cluster
+//   setups `.local` is also used as a generic "private network" label — that
+//   made the previous allow-list too permissive for SSRF. Operators wanting
+//   a `.local` host can append `HICLAW_EXTRA_CONTROLLER_HOSTS` explicitly.
+const DEFAULT_ALLOWED_HOSTS = [
   'localhost',
   '127.0.0.1',
-  '0.0.0.0',
   '::1',
   'hiclaw-controller',
   'hiclaw-controller.hiclaw-system',
@@ -16,11 +28,17 @@ const ALLOWED_HOSTS = [
   'hiclaw-controller.hiclaw-system.svc.cluster.local',
 ];
 
+const CLUSTER_SUFFIXES = ['.svc', '.svc.cluster.local', '.cluster.local'];
+
+function getAllowedHosts(): string[] {
+  const extra = process.env.HICLAW_EXTRA_CONTROLLER_HOSTS;
+  if (!extra) return DEFAULT_ALLOWED_HOSTS;
+  return [...DEFAULT_ALLOWED_HOSTS, ...extra.split(',').map((h) => h.trim()).filter(Boolean)];
+}
+
 function readAuthTokenFromFile(path: string): string | undefined {
   try {
-    // Use dynamic import so this code can still run in non-Node environments (e.g. tests)
-    const fs = require('fs');
-    return fs.readFileSync(path, 'utf-8').trim();
+    return readFileSync(path, 'utf-8').trim();
   } catch {
     return undefined;
   }
@@ -51,22 +69,24 @@ export function getControllerUrl(request: NextRequest): string {
   const defaultUrl = getDefaultControllerUrl();
   const url = request.nextUrl.searchParams.get('controllerUrl');
   if (url) {
+    let parsed: URL;
     try {
-      const parsed = new URL(url);
-      if (!['http:', 'https:'].includes(parsed.protocol)) {
-        throw new Error('Invalid protocol');
-      }
-      if (
-        !ALLOWED_HOSTS.includes(parsed.hostname) &&
-        !parsed.hostname.endsWith('.svc') &&
-        !parsed.hostname.endsWith('.svc.cluster.local') &&
-        !parsed.hostname.endsWith('.cluster.local') &&
-        !parsed.hostname.endsWith('.local')
-      ) {
-        throw new Error('Host not allowed');
-      }
+      parsed = new URL(url);
     } catch {
-      // If validation fails, fall back to default
+      return defaultUrl;
+    }
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return defaultUrl;
+    }
+    const allowed = getAllowedHosts();
+    const host = parsed.hostname;
+    const isAllowed =
+      allowed.includes(host) ||
+      CLUSTER_SUFFIXES.some((suffix) => host.endsWith(suffix));
+    if (!isAllowed) {
+      // Host not on the allow-list; fall back to the configured default
+      // rather than 400-ing, because the dashboard's main code path
+      // (settings dialog, store updates) only ever sends env-derived URLs.
       return defaultUrl;
     }
     return url;
@@ -136,17 +156,46 @@ export async function proxyToHiClaw(
     const resCT = res.headers.get('content-type');
     if (resCT) responseHeaders.set('content-type', resCT);
 
+    // Normalize non-2xx responses into the standard error envelope
+    if (!res.ok) {
+      const text = new TextDecoder().decode(data);
+      let parsed: unknown = text;
+      try {
+        parsed = text ? JSON.parse(text) : text;
+      } catch {
+        // keep raw text
+      }
+      const code = statusToCode(res.status);
+      const message =
+        typeof parsed === "object" && parsed && "message" in parsed && typeof (parsed as { message?: unknown }).message === "string"
+          ? (parsed as { message: string }).message
+          : `HiClaw controller returned ${res.status}`;
+      const body: ApiErrorBody = {
+        error: {
+          code,
+          message,
+          upstream: { service: "hiclaw", status: res.status, path },
+          ...(parsed !== text ? { details: parsed } : {}),
+        },
+      };
+      return NextResponse.json(body, { status: res.status });
+    }
+
     return new NextResponse(data, {
       status: res.status,
       headers: responseHeaders,
     });
   } catch (err: unknown) {
     clearTimeout(timeout);
-    const message = err instanceof Error && err.name === 'AbortError'
-      ? 'Request timeout'
+    const isTimeout = err instanceof Error && err.name === 'AbortError';
+    const message = isTimeout
+      ? 'HiClaw controller request timed out'
       : err instanceof Error
         ? err.message
-        : 'Unknown error';
-    return NextResponse.json({ error: message }, { status: 502 });
+        : 'Unknown HiClaw controller error';
+    const body = jsonErrorBody(isTimeout ? 'UPSTREAM_TIMEOUT' : 'UPSTREAM_UNAVAILABLE', message, {
+      upstream: { service: 'hiclaw', path },
+    });
+    return NextResponse.json(body, { status: isTimeout ? 504 : 502 });
   }
 }
