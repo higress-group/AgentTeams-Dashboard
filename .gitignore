@@ -53,5 +53,9 @@ server.log
 # Skills directory
 /skills/
 
+# Local sandbox hiclaw controller data (kept out of repo)
+/hiclaw/
+/hiclaw-storage/
+
 # npm lock conflicts with bun.lock; we standardize on bun.
 package-lock.json
