@@ -16,7 +16,6 @@ import {
   Mail,
   Shield,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -258,15 +257,13 @@ export function HumansSection() {
           { key: 'Pending', label: '等待中', icon: UserCheck, color: 'text-yellow-500' },
           { key: 'Failed', label: '失败', icon: UserCheck, color: 'text-red-500' },
         ].map(({ key, label, icon: Icon, color }) => (
-          <Card key={key} className="glass-card">
-            <CardContent className="p-3 flex items-center gap-3">
-              <Icon className={`w-5 h-5 ${color}`} />
-              <div>
-                <p className="text-xs text-muted-foreground">{label}</p>
-                <p className="text-lg font-bold">{phaseStats[key] || 0}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <SurfaceShell key={key} contentClassName="p-3 flex items-center gap-3">
+            <Icon className={`w-5 h-5 ${color}`} />
+            <div>
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="text-lg font-bold">{phaseStats[key] || 0}</p>
+            </div>
+          </SurfaceShell>
         ))}
       </div>
 
@@ -417,7 +414,7 @@ export function HumansSection() {
 
           {/* Table View */}
           {viewMode === 'table' && (
-            <Card className="glass-card overflow-hidden">
+            <SurfaceShell contentClassName="p-0 overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -501,7 +498,7 @@ export function HumansSection() {
                   ))}
                 </TableBody>
               </Table>
-            </Card>
+            </SurfaceShell>
           )}
         </>
       )}

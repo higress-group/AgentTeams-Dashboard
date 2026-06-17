@@ -19,7 +19,6 @@ import {
   LayoutGrid,
   List,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -362,9 +361,8 @@ export function TeamsSection() {
   return (
     <div className="space-y-6">
       {/* Communication Topology - Visual Diagram */}
-      <Card className="glass-card">
-        <CardContent className="p-4">
-          <h3 className="text-sm font-semibold mb-3">通信拓扑</h3>
+      <SurfaceShell contentClassName="p-4">
+        <h3 className="text-sm font-semibold mb-3">通信拓扑</h3>
           <div className="flex items-center justify-center gap-4 py-4 flex-wrap">
             {/* Manager Node */}
             <div className="flex flex-col items-center">
@@ -405,8 +403,7 @@ export function TeamsSection() {
               <p className="text-[10px] text-muted-foreground mt-1">执行任务</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+      </SurfaceShell>
 
       {/* Header */}
       <SectionHeader
@@ -627,7 +624,7 @@ export function TeamsSection() {
 
           {/* Table View */}
           {viewMode === 'table' && (
-            <Card className="glass-card overflow-hidden">
+            <SurfaceShell contentClassName="p-0 overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -756,7 +753,7 @@ export function TeamsSection() {
                   ))}
                 </TableBody>
               </Table>
-            </Card>
+            </SurfaceShell>
           )}
         </>
       )}
