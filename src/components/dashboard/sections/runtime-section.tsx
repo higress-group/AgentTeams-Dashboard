@@ -3,7 +3,7 @@
 import { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Code, Terminal, Layers, CheckCircle2, XCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { SurfaceShell } from '@/components/dashboard/surface-shell';
 import { Badge } from '@/components/ui/badge';
 import { useWorkers } from '@/hooks/use-hiclaw-workers';

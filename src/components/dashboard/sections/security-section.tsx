@@ -19,7 +19,7 @@ import {
   Users,
   Bot,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { SurfaceShell } from '@/components/dashboard/surface-shell';
 import { Badge } from '@/components/ui/badge';
 import { SectionHeader } from '@/components/dashboard/section-header';

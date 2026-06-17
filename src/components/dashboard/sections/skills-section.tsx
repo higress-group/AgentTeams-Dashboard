@@ -13,7 +13,7 @@ import {
   Link2,
   Wifi,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { SurfaceShell } from '@/components/dashboard/surface-shell';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';

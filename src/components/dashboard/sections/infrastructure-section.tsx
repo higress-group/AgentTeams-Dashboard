@@ -21,7 +21,7 @@ import {
   Shield,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { SurfaceShell } from '@/components/dashboard/surface-shell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
