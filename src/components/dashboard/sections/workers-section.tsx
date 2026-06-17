@@ -17,6 +17,7 @@ import {
   CheckSquare,
   Square,
   XSquare,
+  History,
   MoonStar,
   SunMedium,
   Rocket,
@@ -91,6 +92,7 @@ import {
 } from '@/lib/phase-colors';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { StatusDot } from '@/components/dashboard/status-dot';
+import { WorkerTraceDialog } from '@/components/dashboard/worker-trace';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { toast } from 'sonner';
 import type { WorkerResponse, CreateWorkerRequest, UpdateWorkerRequest, WorkerRuntime } from '@/lib/hiclaw-api';
@@ -122,6 +124,7 @@ export function WorkersSection() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [detailWorker, setDetailWorker] = useState<WorkerResponse | null>(null);
   const [editWorker, setEditWorker] = useState<WorkerResponse | null>(null);
+  const [traceWorker, setTraceWorker] = useState<string | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -608,6 +611,15 @@ export function WorkersSection() {
                         >
                           <Eye className="w-3 h-3 mr-1" />
                           详情
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => setTraceWorker(worker.name)}
+                          title="View trace timeline"
+                        >
+                          <History className="w-3 h-3" />
                         </Button>
                         <Button
                           variant="ghost"
@@ -1141,6 +1153,12 @@ export function WorkersSection() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <WorkerTraceDialog
+        workerName={traceWorker}
+        open={traceWorker !== null}
+        onOpenChange={(open) => { if (!open) setTraceWorker(null); }}
+      />
     </div>
   );
 }

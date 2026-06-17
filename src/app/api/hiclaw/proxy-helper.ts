@@ -2,39 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync } from 'node:fs';
 import { jsonErrorBody, statusToCode, type ApiErrorBody } from '@/lib/api-errors';
+import { isAllowedHiclawUrl } from '@/lib/url-allow-list';
 
 const TIMEOUT_MS = 10000;
-
-// Allowed controller URL hosts to prevent SSRF (only applies to user-supplied ?controllerUrl=)
-// In production/k3s mode the env var HICLAW_CONTROLLER_URL is authoritative and
-// is the default the helper returns when the query parameter is missing.
-//
-// Notes:
-// - `*.svc` / `*.svc.cluster.local` are kept because they are the canonical
-//   Kubernetes service DNS suffixes and dashboard pods legitimately need to
-//   reach the Controller service by name.
-// - `*.local` is intentionally NOT in the wildcard list. mDNS reserves the
-//   `.local` TLD but in docker-compose, dev hostnames, and unmanaged cluster
-//   setups `.local` is also used as a generic "private network" label — that
-//   made the previous allow-list too permissive for SSRF. Operators wanting
-//   a `.local` host can append `HICLAW_EXTRA_CONTROLLER_HOSTS` explicitly.
-const DEFAULT_ALLOWED_HOSTS = [
-  'localhost',
-  '127.0.0.1',
-  '::1',
-  'hiclaw-controller',
-  'hiclaw-controller.hiclaw-system',
-  'hiclaw-controller.hiclaw-system.svc',
-  'hiclaw-controller.hiclaw-system.svc.cluster.local',
-];
-
-const CLUSTER_SUFFIXES = ['.svc', '.svc.cluster.local', '.cluster.local'];
-
-function getAllowedHosts(): string[] {
-  const extra = process.env.HICLAW_EXTRA_CONTROLLER_HOSTS;
-  if (!extra) return DEFAULT_ALLOWED_HOSTS;
-  return [...DEFAULT_ALLOWED_HOSTS, ...extra.split(',').map((h) => h.trim()).filter(Boolean)];
-}
 
 function readAuthTokenFromFile(path: string): string | undefined {
   try {
@@ -69,21 +39,7 @@ export function getControllerUrl(request: NextRequest): string {
   const defaultUrl = getDefaultControllerUrl();
   const url = request.nextUrl.searchParams.get('controllerUrl');
   if (url) {
-    let parsed: URL;
-    try {
-      parsed = new URL(url);
-    } catch {
-      return defaultUrl;
-    }
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return defaultUrl;
-    }
-    const allowed = getAllowedHosts();
-    const host = parsed.hostname;
-    const isAllowed =
-      allowed.includes(host) ||
-      CLUSTER_SUFFIXES.some((suffix) => host.endsWith(suffix));
-    if (!isAllowed) {
+    if (!isAllowedHiclawUrl(url)) {
       // Host not on the allow-list; fall back to the configured default
       // rather than 400-ing, because the dashboard's main code path
       // (settings dialog, store updates) only ever sends env-derived URLs.

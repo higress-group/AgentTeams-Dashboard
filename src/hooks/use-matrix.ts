@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { matrixApi, MatrixEvent } from '@/lib/matrix-api';
 import { useMatrixStore } from '@/lib/matrix-store';
+import { collectActiveTypers } from '@/lib/typing';
 
 // Helper to get Matrix connection params
 function useMatrixParams() {
@@ -14,7 +15,7 @@ function useMatrixParams() {
 export function useMatrixRoomMessages(roomId: string | null) {
   const { homeserver, accessToken, isLoggedIn } = useMatrixParams();
 
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: ['matrix-messages', roomId],
     queryFn: async ({ pageParam }) => {
       if (!homeserver || !accessToken || !roomId) {
@@ -32,6 +33,25 @@ export function useMatrixRoomMessages(roomId: string | null) {
     refetchInterval: 10000, // Poll every 10s for new messages
     staleTime: 5000,
   });
+
+  // Collect active typers from every page of the message timeline.
+  // Typing events are ephemeral and arrive interleaved with normal
+  // messages; the observer prunes senders whose last typing event is
+  // older than 6 seconds.
+  const typingUsers = (() => {
+    const pages = query.data?.pages ?? [];
+    const typingEvents: { sender: string; ts: number }[] = [];
+    for (const page of pages) {
+      for (const event of page.chunk ?? []) {
+        if (event.type === 'm.typing') {
+          typingEvents.push({ sender: event.sender, ts: event.origin_server_ts });
+        }
+      }
+    }
+    return collectActiveTypers(typingEvents, 6000);
+  })();
+
+  return Object.assign(query, { typingUsers });
 }
 
 // ============ Room Members ============
@@ -142,6 +162,7 @@ export interface DisplayMessage {
   senderShort: string;
   content: string;
   formattedContent?: string;
+  rawContent?: Record<string, unknown>;
   timestamp: number;
   type: string;
   isMe: boolean;
@@ -161,6 +182,7 @@ export function formatMatrixEvent(event: MatrixEvent, currentUserId: string): Di
     senderShort,
     content: event.content.body || '',
     formattedContent: event.content.formatted_body,
+    rawContent: event.content as Record<string, unknown>,
     timestamp: event.origin_server_ts,
     type: event.content.msgtype || 'm.text',
     isMe: event.sender === currentUserId,

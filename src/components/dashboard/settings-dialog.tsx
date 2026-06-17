@@ -16,6 +16,8 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Wifi, WifiOff, Loader2, RotateCcw, Clock, Server, History } from 'lucide-react';
 import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
+import { useUiStore } from '@/lib/ui-store';
+import { Separator } from '@/components/ui/separator';
 
 const DEFAULT_URL =
   (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_HICLAW_CONTROLLER_URL) ||
@@ -38,6 +40,11 @@ export function SettingsDialog() {
     lastConnectedAt,
     connectionHistory,
   } = useHiClawStore();
+
+  const modernChatEnabled = useUiStore((s) => s.modernChatEnabled);
+  const setModernChatEnabled = useUiStore((s) => s.setModernChatEnabled);
+  const modernChromeEnabled = useUiStore((s) => s.modernChromeEnabled);
+  const setModernChromeEnabled = useUiStore((s) => s.setModernChromeEnabled);
 
   const { data: infrastructure } = useInfrastructure();
 
@@ -221,6 +228,32 @@ export function SettingsDialog() {
               />
             </div>
           )}
+
+          {/* Modern chrome feature flags (kill switch) */}
+          <Separator />
+          <div className="space-y-3">
+            <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">体验开关</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>现代化外观</Label>
+                <p className="text-xs text-muted-foreground">使用新的导航 / 卡片 / 顶栏样式。关闭后回退到旧版 chrome。</p>
+              </div>
+              <Switch
+                checked={modernChromeEnabled}
+                onCheckedChange={setModernChromeEnabled}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>现代化聊天</Label>
+                <p className="text-xs text-muted-foreground">启用 Markdown / A2UI / Typing Indicator。关闭后回退到纯文本。</p>
+              </div>
+              <Switch
+                checked={modernChatEnabled}
+                onCheckedChange={setModernChatEnabled}
+              />
+            </div>
+          </div>
 
           {/* Test Result */}
           {testResult && (

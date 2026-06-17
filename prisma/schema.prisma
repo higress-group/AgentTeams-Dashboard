@@ -60,3 +60,19 @@ model AuditLog {
   @@index([createdAt])
   @@index([resource, resourceId])
 }
+
+/// Top-bar Activity Feed projection. Lazy-built by the
+/// `/api/activity` route, capped at 20 rows.
+model ActivityFeedItem {
+  id         String   @id @default(cuid())
+  kind       String
+  actor      String?
+  action     String?
+  resource   String?
+  resourceId String?
+  preview    String?
+  link       String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}

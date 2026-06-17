@@ -69,7 +69,9 @@ import { useManagers } from '@/hooks/use-hiclaw-managers';
 import { ConnectionBanner } from './connection-banner';
 import { SettingsDialog } from './settings-dialog';
 import { NotificationPopover } from './notification-popover';
+import { ActivityFeed } from './activity-feed';
 import { SectionErrorBoundary } from './section-error-boundary';
+import { ModernSectionHeader, useModernChrome, ModernChromeFallback } from './modern-chrome';
 
 // Lazy load sections for performance
 const OverviewSection = lazy(() => import('./sections/overview-section').then(m => ({ default: m.OverviewSection })));
@@ -89,19 +91,19 @@ const QuickstartSection = lazy(() => import('./sections/quickstart-section').the
 const STORAGE_KEY = 'hiclaw-active-section';
 
 const navItems = [
-  { id: 'overview', label: '总览', icon: LayoutDashboard },
-  { id: 'workers', label: 'Workers', icon: Bot },
-  { id: 'teams', label: '团队', icon: Users },
-  { id: 'managers', label: 'Managers', icon: Crown },
-  { id: 'humans', label: 'Humans', icon: UserCheck },
-  { id: 'chat', label: 'Matrix 聊天', icon: MessageSquare },
-  { id: 'infrastructure', label: '基础设施', icon: Server },
-  { id: 'k8s', label: 'K8s 资源', icon: Container },
-  { id: 'skills', label: '技能生态', icon: Sparkles },
-  { id: 'architecture', label: '架构', icon: GitBranch },
-  { id: 'security', label: '安全模型', icon: Shield },
-  { id: 'runtime', label: '多运行时', icon: Cpu },
-  { id: 'quickstart', label: '快速开始', icon: Rocket },
+  { id: 'overview', label: '总览', icon: LayoutDashboard, description: '集群心跳、Worker 阶段分布与资源吞吐一屏可见。' },
+  { id: 'workers', label: 'Workers', icon: Bot, description: 'Worker 实时状态、阶段分布与最近活动。' },
+  { id: 'teams', label: '团队', icon: Users, description: '团队组成、协作关系与 Owner 列表。' },
+  { id: 'managers', label: 'Managers', icon: Crown, description: 'Manager 调度视图、当前负责团队与健康度。' },
+  { id: 'humans', label: 'Humans', icon: UserCheck, description: 'Human 协作成员、当前在线与角色。' },
+  { id: 'chat', label: 'Matrix 聊天', icon: MessageSquare, description: 'Matrix 房间实时消息，支持 A2UI 与 Markdown。' },
+  { id: 'infrastructure', label: '基础设施', icon: Server, description: '拓扑、节点健康与连接关系图。' },
+  { id: 'k8s', label: 'K8s 资源', icon: Container, description: '集群中 Pod / Deployment / Service 实时状态。' },
+  { id: 'skills', label: '技能生态', icon: Sparkles, description: '可用技能、版本与最近一次调用时间。' },
+  { id: 'architecture', label: '架构', icon: GitBranch, description: '系统模块关系与控制流拓扑。' },
+  { id: 'security', label: '安全模型', icon: Shield, description: '认证、授权与凭据生命周期。' },
+  { id: 'runtime', label: '多运行时', icon: Cpu, description: '支持的运行时与当前部署目标。' },
+  { id: 'quickstart', label: '快速开始', icon: Rocket, description: '一键接入 HiClaw + Matrix 的引导步骤。' },
 ];
 
 const sectionMap: Record<string, React.ComponentType> = {
@@ -274,8 +276,14 @@ export function HiClawDashboard() {
 
   const ActiveSectionComponent = sectionMap[activeSection] || OverviewSection;
 
+  // Modern chrome applies modern section header / layout primitives around
+  // the legacy section body. When disabled, the body renders inside a
+  // `ModernChromeFallback` notice that explains the migration label.
+  const { enabled: modernChrome } = useModernChrome();
+  const activeMeta = navItems.find((n) => n.id === activeSection);
+
   // Breadcrumb
-  const activeLabel = navItems.find((n) => n.id === activeSection)?.label || '总览';
+  const activeLabel = activeMeta?.label || '总览';
 
   // Count data for badges
   const workerCount = workers?.length ?? 0;
@@ -634,6 +642,9 @@ export function HiClawDashboard() {
                 {/* Notifications */}
                 <NotificationPopover />
 
+                {/* Activity feed (R6-3) */}
+                <ActivityFeed />
+
                 {/* Theme Toggle */}
                 <Button
                   variant="ghost"
@@ -675,10 +686,26 @@ export function HiClawDashboard() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2 }}
+                  className="space-y-4"
                 >
+                  {modernChrome && (
+                    <ModernSectionHeader
+                      eyebrow={activeMeta?.id?.toUpperCase() ?? 'SECTION'}
+                      title={activeLabel}
+                      description={activeMeta?.description ?? ''}
+                    />
+                  )}
                   <SectionErrorBoundary sectionName={activeLabel}>
                     <Suspense fallback={<SectionSkeleton />}>
-                      <ActiveSectionComponent />
+                      {modernChrome ? (
+                        <ActiveSectionComponent />
+                      ) : (
+                        <ModernChromeFallback
+                          reason={`${activeLabel} not migrated — using legacy chrome`}
+                        >
+                          <ActiveSectionComponent />
+                        </ModernChromeFallback>
+                      )}
                     </Suspense>
                   </SectionErrorBoundary>
                 </motion.div>

@@ -15,7 +15,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx", "tests/**/*.test.ts", "tests/**/*.test.tsx"],
-    exclude: ["node_modules", ".next", "dist", "build", "tests/_*.test.ts"],
+    exclude: ["node_modules", ".next", "dist", "build", "tests/_*.test.ts", "tests/_specs/**"],
     globals: false,
     coverage: {
       provider: "v8",

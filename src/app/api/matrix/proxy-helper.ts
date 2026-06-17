@@ -1,31 +1,9 @@
 // Shared proxy helper for Matrix Client-Server API routes
 import { NextRequest, NextResponse } from 'next/server';
 import { jsonErrorBody, statusToCode, type ApiErrorBody } from '@/lib/api-errors';
+import { isAllowedMatrixUrl } from '@/lib/url-allow-list';
 
 const TIMEOUT_MS = 30000; // Matrix sync can take longer
-
-// Mirror of the HiClaw Controller allow-list. Comma-separated
-// `MATRIX_ALLOWED_HOSTS` env var can extend the list at runtime.
-//
-// `*.local` is intentionally not in the wildcard suffix list. See
-// `src/app/api/hiclaw/proxy-helper.ts` for the rationale.
-const DEFAULT_ALLOWED_HOSTS = [
-  'localhost',
-  '127.0.0.1',
-  '::1',
-  'matrix',
-  'matrix.hiclaw-system',
-  'matrix.hiclaw-system.svc',
-  'matrix.hiclaw-system.svc.cluster.local',
-];
-
-const CLUSTER_SUFFIXES = ['.svc', '.svc.cluster.local', '.cluster.local'];
-
-function getAllowedHosts(): string[] {
-  const extra = process.env.MATRIX_ALLOWED_HOSTS;
-  if (!extra) return DEFAULT_ALLOWED_HOSTS;
-  return [...DEFAULT_ALLOWED_HOSTS, ...extra.split(',').map((h) => h.trim()).filter(Boolean)];
-}
 
 export function isAllowedMatrixHost(url: string): { ok: boolean; error?: string } {
   let parsed: URL;
@@ -37,12 +15,7 @@ export function isAllowedMatrixHost(url: string): { ok: boolean; error?: string 
   if (!['http:', 'https:'].includes(parsed.protocol)) {
     return { ok: false, error: 'Invalid homeserver protocol' };
   }
-  const allowed = getAllowedHosts();
-  const host = parsed.hostname;
-  const isAllowed =
-    allowed.includes(host) ||
-    CLUSTER_SUFFIXES.some((suffix) => host.endsWith(suffix));
-  if (!isAllowed) {
+  if (!isAllowedMatrixUrl(url)) {
     return { ok: false, error: 'Homeserver host not allowed' };
   }
   return { ok: true };

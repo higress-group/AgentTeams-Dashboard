@@ -49,6 +49,7 @@ graph TD
 | recordAudit | [recordAudit.md](专有概念/recordAudit.md) | 客户端审计写入器 |
 | ConnectionBanner | [ConnectionBanner.md](专有概念/ConnectionBanner.md) | 错误降级 UI |
 | Token 持久化 | [Token-持久化策略.md](专有概念/Token-持久化策略.md) | Matrix token 三种策略 |
+| Agent 行业趋势 | [Agent-行业趋势调研.md](专有概念/Agent-行业趋势调研.md) | A2A / MCP / A2UI / Mission Control 调研与本项目映射 |
 
 ## 模块参考
 
@@ -62,6 +63,11 @@ graph TD
 | `src/lib/matrix-store.ts` | [matrix-store.md](模块/matrix-store.md) | 登录状态 + Token 持久化 |
 | `prisma/schema.prisma` | [db.md](模块/db.md) | SQLite schema + Prisma Client 单例 |
 | `src/lib/query-provider.tsx` | [query-provider.md](模块/query-provider.md) | React Query Provider 配置 |
+| `src/lib/ui-store.ts` | [ui-store.md](模块/ui-store.md) | Feature flag (modern chat / modern chrome) 持久化 |
+| `src/lib/typing.ts` | [typing.md](模块/typing.md) | 打字节流 publisher + 失活收集 |
+| `src/lib/sanitize.ts` | [sanitize.md](模块/sanitize.md) | sanitizeHtml + renderInlineMarkdown (remark/rehype 管线) |
+| `src/lib/a2ui.ts` | [a2ui.md](模块/a2ui.md) | A2UI payload 解析 + 渲染器 |
+| `src/app/api/activity/route.ts` | [activity-route.md](模块/activity-route.md) | Activity Feed GET 端点（合并 AuditLog） |
 
 ## 文档约定
 

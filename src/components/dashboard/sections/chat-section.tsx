@@ -53,9 +53,14 @@ import {
 } from '@/hooks/use-matrix';
 import { useMatrixStore } from '@/lib/matrix-store';
 import { useHiClawStore } from '@/lib/hiclaw-store';
-import { sanitizeHtml } from '@/lib/utils';
+import { sanitizeHtml, renderInlineMarkdown } from '@/lib/sanitize';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { SectionHeader } from '@/components/dashboard/section-header';
+import { TypingRow } from '@/components/dashboard/chat/typing-row';
+import { createTypingPublisher } from '@/lib/typing';
+import { parseA2UIPayload, renderA2UI } from '@/lib/a2ui';
+import { useUiStore } from '@/lib/ui-store';
+import { A2UIRenderer } from '@/components/dashboard/a2ui/a2ui-renderer';
 
 // ============ Helpers ============
 
@@ -102,6 +107,15 @@ function isDifferentDay(ts1: number, ts2: number): boolean {
   return d1.getFullYear() !== d2.getFullYear() ||
     d1.getMonth() !== d2.getMonth() ||
     d1.getDate() !== d2.getDate();
+}
+
+// Lightweight heuristic: a body that contains Markdown markers
+// (`[` link, `*` emphasis, backtick code, fenced ```) or any HTML
+// tag benefits from the renderer. Plain prose falls through to the
+// `<p class="whitespace-pre-wrap">` branch.
+function looksLikeMarkdown(body: string): boolean {
+  if (!body) return false;
+  return /(\[[^\]]+\]\(|`[^`]+`|\*\*|__|`{3}|<\/?[a-z][^>]*>)/i.test(body);
 }
 
 // ============ Copy Button ============
@@ -329,6 +343,7 @@ function DateSeparator({ date }: { date: string }) {
 // ============ Message Bubble ============
 
 function MessageBubble({ message, showSender }: { message: DisplayMessage; showSender: boolean }) {
+  const modernChatEnabled = useUiStore((s) => s.modernChatEnabled);
   const time = formatTime(message.timestamp);
   const isNotice = message.type === 'm.notice';
   const avatarColor = getAvatarColor(message.sender);
@@ -365,14 +380,46 @@ function MessageBubble({ message, showSender }: { message: DisplayMessage; showS
                 : 'bg-muted/80 text-foreground rounded-tl-sm'
           }`}
         >
-          {message.formattedContent ? (
-            <div
-              className="matrix-html-content [&>p]:mb-1 [&>br]:block [&>pre]:bg-muted/50 [&>pre]:rounded [&>pre]:p-2 [&>code]:bg-muted/50 [&>code]:px-1 [&>code]:rounded text-sm"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(message.formattedContent) }}
-            />
-          ) : (
-            <p className="whitespace-pre-wrap">{message.content}</p>
-          )}
+          {(() => {
+            // Legacy chat path: no A2UI, no Markdown, no TypingRow. R7-2.
+            if (!modernChatEnabled) {
+              return (
+                <p className="whitespace-pre-wrap break-words text-sm">
+                  {message.content}
+                </p>
+              );
+            }
+            // A2UI surface takes priority — Agents that emit a structured
+            // form should never have their JSON dumped as text.
+            const a2ui = parseA2UIPayload(message.rawContent as Record<string, unknown> | undefined);
+            if (a2ui) {
+              return (
+                <A2UIRenderer
+                  node={renderA2UI(a2ui.doc)}
+                  schemaVersion={a2ui.doc.schemaVersion}
+                  schemaRecognized={a2ui.schemaRecognized}
+                  hasUnsupportedComponents={a2ui.hasUnsupportedComponents}
+                />
+              );
+            }
+            if (message.formattedContent) {
+              return (
+                <div
+                  className="matrix-html-content [&>p]:mb-1 [&>br]:block [&>pre]:bg-muted/50 [&>pre]:rounded [&>pre]:p-2 [&>code]:bg-muted/50 [&>code]:px-1 [&>code]:rounded text-sm"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(message.formattedContent) }}
+                />
+              );
+            }
+            if (looksLikeMarkdown(message.content)) {
+              return (
+                <div
+                  className="matrix-html-content [&>p]:mb-1 [&>br]:block [&>pre]:bg-muted/50 [&>pre]:rounded [&>pre]:p-2 [&>code]:bg-muted/50 [&>code]:px-1 [&>code]:rounded text-sm"
+                  dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(message.content) }}
+                />
+              );
+            }
+            return <p className="whitespace-pre-wrap">{message.content}</p>;
+          })()}
         </div>
       </div>
     </div>
@@ -383,6 +430,7 @@ function MessageBubble({ message, showSender }: { message: DisplayMessage; showS
 
 function ChatPanel({ room }: { room: RoomInfo }) {
   const { userId, isLoggedIn } = useMatrixStore();
+  const modernChatEnabled = useUiStore((s) => s.modernChatEnabled);
   const messagesQuery = useMatrixRoomMessages(room.id);
   const membersQuery = useMatrixRoomMembers(room.id);
   const stateQuery = useMatrixRoomState(room.id);
@@ -392,6 +440,28 @@ function ChatPanel({ room }: { room: RoomInfo }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const typingPublisherRef = useRef<ReturnType<typeof createTypingPublisher> | null>(null);
+
+  // R1-1: publish typing notifications while the local user composes.
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const publisher = createTypingPublisher({ roomId: room.id, intervalMs: 4000 });
+    typingPublisherRef.current = publisher;
+    return () => {
+      publisher.dispose();
+      typingPublisherRef.current = null;
+    };
+  }, [room.id, isLoggedIn]);
+
+  useEffect(() => {
+    const publisher = typingPublisherRef.current;
+    if (!publisher) return;
+    if (inputValue.trim().length > 0) {
+      publisher.notify();
+    } else {
+      publisher.stop();
+    }
+  }, [inputValue]);
 
   // Flatten all pages of messages
   const allMessages = useMemo(() => {
@@ -625,6 +695,9 @@ function ChatPanel({ room }: { room: RoomInfo }) {
 
         {/* Input Area */}
         <div className="border-t border-border p-3 shrink-0 bg-card/30">
+          {modernChatEnabled && (
+            <TypingRow typingUsers={messagesQuery.typingUsers} selfUserId={userId} />
+          )}
           <div className="flex items-end gap-2">
             <div className="flex-1 relative">
               <textarea
