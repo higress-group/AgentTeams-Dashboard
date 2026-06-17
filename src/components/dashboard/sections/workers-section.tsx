@@ -111,6 +111,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { SectionHeader } from '@/components/dashboard/section-header';
+import { SurfaceEmptyState, SurfaceShell, SurfaceSkeletonGrid } from '@/components/dashboard/surface-shell';
 import { toast } from 'sonner';
 import type { WorkerResponse, CreateWorkerRequest, UpdateWorkerRequest, WorkerRuntime, WorkerPhase } from '@/lib/hiclaw-api';
 
@@ -248,7 +249,7 @@ export function WorkersSection() {
   // Reset page when filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, sortKey, phaseFilter.size, Array.from(phaseFilter).join(','), teamFilter]);
+  }, [searchQuery, sortKey, teamFilter, phaseFilter]);
 
   // Runtime distribution
   const runtimeDist = useMemo(() => {
@@ -472,15 +473,13 @@ export function WorkersSection() {
       {/* Runtime Distribution */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {Object.entries(RUNTIME_LABELS).map(([key, label]) => (
-          <Card key={key} className="glass-card">
-            <CardContent className="p-3 flex items-center gap-3">
-              <Bot className="w-5 h-5 text-muted-foreground" />
-              <div>
-                <p className="text-xs text-muted-foreground">{label}</p>
-                <p className="text-lg font-bold">{runtimeDist[key] || 0}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <SurfaceShell key={key} hover contentClassName="p-3 flex items-center gap-3">
+            <Bot className="w-5 h-5 text-muted-foreground" />
+            <div>
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="text-lg font-bold">{runtimeDist[key] || 0}</p>
+            </div>
+          </SurfaceShell>
         ))}
       </div>
 
@@ -648,41 +647,27 @@ export function WorkersSection() {
       {/* Workers List */}
       {isLoading ? (
         viewMode === 'card' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="glass-card">
-                <CardContent className="p-4 space-y-3">
-                  <div className="h-5 w-32 rounded shimmer" />
-                  <div className="h-4 w-24 rounded shimmer" />
-                  <div className="h-4 w-20 rounded shimmer" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <SurfaceSkeletonGrid count={6} cols={3} rows={3} />
         ) : (
-          <Card className="glass-card">
-            <CardContent className="p-4 space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-8 w-full rounded shimmer" />
-              ))}
-            </CardContent>
-          </Card>
+          <SurfaceShell contentClassName="p-4 space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-8 w-full rounded shimmer" />
+            ))}
+          </SurfaceShell>
         )
       ) : filteredWorkers.length === 0 ? (
-        <Card className="glass-card">
-          <CardContent className="p-12 text-center">
-            <Bot className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">
-              {searchQuery ? '没有匹配的 Worker' : '暂无 Worker'}
-            </p>
-            {!searchQuery && (
-              <Button variant="outline" className="mt-4" onClick={() => setCreateOpen(true)}>
+        <SurfaceEmptyState
+          icon={<Bot className="w-12 h-12" />}
+          message={searchQuery ? '没有匹配的 Worker' : '暂无 Worker'}
+          action={
+            !searchQuery ? (
+              <Button variant="outline" onClick={() => setCreateOpen(true)}>
                 <Plus className="w-4 h-4 mr-1" />
                 创建第一个 Worker
               </Button>
-            )}
-          </CardContent>
-        </Card>
+            ) : undefined
+          }
+        />
       ) : (
         <>
           {/* Card View */}
@@ -696,55 +681,54 @@ export function WorkersSection() {
                   transition={{ delay: i * 0.03 }}
                   layout
                 >
-                  <Card className={`glass-card hover-lift ${selectedWorkers.has(worker.name) ? 'ring-2 ring-orange-500/50' : ''}`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <button
-                            onClick={() => toggleSelect(worker.name)}
-                            className="shrink-0"
-                            title={selectedWorkers.has(worker.name) ? '取消选择' : '选择'}
-                          >
-                            {selectedWorkers.has(worker.name) ? (
-                              <CheckSquare className="w-4 h-4 text-orange-500" />
-                            ) : (
-                              <Square className="w-4 h-4 text-muted-foreground/50 hover:text-muted-foreground" />
-                            )}
-                          </button>
-                          <StatusDot phase={worker.phase} />
-                          <Bot className="w-5 h-5 text-orange-500 shrink-0" />
-                          <span className="font-medium truncate">{worker.name}</span>
-                        </div>
-                        <Badge className={WORKER_PHASE_BADGE_CLASSES[worker.phase]} variant="secondary">
-                          {WORKER_PHASE_LABELS[worker.phase] || worker.phase}
+                  <SurfaceShell hover selected={selectedWorkers.has(worker.name)} contentClassName="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <button
+                          onClick={() => toggleSelect(worker.name)}
+                          className="shrink-0"
+                          title={selectedWorkers.has(worker.name) ? '取消选择' : '选择'}
+                        >
+                          {selectedWorkers.has(worker.name) ? (
+                            <CheckSquare className="w-4 h-4 text-orange-500" />
+                          ) : (
+                            <Square className="w-4 h-4 text-muted-foreground/50 hover:text-muted-foreground" />
+                          )}
+                        </button>
+                        <StatusDot phase={worker.phase} />
+                        <Bot className="w-5 h-5 text-orange-500 shrink-0" />
+                        <span className="font-medium truncate">{worker.name}</span>
+                      </div>
+                      <Badge className={WORKER_PHASE_BADGE_CLASSES[worker.phase]} variant="secondary">
+                        {WORKER_PHASE_LABELS[worker.phase] || worker.phase}
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-1.5 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">模型</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="font-mono text-xs truncate ml-2 cursor-help">{worker.model || '-'}</span>
+                          </TooltipTrigger>
+                          <TooltipContent>完整模型名: {worker.model || '未设置'}</TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">运行时</span>
+                        <Badge variant="outline" className="text-xs">
+                          {RUNTIME_LABELS[worker.runtime] || worker.runtime}
                         </Badge>
                       </div>
-
-                      <div className="space-y-1.5 text-sm">
+                      {worker.team && (
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">模型</span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="font-mono text-xs truncate ml-2 cursor-help">{worker.model || '-'}</span>
-                            </TooltipTrigger>
-                            <TooltipContent>完整模型名: {worker.model || '未设置'}</TooltipContent>
-                          </Tooltip>
+                          <span className="text-muted-foreground">团队</span>
+                          <span className="text-xs truncate ml-2">{worker.team}</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">运行时</span>
-                          <Badge variant="outline" className="text-xs">
-                            {RUNTIME_LABELS[worker.runtime] || worker.runtime}
-                          </Badge>
-                        </div>
-                        {worker.team && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">团队</span>
-                            <span className="text-xs truncate ml-2">{worker.team}</span>
-                          </div>
-                        )}
-                      </div>
+                      )}
+                    </div>
 
-                      <WorkerCardMetrics name={worker.name} />
+                    <WorkerCardMetrics name={worker.name} />
 
                       <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border">
                         <Button
@@ -812,8 +796,7 @@ export function WorkersSection() {
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
-                    </CardContent>
-                  </Card>
+                  </SurfaceShell>
                 </motion.div>
               ))}
             </div>

@@ -1,27 +1,16 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { History, X, RefreshCw, AlertCircle, Pause, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PhaseTimeline } from '@/components/dashboard/phase-timeline';
 import { useTraceRetry } from '@/hooks/use-trace-retry';
+import { useWorkerEvents } from '@/hooks/use-worker-events';
+import { fetchWorkerEvents } from '@/lib/worker-events';
 
-interface WorkerEventsResponse {
-  events?: Array<{ ts?: string; type?: string; level?: string; message?: string; [k: string]: unknown }>;
-  items?: Array<{ ts?: string; type?: string; level?: string; message?: string; [k: string]: unknown }>;
-}
-
-async function fetchEvents(name: string): Promise<WorkerEventsResponse | null> {
-  const res = await fetch(`/api/hiclaw/workers/${encodeURIComponent(name)}/events`, { cache: 'no-store' });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Trace fetch failed: ${res.status}`);
-  return (await res.json()) as WorkerEventsResponse;
-}
-
-export const __test__ = { fetchEvents };
+export const __test__ = { fetchEvents: fetchWorkerEvents };
 
 interface WorkerTraceDialogProps {
   workerName: string | null;
@@ -38,17 +27,13 @@ const LEVEL_COLOR: Record<string, string> = {
 };
 
 export function WorkerTraceDialog({ workerName, open, onOpenChange }: WorkerTraceDialogProps) {
-  // Cache-friendly baseline query (for first paint)
-  const query = useQuery({
-    queryKey: ['worker-trace', workerName],
-    queryFn: () => fetchEvents(workerName ?? ''),
-    enabled: open && !!workerName,
-    refetchInterval: false, // polling handled by useTraceRetry
-  });
+  const query = useWorkerEvents(workerName, { enabled: open, refetchInterval: false });
 
   const [paused, setPaused] = useState(false);
-  const fetcher = useCallback(() => fetchEvents(workerName ?? ''), [workerName]);
-  const { lastError, retry } = useTraceRetry(fetcher, { enabled: open && !!workerName && !paused, intervalMs: 5_000 });
+  const { lastError, retry } = useTraceRetry(() => fetchWorkerEvents(workerName ?? ''), {
+    enabled: open && !!workerName && !paused,
+    intervalMs: 5_000,
+  });
 
   const events = query.data
     ? (query.data.events ?? query.data.items ?? [])

@@ -15,7 +15,7 @@ export interface ConnectionErrorInfo {
   message: string;
 }
 
-interface HiClawState {
+export interface HiClawState {
   controllerUrl: string;
   isConnected: boolean;
   connectionError: ConnectionErrorInfo | null;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useHiClawStore } from '@/lib/hiclaw-store';
 import {
   Dialog,
@@ -39,7 +40,24 @@ export function SettingsDialog() {
     connectionLatency,
     lastConnectedAt,
     connectionHistory,
-  } = useHiClawStore();
+  } = useHiClawStore(
+    useShallow((s) => ({
+      controllerUrl: s.controllerUrl,
+      setControllerUrl: s.setControllerUrl,
+      isConnected: s.isConnected,
+      isChecking: s.isChecking,
+      connectionError: s.connectionError,
+      settingsOpen: s.settingsOpen,
+      closeSettings: s.closeSettings,
+      autoReconnect: s.autoReconnect,
+      setAutoReconnect: s.setAutoReconnect,
+      reconnectInterval: s.reconnectInterval,
+      setReconnectInterval: s.setReconnectInterval,
+      connectionLatency: s.connectionLatency,
+      lastConnectedAt: s.lastConnectedAt,
+      connectionHistory: s.connectionHistory,
+    })),
+  );
 
   const modernChatEnabled = useUiStore((s) => s.modernChatEnabled);
   const setModernChatEnabled = useUiStore((s) => s.setModernChatEnabled);

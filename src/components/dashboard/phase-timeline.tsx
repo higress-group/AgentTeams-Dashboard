@@ -1,8 +1,8 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { Clock, ArrowRight, CircleAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useWorkerEvents } from '@/hooks/use-worker-events';
 import { WORKER_PHASE_BADGE_CLASSES, WORKER_PHASE_LABELS } from '@/lib/phase-colors';
 import { extractPhaseTimeline, type PhaseTimelineEntry } from '@/lib/phase-timeline';
 import { cn } from '@/lib/utils';
@@ -10,20 +10,7 @@ import { cn } from '@/lib/utils';
 interface PhaseTimelineProps {
   workerName: string;
   className?: string;
-  /** Polling interval in ms; `false` disables polling. */
   refetchInterval?: number | false;
-}
-
-interface WorkerEventsResponse {
-  events?: Array<{ ts?: string; type?: string; message?: string; [k: string]: unknown }>;
-  items?: Array<{ ts?: string; type?: string; message?: string; [k: string]: unknown }>;
-}
-
-async function fetchEvents(name: string): Promise<WorkerEventsResponse | null> {
-  const res = await fetch(`/api/hiclaw/workers/${encodeURIComponent(name)}/events`, { cache: 'no-store' });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Trace fetch failed: ${res.status}`);
-  return (await res.json()) as WorkerEventsResponse;
 }
 
 function timeAgo(iso: string): string {
@@ -61,18 +48,8 @@ function TimelineRow({ entry }: { entry: PhaseTimelineEntry }) {
   );
 }
 
-/**
- * Vertical timeline of phase transitions for a single worker. Polls
- * `/workers/{name}/events` and surfaces only phase-change events.
- */
 export function PhaseTimeline({ workerName, className, refetchInterval = 5_000 }: PhaseTimelineProps) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['worker-phase-timeline', workerName],
-    queryFn: () => fetchEvents(workerName),
-    enabled: !!workerName,
-    refetchInterval,
-    retry: 1,
-  });
+  const { data, isLoading, isError } = useWorkerEvents(workerName, { refetchInterval });
 
   if (isLoading) {
     return (
@@ -93,7 +70,7 @@ export function PhaseTimeline({ workerName, className, refetchInterval = 5_000 }
   if (!data) {
     return (
       <div className={cn('text-[11px] text-muted-foreground', className)}>
-        Controller 未暴露 events 端点
+        暂无 phase 变更记录
       </div>
     );
   }

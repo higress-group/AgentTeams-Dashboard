@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { fetchMetrics } from '@/lib/worker-metrics';
+import { fetchMetrics, isSyntheticWorkerMetrics } from '@/lib/worker-metrics';
+import { SYNTHETIC_METRICS_UPDATED_AT } from '@/lib/worker-fallback';
 
 describe('fetchMetrics', () => {
   const originalFetch = global.fetch;
@@ -40,5 +41,17 @@ describe('fetchMetrics', () => {
     global.fetch = spy as unknown as typeof fetch;
     await fetchMetrics('worker with/slash');
     expect(spy).toHaveBeenCalledWith(expect.stringContaining(encodeURIComponent('worker with/slash')), expect.anything());
+  });
+});
+
+describe('isSyntheticWorkerMetrics', () => {
+  it('detects the synthetic sentinel timestamp', () => {
+    expect(isSyntheticWorkerMetrics({ cpuPct: 1, memPct: 2, diskPct: 3, updatedAt: SYNTHETIC_METRICS_UPDATED_AT })).toBe(true);
+  });
+
+  it('returns false for real timestamps and empty values', () => {
+    expect(isSyntheticWorkerMetrics({ cpuPct: 1, memPct: 2, diskPct: 3, updatedAt: '2026-06-17T00:00:00Z' })).toBe(false);
+    expect(isSyntheticWorkerMetrics(null)).toBe(false);
+    expect(isSyntheticWorkerMetrics(undefined)).toBe(false);
   });
 });
