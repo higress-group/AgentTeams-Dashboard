@@ -72,6 +72,11 @@ graph TD
 | `src/lib/phase-timeline.ts` | [phase-timeline.md](模块/phase-timeline.md) | 从 events 流抽取 phase 变更时间线 |
 | `src/hooks/use-trace-retry.ts` | [trace-retry.md](模块/trace-retry.md) | 1s/2s/4s 指数退避重试 + pause/cancel |
 | `src/hooks/use-worker-bulk-action.ts` | [worker-bulk-action.md](模块/worker-bulk-action.md) | 6 动作批量执行 + 进度条 + 失败重试 |
+| `src/components/dashboard/surface-shell.tsx` | [ui-shell.md](模块/ui-shell.md) | SurfaceShell / EmptyState / SkeletonGrid 共享卡片骨架 |
+| `src/lib/format.ts` | [ui-shell.md](模块/ui-shell.md) | 共享格式 (formatPct / pctColorClass / timeAgo) |
+| `src/hooks/use-hiclaw-store-selectors.ts` | [ui-shell.md](模块/ui-shell.md) | useShallow 选择器，避免无关 store 重渲染 |
+| `src/components/dashboard/section-error-boundary.tsx` | [ui-shell.md](模块/ui-shell.md) | 按 section 隔离 crash 的错误边界 |
+| `src/app/api/hiclaw/workers/[name]/fallback-helper.ts` | [ui-shell.md](模块/ui-shell.md) | metrics/events controller 降级共享逻辑 |
 
 ## 文档约定
 
