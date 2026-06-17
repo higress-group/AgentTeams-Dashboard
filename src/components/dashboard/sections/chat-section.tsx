@@ -154,7 +154,8 @@ function MatrixLoginForm({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   };
 
   return (
-    <SurfaceShell className="border-cyan-500/20">
+    <SurfaceShell className="border-cyan-500/20" contentClassName="p-6">
+              {/* contentClassName lost in migration - defaults to p-4 */}
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
             <Lock className="w-5 h-5 text-cyan-500" />
@@ -802,7 +803,7 @@ function HumanPanel() {
         humans.map((human) => {
           const color = getAvatarColor(human.matrixUserID || human.name);
           return (
-            <SurfaceShell key={human.name}>
+            <SurfaceShell key={human.name} contentClassName="p-3">
                 <div className="flex items-center gap-2">
                   <Avatar className="w-6 h-6">
                     <AvatarFallback className={`text-[8px] ${color}`}>
@@ -886,7 +887,7 @@ function RoomTopology({ rooms }: { rooms: RoomInfo[] }) {
         房间拓扑
       </h3>
       {topology.map(({ team, workers: teamWorkers, managers: teamManagers }) => (
-        <SurfaceShell key={team.id}>
+        <SurfaceShell key={team.id} contentClassName="p-3">
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-3 h-3 text-emerald-500" />
               <span className="font-medium text-xs">{team.parentTeam}</span>
