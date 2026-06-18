@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, memo } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -54,7 +54,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
  * to a `document.execCommand` path when the modern `navigator.clipboard`
  * API is unavailable (older browsers, http://, sandboxed iframes).
  */
-export function CopyButton({ value, text, label, title, size = 'icon', className, onCopied }: CopyButtonProps) {
+function CopyButtonImpl({ value, text, label, title, size = 'icon', className, onCopied }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resolved = value ?? text ?? '';
@@ -102,3 +102,8 @@ export function CopyButton({ value, text, label, title, size = 'icon', className
     </Button>
   );
 }
+
+// Most call sites pass stable string `value`/`text`/`label` props.
+// memo skips re-renders when the parent section re-renders for an
+// unrelated reason (e.g. a single worker detail update).
+export const CopyButton = memo(CopyButtonImpl);
