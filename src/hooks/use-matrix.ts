@@ -1,5 +1,6 @@
 // React Query hooks for Matrix Client-Server API
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { matrixApi, MatrixEvent } from '@/lib/matrix-api';
 import { useMatrixStore } from '@/lib/matrix-store';
 import { collectActiveTypers } from '@/lib/typing';
@@ -37,8 +38,9 @@ export function useMatrixRoomMessages(roomId: string | null) {
   // Collect active typers from every page of the message timeline.
   // Typing events are ephemeral and arrive interleaved with normal
   // messages; the observer prunes senders whose last typing event is
-  // older than 6 seconds.
-  const typingUsers = (() => {
+  // older than 6 seconds. Memoised on pages identity to avoid
+  // re-computing the O(N*M) scan on unrelated re-renders.
+  const typingUsers = useMemo(() => {
     const pages = query.data?.pages ?? [];
     const typingEvents: { sender: string; ts: number }[] = [];
     for (const page of pages) {
@@ -49,7 +51,7 @@ export function useMatrixRoomMessages(roomId: string | null) {
       }
     }
     return collectActiveTypers(typingEvents, 6000);
-  })();
+  }, [query.data]);
 
   return Object.assign(query, { typingUsers });
 }
