@@ -143,8 +143,16 @@ function MatrixLoginForm({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   const loginMutation = useMatrixLogin();
   const { data: infrastructure } = useInfrastructure();
 
-  // Auto-fill homeserver from infrastructure (compute initial value, no effect needed)
-  const effectiveHomeserverUrl = homeserverUrl || infrastructure?.matrix?.homeserver || '';
+  // Auto-fill homeserver from infrastructure. The controller reports the
+  // in-cluster DNS name (e.g. hiclaw-tuwunel.hiclaw-system:6167), which the
+  // browser cannot reach. Rewrite it to the public dashboard origin so login
+  // and subsequent Matrix requests go through Higress.
+  const publicHomeserverUrl = typeof window !== 'undefined' ? `${window.location.origin}` : '';
+  const inferredHomeserverUrl =
+    infrastructure?.matrix?.homeserver && publicHomeserverUrl
+      ? publicHomeserverUrl
+      : infrastructure?.matrix?.homeserver || '';
+  const effectiveHomeserverUrl = homeserverUrl || inferredHomeserverUrl || '';
 
   const handleLogin = () => {
     if (!username || !password || !effectiveHomeserverUrl) return;

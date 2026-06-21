@@ -1,13 +1,37 @@
-# TaDashboard - Docker Compose one-click deployment
+# TaDashboard + HiClaw mock controller - Docker Compose one-click deployment
 #
 # Usage:
 #   docker compose up -d          # Start all services
 #   docker compose down            # Stop all services
-#   docker compose logs -f app     # Follow app logs
+#   docker compose logs -f app     # Follow dashboard logs
+#   docker compose logs -f controller  # Follow mock controller logs
 #
-# Customize via .env file (see .env.example)
+# Customize via .env file
 
 services:
+  controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hiclaw-controller
+    restart: unless-stopped
+    command: ["node", "scripts/mock-hiclaw.mjs"]
+    ports:
+      - "${CONTROLLER_PORT:-8090}:8090"
+    environment:
+      - PORT=8090
+      - HOST=0.0.0.0
+      - MOCK_RESET=${MOCK_RESET:-0}
+      - NODE_ENV=production
+    volumes:
+      - controller-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8090/healthz"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
   app:
     build:
       context: .
@@ -18,7 +42,7 @@ services:
       - "${APP_PORT:-3000}:3000"
     environment:
       - DATABASE_URL=file:/app/db/custom.db
-      - HICLAW_CONTROLLER_URL=${HICLAW_CONTROLLER_URL:-http://hiclaw-controller:8090}
+      - HICLAW_CONTROLLER_URL=http://controller:8090
       - HICLAW_AUTH_TOKEN=${HICLAW_AUTH_TOKEN:-}
       - NEXT_PUBLIC_HICLAW_CONTROLLER_URL=${NEXT_PUBLIC_HICLAW_CONTROLLER_URL:-}
       - NEXT_PUBLIC_MATRIX_API_URL=${NEXT_PUBLIC_MATRIX_API_URL:-}
@@ -34,7 +58,12 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 3
+    depends_on:
+      controller:
+        condition: service_healthy
 
 volumes:
   dashboard-db:
+    driver: local
+  controller-data:
     driver: local

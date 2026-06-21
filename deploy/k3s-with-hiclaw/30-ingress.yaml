@@ -1,0 +1,36 @@
+# HiClaw (hiclaw Helm chart) already deploys Higress as the cluster gateway
+# on host ports 80/443. This Ingress registers the dashboard as a Higress
+# route so it is reachable on the same public URL as the rest of HiClaw.
+#
+# TLS is left unconfigured by default. For production, create a TLS secret
+# named hiclaw-dashboard-tls in the hiclaw-system namespace and uncomment
+# the tls: block below, or use Higress Gateway API cert management.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hiclaw-dashboard
+  namespace: hiclaw-system
+  labels:
+    app.kubernetes.io/name: hiclaw-dashboard
+    app.kubernetes.io/part-of: hiclaw
+  annotations:
+    higress.io/backend-protocol: HTTP
+    higress.io/timeout: 30s
+spec:
+  ingressClassName: higress
+  # tls:
+  #   - hosts:
+  #       - dashboard.hiclaw.local
+  #     secretName: hiclaw-dashboard-tls
+  rules:
+    - host: dashboard.hiclaw.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hiclaw-dashboard
+                port:
+                  number: 80

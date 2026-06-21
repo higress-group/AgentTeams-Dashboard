@@ -7,12 +7,12 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY package.json bun.lock* ./
-RUN \
-  if [ -f bun.lock ]; then \
-    npm ci --no-audit --no-fund; \
-  else \
-    echo "Lockfile not found." && exit 1; \
-  fi
+RUN npm config set registry https://registry.npmmirror.com && \
+    if [ -f bun.lock ]; then \
+      npm install --no-audit --no-fund; \
+    else \
+      echo "Lockfile not found." && exit 1; \
+    fi
 
 # ---------- Build ----------
 FROM node:20-alpine AS builder
@@ -29,6 +29,7 @@ COPY tsconfig.json ./
 COPY postcss.config.mjs ./
 COPY components.json ./
 COPY public ./public
+COPY scripts ./scripts
 COPY src ./src
 
 RUN npx prisma generate && \
@@ -52,6 +53,15 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static    ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public            ./public
+COPY --from=builder --chown=nextjs:nodejs /app/scripts            ./scripts
+
+# Prisma CLI + schema used by the initContainer to push the SQLite schema.
+# Prisma is a devDependency so it is not part of the standalone bundle.
+COPY --from=builder --chown=nextjs:nodejs /app/prisma             ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/package.json       ./package.json
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm install prisma@^6.11.1 --no-save --no-audit --no-fund && \
+    chown -R nextjs:nodejs /app/node_modules
 
 # Local SQLite directory (mounted as PVC in k3s or Docker volume)
 RUN mkdir -p /app/db && chown -R nextjs:nodejs /app/db

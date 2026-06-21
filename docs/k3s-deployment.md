@@ -171,6 +171,39 @@ For day-to-day local work, drop the `tls:` block from the Ingress and let Higres
 4. Re-run `scripts/build-and-load-image.sh` if your controller shares the dashboard image, or `docker push` if it's separate.
 5. `scripts/deploy-k3s.sh` will re-apply the manifests and roll the controller pod.
 
+## Deploying alongside an existing HiClaw Helm release
+
+If you already installed HiClaw via the official Helm chart
+(`helm install hiclaw higress.io/hiclaw -n hiclaw-system`), deploy the
+TaDashboard as an add-on instead of the standalone stack:
+
+```bash
+scripts/build-and-load-image.sh
+scripts/deploy-with-hiclaw.sh
+```
+
+What this does differently:
+
+- Applies only the dashboard manifests under `deploy/k3s-with-hiclaw/`.
+- Does **not** create a mock controller, Matrix server, MinIO, or Higress —
+  those are already provided by the Helm release.
+- Points `HICLAW_CONTROLLER_URL` at the existing
+  `hiclaw-controller.hiclaw-system.svc.cluster.local:8090` Service.
+- Uses the `hiclaw-manager` ServiceAccount so the dashboard's projected
+  Kubernetes token is accepted by the controller's SA-token authentication.
+- Registers a Higress Ingress for `hiclaw.localhost` on the same gateway
+  that the Helm release already manages.
+
+Access the dashboard the same way:
+
+```bash
+echo "$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}') hiclaw.localhost" | sudo tee -a /etc/hosts
+# open http://hiclaw.localhost
+```
+
+The dashboard will show the live infrastructure status served by the real
+HiClaw controller.
+
 ## Wasm plugins on Higress
 
 HiClaw's gateway features (Consumer auth, rate-limiting) are usually

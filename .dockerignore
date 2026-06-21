@@ -38,10 +38,11 @@ LICENSE
 CONTRIBUTING.md
 SECURITY.md
 
-# Deploy & scripts (not needed in image)
+# Deploy & scripts
+# scripts/ is required for the mock HiClaw Controller in Docker Compose
 deploy
 k8s
-scripts
+# scripts
 .caddy
 Caddyfile
 
