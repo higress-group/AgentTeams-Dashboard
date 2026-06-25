@@ -13,16 +13,15 @@ import {
   Link2,
   Wifi,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useWorkers } from '@/hooks/use-hiclaw-workers';
 import { useManagers } from '@/hooks/use-hiclaw-managers';
 import { useSearch } from '@/lib/search-context';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { WORKER_PHASE_BADGE_CLASSES, MANAGER_PHASE_BADGE_CLASSES } from '@/lib/phase-colors';
-import type { WorkerResponse, ManagerResponse } from '@/lib/hiclaw-api';
+
 
 interface SkillInfo {
   name: string;
@@ -210,12 +209,9 @@ export function SkillsSection() {
 
     // Extract skills from managers - derive from the teams they lead
     managers?.forEach((m) => {
-      // Derive manager skills from their actual managed teams and coordination patterns
-      const mAny = m as Record<string, unknown>;
       const managerSkills: string[] = [];
-      // If the manager has an explicit skills array, use it
-      if (Array.isArray(mAny.skills)) {
-        managerSkills.push(...(mAny.skills as string[]));
+      if (Array.isArray(m.skills)) {
+        managerSkills.push(...m.skills);
       }
       // Otherwise derive from runtime/role
       if (managerSkills.length === 0) {
@@ -244,11 +240,7 @@ export function SkillsSection() {
     const serverMap = new Map<string, MCPServerInfo>();
 
     workers?.forEach((w) => {
-      // Access mcpServers from worker data if available
-      // The WorkerResponse type doesn't directly include mcpServers in the response,
-      // but we can derive from the worker's configuration
-      const wAny = w as Record<string, unknown>;
-      const mcpConfigs = wAny.mcpServers as { name: string; url: string; transport: string }[] | undefined;
+      const mcpConfigs = w.mcpServers;
       if (mcpConfigs && Array.isArray(mcpConfigs)) {
         mcpConfigs.forEach((mcp) => {
           const key = `${mcp.name}-${mcp.url}`;

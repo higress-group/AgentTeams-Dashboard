@@ -9,6 +9,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useCopyToClipboard } from '@/lib/use-copy-to-clipboard';
 import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
 import { useWorkers } from '@/hooks/use-hiclaw-workers';
 import { useTeams } from '@/hooks/use-hiclaw-teams';
@@ -34,14 +35,7 @@ function saveCompletedSteps(steps: Set<number>) {
 }
 
 function CodeBlock({ code, onCopyAll }: { code: string; onCopyAll?: () => void }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    if (onCopyAll) onCopyAll();
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const { copied, copy } = useCopyToClipboard({ onCopy: () => onCopyAll?.() });
 
   return (
     <div className="relative group">
@@ -52,7 +46,7 @@ function CodeBlock({ code, onCopyAll }: { code: string; onCopyAll?: () => void }
         variant="ghost"
         size="sm"
         className="absolute top-2 right-2 h-7 gap-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-        onClick={handleCopy}
+        onClick={() => copy(code)}
       >
         {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
         {copied ? '已复制' : '复制命令'}

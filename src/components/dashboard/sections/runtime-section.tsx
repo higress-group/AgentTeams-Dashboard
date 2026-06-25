@@ -2,7 +2,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Cpu, Code, Terminal, Layers, CheckCircle2, XCircle } from 'lucide-react';
+import { Cpu, Code, Terminal, Layers, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useWorkers } from '@/hooks/use-hiclaw-workers';

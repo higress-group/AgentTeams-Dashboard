@@ -35,27 +35,29 @@ export async function PUT(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
 
-    const res = await fetch(targetUrl, {
-      method: 'PUT',
-      signal: controller.signal,
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(messageContent),
-    });
+    try {
+      const res = await fetch(targetUrl, {
+        method: 'PUT',
+        signal: controller.signal,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messageContent),
+      });
 
-    clearTimeout(timeout);
+      const resultData = await res.arrayBuffer();
+      const responseHeaders = new Headers();
+      const resCT = res.headers.get('content-type');
+      if (resCT) responseHeaders.set('content-type', resCT);
 
-    const resultData = await res.arrayBuffer();
-    const responseHeaders = new Headers();
-    const resCT = res.headers.get('content-type');
-    if (resCT) responseHeaders.set('content-type', resCT);
-
-    return new NextResponse(resultData, {
-      status: res.status,
-      headers: responseHeaders,
-    });
+      return new NextResponse(resultData, {
+        status: res.status,
+        headers: responseHeaders,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 502 });

@@ -1,0 +1,146 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { navItems, type NavItem } from './nav-items';
+
+interface SidebarProps {
+  activeSection: string;
+  countMap: Record<string, number>;
+  sectionsWithNotifications: Set<string>;
+  collapsed: boolean;
+  onNavClick: (_sectionId: string) => void;
+  onToggleCollapse: () => void;
+}
+
+interface NavButtonProps {
+  item: NavItem;
+  idx: number;
+  isActive: boolean;
+  count: number;
+  hasNotification: boolean;
+  collapsed: boolean;
+  onNavClick: (_sectionId: string) => void;
+}
+
+function NavButton({ item, idx, isActive, count, hasNotification, collapsed, onNavClick }: NavButtonProps) {
+  const Icon = item.icon;
+  const button = (
+    <button
+      onClick={() => onNavClick(item.id)}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200 relative ${
+        isActive
+          ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 font-medium border-r-2 border-orange-500'
+          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+      }`}
+      title={collapsed ? item.label : undefined}
+    >
+      <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-orange-500' : ''}`} />
+      {!collapsed && <span className="truncate">{item.label}</span>}
+      {!collapsed && count > 0 && (
+        <Badge
+          variant="secondary"
+          className="ml-auto text-[10px] h-5 min-w-[20px] px-1.5 flex items-center justify-center"
+        >
+          {count}
+        </Badge>
+      )}
+      {collapsed && count > 0 && (
+        <span className="absolute top-1 right-1 h-4 min-w-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] flex items-center justify-center">
+          {count > 99 ? '99+' : count}
+        </span>
+      )}
+      {hasNotification && !isActive && (
+        <span className={`w-2 h-2 rounded-full bg-orange-500 animate-pulse ${collapsed ? 'absolute top-1.5 right-1.5' : 'mr-1 ml-0'}`} />
+      )}
+      {!collapsed && !count && (
+        <kbd className="ml-auto text-[10px] text-muted-foreground/50 hidden lg:inline-block">
+          {idx + 1}
+        </kbd>
+      )}
+    </button>
+  );
+
+  if (collapsed) {
+    return (
+      <Tooltip key={item.id}>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent side="right">
+          {item.label}
+          {count > 0 && ` (${count})`}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return <div key={item.id}>{button}</div>;
+}
+
+export function Sidebar({
+  activeSection,
+  countMap,
+  sectionsWithNotifications,
+  collapsed,
+  onNavClick,
+  onToggleCollapse,
+}: SidebarProps) {
+  return (
+    <aside
+      className={`hidden md:flex flex-col border-r border-border bg-card/50 backdrop-blur-sm transition-all duration-300 ${
+        collapsed ? 'w-16' : 'w-56'
+      }`}
+    >
+      <div className="flex items-center gap-2 px-4 h-14 border-b border-border">
+        <div className="w-8 h-8 rounded-lg mesh-gradient flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+          H
+        </div>
+        {!collapsed && (
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="font-bold text-lg"
+          >
+            HiClaw
+          </motion.span>
+        )}
+      </div>
+
+      <nav className="flex-1 py-2 overflow-y-auto custom-scrollbar">
+        {navItems.map((item, idx) => (
+          <NavButton
+            key={item.id}
+            item={item}
+            idx={idx}
+            isActive={activeSection === item.id}
+            count={countMap[item.id] ?? 0}
+            hasNotification={sectionsWithNotifications.has(item.id)}
+            collapsed={collapsed}
+            onNavClick={onNavClick}
+          />
+        ))}
+      </nav>
+
+      <div className="p-2 border-t border-border">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-center"
+          onClick={onToggleCollapse}
+        >
+          {collapsed ? (
+            <ChevronRight className="w-4 h-4" />
+          ) : (
+            <ChevronLeft className="w-4 h-4" />
+          )}
+        </Button>
+      </div>
+    </aside>
+  );
+}

@@ -32,16 +32,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { useWorkers } from '@/hooks/use-hiclaw-workers';
 import { useTeams } from '@/hooks/use-hiclaw-teams';
 import { useHumans } from '@/hooks/use-hiclaw-humans';
@@ -49,9 +39,11 @@ import { useManagers } from '@/hooks/use-hiclaw-managers';
 import { useCreateHuman, useDeleteHuman } from '@/hooks/use-hiclaw-mutations';
 import { useSearch } from '@/lib/search-context';
 import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useCopyToClipboard } from '@/lib/use-copy-to-clipboard';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { SectionHeader } from '@/components/dashboard/section-header';
+import { ConfirmDeleteDialog } from '@/components/dashboard/confirm-delete-dialog';
 import {
   WORKER_PHASE_LABELS,
   WORKER_PHASE_BADGE_CLASSES,
@@ -101,39 +93,19 @@ function getPhaseBadgeClass(kind: string, phase: string): string {
   }
 }
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  return (
-    <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={handleCopy}>
-      {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-    </Button>
-  );
-}
-
 function YamlPreviewDialog({
   open,
   onOpenChange,
   resource,
 }: {
   open: boolean;
-  onOpenChange: (v: boolean) => void;
+  onOpenChange: (_v: boolean) => void;
   resource: CRDResource | null;
 }) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
   if (!resource) return null;
 
   const jsonStr = JSON.stringify(resource.raw, null, 2);
-
-  const handleCopyAll = () => {
-    navigator.clipboard.writeText(jsonStr);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -152,9 +124,11 @@ function YamlPreviewDialog({
             variant="ghost"
             size="sm"
             className="absolute top-3 right-3 h-7 gap-1.5 text-xs"
-            onClick={handleCopyAll}
+            onClick={() => copy(jsonStr)}
+            aria-label={copied ? '已复制' : '复制全部'}
+            title={copied ? '已复制' : '复制全部'}
           >
-            {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+            {copied ? <Check className="w-3 h-3 text-emerald-500" aria-hidden="true" /> : <Copy className="w-3 h-3" aria-hidden="true" />}
             {copied ? '已复制' : '复制全部'}
           </Button>
         </div>
@@ -174,11 +148,11 @@ function CRDCard({
   onDelete,
 }: {
   resource: CRDResource;
-  onYamlPreview: (r: CRDResource) => void;
-  onDelete: (name: string) => void;
+  onYamlPreview: (_r: CRDResource) => void;
+  onDelete: (_name: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const kindConfig: Record<string, { icon: typeof Bot; color: string; extraInfo: (r: CRDResource) => React.ReactNode }> = {
+  const kindConfig: Record<string, { icon: typeof Bot; color: string;   extraInfo: (_r: CRDResource) => React.ReactNode }> = {
     Worker: {
       icon: Bot,
       color: 'text-orange-500',
@@ -319,8 +293,9 @@ function CRDCard({
                   className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                   onClick={() => onDelete(resource.name)}
                   title="删除"
+                  aria-label={`删除 ${resource.name}`}
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                 </Button>
               )}
             </div>
@@ -664,22 +639,13 @@ export function K8sSection() {
       </Dialog>
 
       {/* Delete Human Confirmation */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>确认删除</AlertDialogTitle>
-            <AlertDialogDescription>
-              确定要删除用户 &quot;{deleteTarget}&quot; 吗？此操作不可撤销。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              删除
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={!!deleteTarget}
+        onOpenChange={() => setDeleteTarget(null)}
+        resourceType="用户"
+        itemName={deleteTarget ?? ''}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

@@ -21,13 +21,13 @@ interface HiClawState {
   connectionLatency: number | null;
   connectionHistory: ConnectionAttempt[];
 
-  setControllerUrl: (url: string) => void;
+  setControllerUrl: (_url: string) => void;
   checkConnection: () => Promise<boolean>;
   openSettings: () => void;
   closeSettings: () => void;
-  setAutoReconnect: (val: boolean) => void;
-  setReconnectInterval: (ms: number) => void;
-  addConnectionAttempt: (attempt: ConnectionAttempt) => void;
+  setAutoReconnect: (_val: boolean) => void;
+  setReconnectInterval: (_ms: number) => void;
+  addConnectionAttempt: (_attempt: ConnectionAttempt) => void;
 }
 
 const MAX_HISTORY = 5;

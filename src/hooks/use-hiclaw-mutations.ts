@@ -13,6 +13,7 @@ import type {
 } from '@/lib/hiclaw-api';
 import { toast } from 'sonner';
 import { useNotificationStore } from '@/lib/notification-store';
+import { formatErrorMessage } from '@/lib/api-error';
 
 function useNotify() {
   const addNotification = useNotificationStore((s) => s.addNotification);
@@ -33,8 +34,8 @@ export function useCreateWorker() {
       addNotification({ type: 'success', title: 'Worker 创建成功', message: `Worker "${variables.name}" 已创建` });
     },
     onError: (err, variables) => {
-      toast.error(`Worker "${variables.name}" 创建失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Worker 创建失败', message: err.message });
+      toast.error(`Worker "${variables.name}" 创建失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Worker 创建失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -52,8 +53,8 @@ export function useDeleteWorker() {
       addNotification({ type: 'success', title: 'Worker 已删除', message: `Worker "${name}" 已删除` });
     },
     onError: (err, name) => {
-      toast.error(`Worker "${name}" 删除失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Worker 删除失败', message: err.message });
+      toast.error(`Worker "${name}" 删除失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Worker 删除失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -72,8 +73,8 @@ export function useUpdateWorker() {
       addNotification({ type: 'success', title: 'Worker 更新成功', message: `Worker "${variables.name}" 已更新` });
     },
     onError: (err, variables) => {
-      toast.error(`Worker "${variables.name}" 更新失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Worker 更新失败', message: err.message });
+      toast.error(`Worker "${variables.name}" 更新失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Worker 更新失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -90,8 +91,8 @@ export function useWakeWorker() {
       addNotification({ type: 'success', title: 'Worker 已唤醒', message: `Worker "${name}" 已唤醒` });
     },
     onError: (err, name) => {
-      toast.error(`Worker "${name}" 唤醒失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Worker 唤醒失败', message: err.message });
+      toast.error(`Worker "${name}" 唤醒失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Worker 唤醒失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -108,8 +109,8 @@ export function useSleepWorker() {
       addNotification({ type: 'success', title: 'Worker 已休眠', message: `Worker "${name}" 已休眠` });
     },
     onError: (err, name) => {
-      toast.error(`Worker "${name}" 休眠失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Worker 休眠失败', message: err.message });
+      toast.error(`Worker "${name}" 休眠失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Worker 休眠失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -126,8 +127,8 @@ export function useEnsureReadyWorker() {
       addNotification({ type: 'success', title: 'Worker 就绪请求已发送', message: `Worker "${name}" 已请求就绪` });
     },
     onError: (err, name) => {
-      toast.error(`Worker "${name}" 就绪请求失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Worker 就绪请求失败', message: err.message });
+      toast.error(`Worker "${name}" 就绪请求失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Worker 就绪请求失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -146,8 +147,8 @@ export function useCreateTeam() {
       addNotification({ type: 'success', title: '团队创建成功', message: `团队 "${variables.name}" 已创建` });
     },
     onError: (err, variables) => {
-      toast.error(`团队 "${variables.name}" 创建失败: ${err.message}`);
-      addNotification({ type: 'error', title: '团队创建失败', message: err.message });
+      toast.error(`团队 "${variables.name}" 创建失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: '团队创建失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -165,8 +166,8 @@ export function useDeleteTeam() {
       addNotification({ type: 'success', title: '团队已删除', message: `团队 "${name}" 已删除` });
     },
     onError: (err, name) => {
-      toast.error(`团队 "${name}" 删除失败: ${err.message}`);
-      addNotification({ type: 'error', title: '团队删除失败', message: err.message });
+      toast.error(`团队 "${name}" 删除失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: '团队删除失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -184,8 +185,8 @@ export function useUpdateTeam() {
       addNotification({ type: 'success', title: '团队更新成功', message: `团队 "${variables.name}" 已更新` });
     },
     onError: (err, variables) => {
-      toast.error(`团队 "${variables.name}" 更新失败: ${err.message}`);
-      addNotification({ type: 'error', title: '团队更新失败', message: err.message });
+      toast.error(`团队 "${variables.name}" 更新失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: '团队更新失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -204,8 +205,8 @@ export function useCreateHuman() {
       addNotification({ type: 'success', title: '用户创建成功', message: `用户 "${variables.displayName}" 已创建` });
     },
     onError: (err, variables) => {
-      toast.error(`用户 "${variables.displayName}" 创建失败: ${err.message}`);
-      addNotification({ type: 'error', title: '用户创建失败', message: err.message });
+      toast.error(`用户 "${variables.displayName}" 创建失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: '用户创建失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -223,8 +224,8 @@ export function useDeleteHuman() {
       addNotification({ type: 'success', title: '用户已删除', message: `用户 "${name}" 已删除` });
     },
     onError: (err, name) => {
-      toast.error(`用户 "${name}" 删除失败: ${err.message}`);
-      addNotification({ type: 'error', title: '用户删除失败', message: err.message });
+      toast.error(`用户 "${name}" 删除失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: '用户删除失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -242,8 +243,8 @@ export function useCreateManager() {
       addNotification({ type: 'success', title: 'Manager 创建成功', message: `Manager "${variables.name}" 已创建` });
     },
     onError: (err, variables) => {
-      toast.error(`Manager "${variables.name}" 创建失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Manager 创建失败', message: err.message });
+      toast.error(`Manager "${variables.name}" 创建失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Manager 创建失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -260,8 +261,8 @@ export function useDeleteManager() {
       addNotification({ type: 'success', title: 'Manager 已删除', message: `Manager "${name}" 已删除` });
     },
     onError: (err, name) => {
-      toast.error(`Manager "${name}" 删除失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Manager 删除失败', message: err.message });
+      toast.error(`Manager "${name}" 删除失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Manager 删除失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -279,8 +280,8 @@ export function useUpdateManager() {
       addNotification({ type: 'success', title: 'Manager 更新成功', message: `Manager "${variables.name}" 已更新` });
     },
     onError: (err, variables) => {
-      toast.error(`Manager "${variables.name}" 更新失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Manager 更新失败', message: err.message });
+      toast.error(`Manager "${variables.name}" 更新失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Manager 更新失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -298,8 +299,8 @@ export function useCreateConsumer() {
       addNotification({ type: 'success', title: 'Consumer 创建成功', message: `Consumer "${variables.name}" 已创建` });
     },
     onError: (err) => {
-      toast.error(`Consumer 创建失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Consumer 创建失败', message: err.message });
+      toast.error(`Consumer 创建失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Consumer 创建失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -316,8 +317,8 @@ export function useDeleteConsumer() {
       addNotification({ type: 'success', title: 'Consumer 已删除', message: `Consumer ${id} 已删除` });
     },
     onError: (err) => {
-      toast.error(`Consumer 删除失败: ${err.message}`);
-      addNotification({ type: 'error', title: 'Consumer 删除失败', message: err.message });
+      toast.error(`Consumer 删除失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: 'Consumer 删除失败', message: formatErrorMessage(err) });
     },
   });
 }
@@ -337,8 +338,8 @@ export function useUpdateHuman() {
       addNotification({ type: 'success', title: '用户更新成功', message: `用户 "${variables.name}" 已更新` });
     },
     onError: (err, variables) => {
-      toast.error(`用户 "${variables.name}" 更新失败: ${err.message}`);
-      addNotification({ type: 'error', title: '用户更新失败', message: err.message });
+      toast.error(`用户 "${variables.name}" 更新失败: ${formatErrorMessage(err)}`);
+      addNotification({ type: 'error', title: '用户更新失败', message: formatErrorMessage(err) });
     },
   });
 }

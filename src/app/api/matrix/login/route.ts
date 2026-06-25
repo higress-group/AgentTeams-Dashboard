@@ -1,5 +1,9 @@
 // POST /api/matrix/login - Login to Matrix homeserver
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  HomeserverValidationError,
+  validateHomeserverUrl,
+} from '@/lib/homeserver-allowlist';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,13 +17,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate homeserver URL to prevent SSRF
     try {
-      const parsed = new URL(homeserver);
-      if (!['http:', 'https:'].includes(parsed.protocol)) {
-        return NextResponse.json({ error: 'Invalid homeserver protocol' }, { status: 400 });
+      validateHomeserverUrl(homeserver);
+    } catch (err) {
+      if (err instanceof HomeserverValidationError) {
+        return NextResponse.json(
+          { error: err.message, reason: err.reason },
+          { status: 403 }
+        );
       }
-    } catch {
       return NextResponse.json({ error: 'Invalid homeserver URL' }, { status: 400 });
     }
 
@@ -28,31 +34,34 @@ export async function POST(request: NextRequest) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
 
-    const res = await fetch(loginUrl, {
-      method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'm.login.password',
-        identifier: {
-          type: 'm.id.user',
-          user: username,
-        },
-        password,
-      }),
-    });
+    try {
+      const res = await fetch(loginUrl, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'm.login.password',
+          identifier: {
+            type: 'm.id.user',
+            user: username,
+          },
+          password,
+        }),
+      });
 
-    clearTimeout(timeout);
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: data.error || data.errmsg || 'Login failed', code: data.errcode },
-        { status: res.status }
-      );
+      if (!res.ok) {
+        return NextResponse.json(
+          { error: data.error || data.errmsg || 'Login failed', code: data.errcode },
+          { status: res.status }
+        );
+      }
+
+      return NextResponse.json(data);
+    } finally {
+      clearTimeout(timeout);
     }
-
-    return NextResponse.json(data);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 502 });

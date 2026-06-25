@@ -19,7 +19,7 @@ export function ConnectionBanner() {
 
   const intervalSec = Math.round(reconnectInterval / 1000);
   const startTimeRef = useRef<number | null>(null);
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
 
   // Tick every second when disconnected
   useEffect(() => {

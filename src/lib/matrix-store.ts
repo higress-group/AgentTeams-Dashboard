@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { matrixApi } from './matrix-api';
+import { formatErrorMessage } from './api-error';
 
 interface MatrixState {
   // Connection
@@ -17,16 +18,18 @@ interface MatrixState {
   isSyncing: boolean;
 
   // Actions
-  login: (homeserver: string, username: string, password: string) => Promise<boolean>;
+  login: (_homeserver: string, _username: string, _password: string) => Promise<boolean>;
   logout: () => void;
-  setHomeserver: (url: string) => void;
-  setSyncToken: (token: string | null) => void;
-  setSyncing: (syncing: boolean) => void;
+  setHomeserver: (_url: string) => void;
+  setSyncToken: (_token: string | null) => void;
+  setSyncing: (_syncing: boolean) => void;
 }
+
+const PERSISTED_KEY = 'matrix-store';
 
 export const useMatrixStore = create<MatrixState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       homeserver: '',
       accessToken: '',
       userId: '',
@@ -53,7 +56,7 @@ export const useMatrixStore = create<MatrixState>()(
           });
           return true;
         } catch (err) {
-          const message = err instanceof Error ? err.message : 'Login failed';
+          const message = formatErrorMessage(err, 'Login failed');
           set({
             isLoggingIn: false,
             loginError: message,
@@ -80,15 +83,26 @@ export const useMatrixStore = create<MatrixState>()(
       setSyncing: (syncing: boolean) => set({ isSyncing: syncing }),
     }),
     {
-      name: 'matrix-store',
+      name: PERSISTED_KEY,
       partialize: (state) => ({
         homeserver: state.homeserver,
-        accessToken: state.accessToken,
         userId: state.userId,
         deviceId: state.deviceId,
         isLoggedIn: state.isLoggedIn,
         syncToken: state.syncToken,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state?.isLoggedIn && !state.accessToken) {
+          useMatrixStore.setState({
+            isLoggedIn: false,
+            userId: '',
+            deviceId: '',
+            syncToken: null,
+          });
+        }
+      },
     }
   )
 );
+
+export const MATRIX_PERSIST_KEY = PERSISTED_KEY;

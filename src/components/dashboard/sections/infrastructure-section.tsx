@@ -469,7 +469,7 @@ export function InfrastructureSection() {
 
   // Resource overview derived data
   const resourceItems = useMemo(() => {
-    const items = [];
+    const items: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; detail: string; healthy: boolean }[] = [];
 
     // Storage (MinIO)
     const minioBuckets = derivedHealth?.minio?.buckets?.length ?? 0;

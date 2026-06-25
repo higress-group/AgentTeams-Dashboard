@@ -1,32 +1,29 @@
 'use client';
 
-import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCopyToClipboard } from '@/lib/use-copy-to-clipboard';
 
 interface CopyButtonProps {
   text: string;
   className?: string;
+  label?: string;
+  successLabel?: string;
 }
 
-export function CopyButton({ text, className }: CopyButtonProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+export function CopyButton({ text, className, label = '复制', successLabel = '已复制' }: CopyButtonProps) {
+  const { copied, copy } = useCopyToClipboard();
 
   return (
     <Button
       variant="ghost"
       size="sm"
       className={`h-6 w-6 p-0 ${className || ''}`}
-      onClick={handleCopy}
-      title="复制"
+      onClick={() => copy(text)}
+      title={copied ? successLabel : label}
+      aria-label={copied ? successLabel : label}
     >
-      {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+      {copied ? <Check className="w-3 h-3 text-emerald-500" aria-hidden="true" /> : <Copy className="w-3 h-3" aria-hidden="true" />}
     </Button>
   );
 }

@@ -16,23 +16,23 @@ const ALLOWED_HOSTS = [
   'hiclaw-controller.hiclaw-system.svc.cluster.local',
 ];
 
-function readAuthTokenFromFile(path: string): string | undefined {
+async function readAuthTokenFromFile(path: string): Promise<string | undefined> {
   try {
     // Use dynamic import so this code can still run in non-Node environments (e.g. tests)
-    const fs = require('fs');
+    const fs = await import('fs');
     return fs.readFileSync(path, 'utf-8').trim();
   } catch {
     return undefined;
   }
 }
 
-export function getAuthToken(): string | undefined {
+export async function getAuthToken(): Promise<string | undefined> {
   // Do NOT cache: projected service-account tokens rotate (e.g. every 3600s).
   // Re-read on every call so we never send a stale token to the controller.
   return (
     process.env.HICLAW_AUTH_TOKEN ||
     (process.env.HICLAW_AUTH_TOKEN_FILE
-      ? readAuthTokenFromFile(process.env.HICLAW_AUTH_TOKEN_FILE)
+      ? await readAuthTokenFromFile(process.env.HICLAW_AUTH_TOKEN_FILE)
       : undefined)
   );
 }
@@ -100,7 +100,7 @@ export async function proxyToHiClaw(
     // In cluster mode the dashboard must authenticate to the controller using its
     // own service-account token. Prefer that over any browser-supplied Authorization.
     // Only fall back to the incoming header when no pod token is configured.
-    const saToken = getAuthToken();
+    const saToken = await getAuthToken();
     const incomingAuth = request.headers.get('authorization');
     const authToken = saToken || (incomingAuth ? incomingAuth.replace(/^Bearer\s+/i, '') : undefined);
     if (authToken) {

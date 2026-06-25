@@ -1,6 +1,8 @@
 // HiClaw API Client - Complete TypeScript API layer
 // All requests go through Next.js API proxy routes
 
+import { ApiError, NetworkError } from '@/lib/api-error';
+
 // ============ Response Types ============
 
 export type WorkerPhase = 'Pending' | 'Running' | 'Sleeping' | 'Updating' | 'Stopped' | 'Failed' | 'Ready';
@@ -202,17 +204,26 @@ async function proxyRequest<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const res = await fetch(`/api/hiclaw${path}`, {
-    ...options,
-    headers: {
-      ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
-      ...options.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`/api/hiclaw${path}`, {
+      ...options,
+      headers: {
+        ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+        ...options.headers,
+      },
+    });
+  } catch (err) {
+    throw new NetworkError(path, err);
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => '');
-    throw new Error(`API Error ${res.status}: ${text || res.statusText}`);
+    throw new ApiError(
+      `API Error ${res.status}: ${text || res.statusText}`,
+      res.status,
+      path
+    );
   }
 
   if (res.status === 204) {
@@ -222,14 +233,23 @@ async function proxyRequest<T>(
   const contentType = res.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
     const text = await res.text().catch(() => '');
-    throw new Error(`API returned non-JSON response (${contentType}): ${text.slice(0, 200)}`);
+    throw new ApiError(
+      `API returned non-JSON response (${contentType}): ${text.slice(0, 200)}`,
+      res.status,
+      path
+    );
   }
 
   try {
     return await res.json();
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown';
-    throw new Error(`Failed to parse API JSON response: ${message}`);
+    throw new ApiError(
+      `Failed to parse API JSON response: ${message}`,
+      res.status,
+      path,
+      err
+    );
   }
 }
 
@@ -237,7 +257,7 @@ async function healthRequest(controllerUrl: string): Promise<string> {
   const res = await fetch(`/api/hiclaw/healthz?controllerUrl=${encodeURIComponent(controllerUrl)}`, {
     method: 'GET',
   });
-  if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
+  if (!res.ok) throw new ApiError(`Health check failed: ${res.status}`, res.status, '/healthz');
   return res.text();
 }
 
@@ -368,7 +388,7 @@ export const hiclawApi = {
     });
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      throw new Error(`Upload failed ${res.status}: ${text}`);
+      throw new ApiError(`Upload failed ${res.status}: ${text}`, res.status, '/upload');
     }
     return res.json();
   },

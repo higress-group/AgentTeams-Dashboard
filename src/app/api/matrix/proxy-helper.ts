@@ -1,5 +1,9 @@
 // Shared proxy helper for Matrix Client-Server API routes
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  HomeserverValidationError,
+  validateHomeserverUrl,
+} from '@/lib/homeserver-allowlist';
 
 const TIMEOUT_MS = 30000; // Matrix sync can take longer
 
@@ -8,23 +12,22 @@ export function getMatrixHomeserver(request: NextRequest): string {
   if (!url) {
     throw new Error('Missing homeserver URL. Provide via ?homeserver= parameter.');
   }
-  // Validate URL to prevent SSRF
   try {
-    const parsed = new URL(url);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      throw new Error('Invalid homeserver protocol');
+    validateHomeserverUrl(url);
+  } catch (err) {
+    if (err instanceof HomeserverValidationError) {
+      throw err;
     }
-  } catch {
     throw new Error('Invalid homeserver URL format');
   }
   return url;
 }
 
 export function getAccessToken(request: NextRequest): string {
-  const token = request.nextUrl.searchParams.get('accessToken')
-    || request.headers.get('Authorization')?.replace('Bearer ', '');
+  const token = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '')
+    || request.nextUrl.searchParams.get('accessToken');
   if (!token) {
-    throw new Error('Missing access token. Provide via ?accessToken= parameter or Authorization header.');
+    throw new Error('Missing access token. Provide via Authorization header or ?accessToken= parameter.');
   }
   return token;
 }

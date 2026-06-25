@@ -1,10 +1,10 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface SearchContextType {
   searchQuery: string;
-  setSearchQuery: (query: string) => void;
+  setSearchQuery: (_query: string) => void;
 }
 
 const SearchContext = createContext<SearchContextType>({

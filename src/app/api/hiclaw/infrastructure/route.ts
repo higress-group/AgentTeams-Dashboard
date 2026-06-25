@@ -41,7 +41,7 @@ async function checkController(): Promise<InfrastructureInfo['controller']> {
   try {
     const res = await fetchWithTimeout(`${CONTROLLER_URL}/healthz`);
     const versionRes = await fetchWithTimeout(`${CONTROLLER_URL}/api/v1/version`, {
-      headers: { Authorization: `Bearer ${getAuthToken() || ''}` },
+      headers: { Authorization: `Bearer ${await getAuthToken() || ''}` },
     });
     let version = 'unknown';
     if (versionRes.ok) {

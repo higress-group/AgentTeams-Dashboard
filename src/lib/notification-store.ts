@@ -12,8 +12,8 @@ export interface Notification {
 
 interface NotificationState {
   notifications: Notification[];
-  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
-  markAsRead: (id: string) => void;
+  addNotification: (_notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  markAsRead: (_id: string) => void;
   markAllRead: () => void;
   clearAll: () => void;
   unreadCount: () => number;
