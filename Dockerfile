@@ -1,0 +1,66 @@
+# ============================================================
+# TaDashboard - Production Dockerfile (Next.js standalone)
+# ============================================================
+# Build:
+#   docker build -t hiclaw-dashboard:latest .
+# Run:
+#   docker run -p 3000:3000 \
+#     -e HICLAW_CONTROLLER_URL=http://hiclaw-controller:8090 \
+#     -e NEXT_PUBLIC_MATRIX_API_URL=http://matrix-local.hiclaw.io:6167 \
+#     hiclaw-dashboard:latest
+
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Default basePath for embedding TaDashboard under /dashboard.
+# Override at build time with --build-arg NEXT_PUBLIC_BASE_PATH="" to serve at root.
+ARG NEXT_PUBLIC_BASE_PATH=/dashboard
+ENV NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
+
+# Optional build-time default for the browser-side controller URL.
+ARG NEXT_PUBLIC_HICLAW_CONTROLLER_URL=
+ENV NEXT_PUBLIC_HICLAW_CONTROLLER_URL=${NEXT_PUBLIC_HICLAW_CONTROLLER_URL}
+
+# Install native deps
+ARG APK_MIRROR=mirrors.aliyun.com
+RUN sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories && \
+    apk add --no-cache ca-certificates
+
+# Install dependencies
+ARG NPM_REGISTRY=https://registry.npmmirror.com
+COPY package.json ./
+RUN npm config set registry "${NPM_REGISTRY}" && \
+    npm install
+
+# Copy source and build
+COPY . .
+RUN npm run build
+
+# ============================================================
+# Runtime image
+# ============================================================
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+ARG APK_MIRROR=mirrors.aliyun.com
+RUN sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR}|g" /etc/apk/repositories && \
+    apk add --no-cache ca-certificates
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+
+# Copy standalone output
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+USER nextjs
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
