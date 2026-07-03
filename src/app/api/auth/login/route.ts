@@ -1,7 +1,14 @@
 // POST /api/auth/login - Authenticate via Higress Console or local fallback
+// Also attempts Matrix login with the same credentials for seamless chat access.
 import { NextRequest, NextResponse } from 'next/server';
 import { callHigressConsole, forwardCookies, getHigressConsoleURL, higressErrorResponse } from '../../higress/proxy-helper';
 import { authenticateLocal, createSessionToken, isHigressConfigured } from '@/lib/auth-local';
+import { validateHomeserverUrl } from '@/lib/homeserver-allowlist';
+
+const MATRIX_HOMESERVER =
+  process.env.NEXT_PUBLIC_MATRIX_API_URL ||
+  process.env.HICLAW_MATRIX_URL ||
+  'http://hiclaw-tuwunel.hiclaw-system:6167';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +29,43 @@ export async function POST(request: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ success: false, error: message }, { status: 502 });
+  }
+}
+
+/**
+ * Attempt Matrix login with the same credentials.
+ * Returns the Matrix login result or null if it fails.
+ */
+async function tryMatrixLogin(username: string, password: string): Promise<Record<string, unknown> | null> {
+  try {
+    validateHomeserverUrl(MATRIX_HOMESERVER, { allowPrivateNetwork: true });
+  } catch {
+    return null; // Invalid homeserver URL, skip
+  }
+
+  try {
+    const res = await fetch(`${MATRIX_HOMESERVER}/_matrix/client/v3/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'm.login.password',
+        identifier: { type: 'm.id.user', user: username },
+        password,
+      }),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    return {
+      accessToken: data.access_token,
+      userId: data.user_id,
+      deviceId: data.device_id,
+      homeserver: MATRIX_HOMESERVER,
+    };
+  } catch {
+    return null; // Matrix unreachable or login failed, skip silently
   }
 }
 
@@ -57,6 +101,9 @@ async function loginViaHigress(request: NextRequest, username: string, password:
     return higressErrorResponse(response, loginBody);
   }
 
+  // 3. Attempt Matrix login with the same credentials (non-blocking).
+  const matrix = await tryMatrixLogin(username, password);
+
   // Forward Set-Cookie headers from Higress Console back to the browser.
   const responseHeaders = new Headers();
   responseHeaders.set('content-type', 'application/json');
@@ -64,7 +111,7 @@ async function loginViaHigress(request: NextRequest, username: string, password:
   forwardCookies(response.headers, responseHeaders);
 
   return new NextResponse(
-    JSON.stringify({ success: true, user: { username }, mode: 'higress' }),
+    JSON.stringify({ success: true, user: { username }, mode: 'higress', matrix }),
     { status: 200, headers: responseHeaders }
   );
 }
@@ -80,6 +127,9 @@ async function loginViaLocal(username: string, password: string) {
     );
   }
 
+  // Attempt Matrix login with the same credentials (non-blocking).
+  const matrix = await tryMatrixLogin(username, password);
+
   // Create a signed session cookie.
   const token = createSessionToken(username);
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -93,7 +143,7 @@ async function loginViaLocal(username: string, password: string) {
   );
 
   return new NextResponse(
-    JSON.stringify({ success: true, user: { username }, mode: 'local' }),
+    JSON.stringify({ success: true, user: { username }, mode: 'local', matrix }),
     { status: 200, headers: responseHeaders }
   );
 }

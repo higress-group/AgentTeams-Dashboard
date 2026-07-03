@@ -19,6 +19,7 @@ interface MatrixState {
 
   // Actions
   login: (_homeserver: string, _username: string, _password: string) => Promise<boolean>;
+  setMatrixAuth: (_data: { accessToken: string; userId: string; deviceId: string; homeserver: string }) => void;
   logout: () => void;
   setHomeserver: (_url: string) => void;
   setSyncToken: (_token: string | null) => void;
@@ -66,6 +67,19 @@ export const useMatrixStore = create<MatrixState>()(
         }
       },
 
+      /** Set Matrix auth from server-side auto-login result (e.g. from /api/auth/login). */
+      setMatrixAuth: (data: { accessToken: string; userId: string; deviceId: string; homeserver: string }) => {
+        set({
+          homeserver: data.homeserver,
+          accessToken: data.accessToken,
+          userId: data.userId,
+          deviceId: data.deviceId,
+          isLoggedIn: true,
+          loginError: null,
+          syncToken: null,
+        });
+      },
+
       logout: () => {
         set({
           accessToken: '',
@@ -86,21 +100,12 @@ export const useMatrixStore = create<MatrixState>()(
       name: PERSISTED_KEY,
       partialize: (state) => ({
         homeserver: state.homeserver,
+        accessToken: state.accessToken,
         userId: state.userId,
         deviceId: state.deviceId,
         isLoggedIn: state.isLoggedIn,
         syncToken: state.syncToken,
       }),
-      onRehydrateStorage: () => (state) => {
-        if (state?.isLoggedIn && !state.accessToken) {
-          useMatrixStore.setState({
-            isLoggedIn: false,
-            userId: '',
-            deviceId: '',
-            syncToken: null,
-          });
-        }
-      },
     }
   )
 );

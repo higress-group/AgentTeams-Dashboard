@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { apiUrl } from '@/lib/api-base';
+import { useMatrixStore } from '@/lib/matrix-store';
 import { Lock, LogIn, RefreshCw, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,6 +19,7 @@ export function LoginPage({ onLoginSuccess, defaultUsername = '' }: LoginPagePro
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const setMatrixAuth = useMatrixStore((s) => s.setMatrixAuth);
 
   const handleLogin = async () => {
     if (!username || !password) return;
@@ -35,6 +37,11 @@ export function LoginPage({ onLoginSuccess, defaultUsername = '' }: LoginPagePro
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Login failed');
+      }
+
+      // Store Matrix auto-login result if available
+      if (data.matrix?.accessToken) {
+        setMatrixAuth(data.matrix);
       }
 
       // Small delay to ensure cookie is fully persisted before reload
