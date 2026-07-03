@@ -158,19 +158,18 @@ wizard() {
   prompt_value NEXT_PUBLIC_MATRIX_API_URL "Matrix Homeserver URL" "http://matrix-local.hiclaw.io:6167"
 
   # Detect Higress Console URL from running container (for shared auth with Higress)
+  # Higress Console is typically on port 8001, embedded in hiclaw-controller or standalone
   local higress_url=""
-  local higress_container
-  higress_container=$(${DOCKER_CMD} ps --format '{{.Names}}' | grep -E "higress-console|higress" | head -1 || true)
-  if [ -n "${higress_container}" ]; then
-    # Try to get the mapped port for 8001
-    local higress_port
-    higress_port=$(${DOCKER_CMD} port "${higress_container}" 8001 2>/dev/null | head -1 | cut -d: -f2 || true)
-    if [ -n "${higress_port}" ]; then
-      higress_url="http://127.0.0.1:${higress_port}"
-    else
-      higress_url="http://${higress_container}:8001"
+  for _ctr in "hiclaw-controller" "higress-console" "higress"; do
+    if ${DOCKER_CMD} ps --format '{{.Names}}' | grep -q "^${_ctr}$"; then
+      local higress_port
+      higress_port=$(${DOCKER_CMD} port "${_ctr}" 8001 2>/dev/null | head -1 | cut -d: -f2 || true)
+      if [ -n "${higress_port}" ]; then
+        higress_url="http://127.0.0.1:${higress_port}"
+        break
+      fi
     fi
-  fi
+  done
   prompt_value HICLAW_AI_GATEWAY_ADMIN_URL "Higress Console URL (for shared login)" "${higress_url}"
 }
 
