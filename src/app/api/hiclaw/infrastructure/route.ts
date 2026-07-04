@@ -110,7 +110,7 @@ async function checkMinio(): Promise<InfrastructureInfo['minio']> {
     return {
       healthy: res.ok,
       endpoint: MINIO_ENDPOINT,
-      buckets: ['hiclaw'],
+      buckets: [], // Bucket list is provided by /api/hiclaw/storage/buckets
     };
   } catch {
     return {

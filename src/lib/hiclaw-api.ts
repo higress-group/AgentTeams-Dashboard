@@ -225,6 +225,28 @@ export interface UpdateModelRequest {
   default?: boolean;
 }
 
+export interface BucketResponse {
+  name: string;
+  createdAt?: string;
+}
+
+export interface StorageObject {
+  key: string;
+  size: number;
+  lastModified?: string;
+  etag?: string;
+  isPrefix?: boolean;
+}
+
+export interface PresignUploadResponse {
+  url: string;
+  fields?: Record<string, string>;
+}
+
+export interface PresignDownloadResponse {
+  url: string;
+}
+
 // ============ Proxy Request Helper ============
 
 async function proxyRequest<T>(
@@ -446,4 +468,35 @@ export const hiclawApi = {
 
   setDefaultModel: (name: string) =>
     proxyRequest<void>('/models/default', { method: 'POST', body: JSON.stringify({ name }) }),
+
+  // Storage
+  listBuckets: async (): Promise<BucketResponse[]> => {
+    const result = await proxyRequest<BucketResponse[] | { buckets: BucketResponse[] }>('/storage/buckets');
+    if (!result || typeof result !== 'object') return [];
+    return Array.isArray(result) ? result : (result as { buckets: BucketResponse[] }).buckets ?? [];
+  },
+
+  listObjects: (bucket: string, prefix?: string) => {
+    const query = prefix ? `?prefix=${encodeURIComponent(prefix)}` : '';
+    return proxyRequest<StorageObject[]>(`/storage/buckets/${encodeURIComponent(bucket)}/objects${query}`, {
+      method: 'GET',
+    });
+  },
+
+  deleteObject: (bucket: string, key: string) =>
+    proxyRequest<void>(`/storage/buckets/${encodeURIComponent(bucket)}/objects/${encodeURIComponent(key)}`, {
+      method: 'DELETE',
+    }),
+
+  presignUpload: (bucket: string, key: string, contentType?: string) =>
+    proxyRequest<PresignUploadResponse>('/storage/presign', {
+      method: 'POST',
+      body: JSON.stringify({ bucket, key, contentType }),
+    }),
+
+  presignDownload: (bucket: string, key: string) =>
+    proxyRequest<PresignDownloadResponse>(
+      `/storage/presign?bucket=${encodeURIComponent(bucket)}&key=${encodeURIComponent(key)}`,
+      { method: 'GET' }
+    ),
 };
