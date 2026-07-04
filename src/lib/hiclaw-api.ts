@@ -247,6 +247,22 @@ export interface PresignDownloadResponse {
   url: string;
 }
 
+export interface LogLine {
+  timestamp: string;
+  level: string;
+  component: string;
+  message: string;
+}
+
+export interface TroubleshootRequest {
+  component: string;
+  symptom: string;
+  logs?: string;
+  infraSnapshot?: InfrastructureInfo;
+}
+
+export type TroubleshootResponse = ReadableStream<Uint8Array>;
+
 // ============ Proxy Request Helper ============
 
 async function proxyRequest<T>(
@@ -499,4 +515,28 @@ export const hiclawApi = {
       `/storage/presign?bucket=${encodeURIComponent(bucket)}&key=${encodeURIComponent(key)}`,
       { method: 'GET' }
     ),
+
+  // Logs
+  getLogs: (component: string, options?: { tail?: number; since?: string; level?: string }) => {
+    const params = new URLSearchParams();
+    if (options?.tail) params.set('tail', String(options.tail));
+    if (options?.since) params.set('since', options.since);
+    if (options?.level) params.set('level', options.level);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return proxyRequest<LogLine[]>(`/logs/${encodeURIComponent(component)}${query}`, { method: 'GET' });
+  },
+
+  // AI Troubleshooting
+  troubleshoot: async (body: TroubleshootRequest): Promise<Response> => {
+    const res = await fetch(apiUrl('/api/hiclaw/troubleshoot'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new ApiError(`Troubleshoot failed: ${text || res.statusText}`, res.status, '/troubleshoot');
+    }
+    return res;
+  },
 };

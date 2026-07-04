@@ -14,6 +14,7 @@ import {
   Rocket,
   Brain,
   HardDrive,
+  FileText,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -37,6 +38,7 @@ export const navItems: NavItem[] = [
   { id: 'humans', label: 'Humans', icon: UserCheck },
   { id: 'models', label: '模型仓库', icon: Brain },
   { id: 'storage', label: '对象存储', icon: HardDrive },
+  { id: 'logs', label: '系统日志', icon: FileText },
   { id: 'chat', label: 'Matrix 聊天', icon: MessageSquare },
   { id: 'infrastructure', label: '基础设施', icon: Server, modes: ['k8s'] },
   { id: 'k8s', label: 'K8s 资源', icon: Container, modes: ['k8s'] },
