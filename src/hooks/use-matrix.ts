@@ -1,5 +1,5 @@
 // React Query hooks for Matrix Client-Server API
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { matrixApi, MatrixEvent } from '@/lib/matrix-api';
 import { useMatrixStore } from '@/lib/matrix-store';
@@ -173,9 +173,11 @@ export function useMatrixSendTyping() {
 
 // ============ Typing Users Hook ============
 
+const EMPTY_TYPING_USERS: TypingUser[] = [];
+
 export function useMatrixTypingUsers(roomId: string): TypingUser[] {
   const { userId } = useMatrixParams();
-  const typingUsers = useTypingStore((s) => s.typingUsers[roomId] || []);
+  const typingUsers = useTypingStore((s) => s.typingUsers[roomId] ?? EMPTY_TYPING_USERS);
 
   // Clear expired typing indicators periodically
   useEffect(() => {
@@ -185,8 +187,8 @@ export function useMatrixTypingUsers(roomId: string): TypingUser[] {
     return () => clearInterval(interval);
   }, []);
 
-  // Filter out current user
-  return typingUsers.filter((u) => u.userId !== userId);
+  // Filter out current user - memoize to avoid re-renders
+  return useMemo(() => typingUsers.filter((u) => u.userId !== userId), [typingUsers, userId]);
 }
 
 // ============ Typing Sync (lightweight sync for typing notifications) ============
@@ -236,7 +238,8 @@ export function useTypingSync(roomId: string | null) {
       }
     };
 
-    poll();
+    // Delay first poll to avoid synchronous state update during user interaction
+    timeoutId = setTimeout(poll, 1000);
 
     return () => {
       cancelled = true;
