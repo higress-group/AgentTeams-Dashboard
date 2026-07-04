@@ -20,11 +20,16 @@ import {
   useMatrixRoomMembers,
   useMatrixRoomState,
   useMatrixSendMessage,
+  useMatrixUploadMedia,
+  useMatrixSendTyping,
+  useMatrixTypingUsers,
+  useTypingSync,
   formatMatrixEvent,
   getRoomNameFromState,
   getRoomTopicFromState,
   type DisplayMessage,
 } from '@/hooks/use-matrix';
+import { TypingIndicator } from './typing-indicator';
 import { useMatrixStore } from '@/lib/matrix-store';
 import type { RoomInfo } from './room-info';
 import { formatDate, getAvatarColor, isDifferentDay } from './format';
@@ -276,8 +281,13 @@ export function ChatPanel({ room }: { room: RoomInfo }) {
   const membersQuery = useMatrixRoomMembers(room.id);
   const stateQuery = useMatrixRoomState(room.id);
   const sendMessage = useMatrixSendMessage();
+  const uploadMedia = useMatrixUploadMedia();
+  const sendTyping = useMatrixSendTyping();
+  const typingUsers = useMatrixTypingUsers(room.id);
+  useTypingSync(room.id);
   const [inputValue, setInputValue] = useState('');
   const [showMembers, setShowMembers] = useState(false);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [pendingMessages, setPendingMessages] = useState<DisplayMessage[]>([]);
@@ -317,6 +327,9 @@ export function ChatPanel({ room }: { room: RoomInfo }) {
 
   const handleSend = useCallback(() => {
     if (!inputValue.trim() || sendMessage.isPending) return;
+    // Stop typing notification
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    sendTyping.mutate({ roomId: room.id, typing: false });
     const body = inputValue.trim();
     const formattedBody = body
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -362,7 +375,78 @@ export function ChatPanel({ room }: { room: RoomInfo }) {
         },
       }
     );
-  }, [inputValue, room.id, sendMessage, userId]);
+  }, [inputValue, room.id, sendMessage, userId, sendTyping]);
+
+  // File upload handler
+  const handleFileUpload = useCallback(
+    async (file: File) => {
+      if (!userId) return;
+      try {
+        const result = await uploadMedia.mutateAsync({ roomId: room.id, file });
+        const contentUri = result.content_uri;
+        const isImage = file.type.startsWith('image/');
+        const msgtype = isImage ? 'm.image' : 'm.file';
+        const body = file.name;
+        await sendMessage.mutateAsync({
+          roomId: room.id,
+          body,
+          formattedBody: undefined,
+          extra: { msgtype, url: contentUri, info: { mimetype: file.type, size: file.size } },
+        });
+      } catch {
+        // Error handled by mutation state
+      }
+    },
+    [room.id, uploadMedia, sendMessage, userId]
+  );
+
+  // Slash command handler
+  const handleSlashCommand = useCallback(
+    (command: string, args: string) => {
+      switch (command) {
+        case 'help':
+          // Show help as a system-like message
+          alert('可用指令:\n/help - 显示帮助\n/clear - 清空输入\n/members - 切换成员列表\n/topic <text> - 设置房间主题');
+          break;
+        case 'members':
+          setShowMembers((v) => !v);
+          break;
+        case 'topic':
+          if (args.trim()) {
+            // Set room topic via state event
+            // This would need a separate API call - for now just show info
+            alert(`设置房间主题: ${args} (功能开发中)`);
+          }
+          break;
+      }
+    },
+    []
+  );
+
+  // Typing notification: send on input change, debounce 3s
+  const handleInputChange = useCallback(
+    (val: string) => {
+      setInputValue(val);
+      // Send typing notification
+      if (val.trim() && userId) {
+        sendTyping.mutate({ roomId: room.id, typing: true });
+        // Clear previous timeout
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        // Auto-stop typing after 3s of inactivity
+        typingTimeoutRef.current = setTimeout(() => {
+          sendTyping.mutate({ roomId: room.id, typing: false });
+        }, 3000);
+      }
+    },
+    [room.id, sendTyping, userId]
+  );
+
+  // Stop typing on send
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, []);
 
   const memberList = useMemo(() => {
     const members = membersQuery.data?.chunk || [];
@@ -391,8 +475,8 @@ export function ChatPanel({ room }: { room: RoomInfo }) {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 flex flex-col min-w-0">
+    <div className="flex h-full min-h-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         <ChatHeader
           roomName={roomName}
           roomTopic={roomTopic}
@@ -421,14 +505,19 @@ export function ChatPanel({ room }: { room: RoomInfo }) {
             }}
           />
         </div>
+        <TypingIndicator users={typingUsers} />
         <ChatComposer
           value={inputValue}
-          onChange={setInputValue}
+          onChange={handleInputChange}
           onSend={handleSend}
           isSending={sendMessage.isPending}
           sendError={sendMessage.isError ? sendMessage.error?.message ?? null : null}
           placeholder={`发送消息到 ${roomName}... (Enter 发送, Shift+Enter 换行)`}
           disabled={false}
+          members={memberList}
+          onFileUpload={handleFileUpload}
+          isUploading={uploadMedia.isPending}
+          onSlashCommand={handleSlashCommand}
         />
       </div>
       <MembersSidebar

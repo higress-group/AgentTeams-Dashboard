@@ -23,6 +23,9 @@ export interface MatrixEvent {
     avatar_url?: string;
     name?: string;
     topic?: string;
+    url?: string;
+    info?: { mimetype?: string; size?: number; w?: number; h?: number };
+    user_ids?: string[];
   } & Record<string, unknown>;
   type: string;
   origin_server_ts: number;
@@ -37,6 +40,9 @@ export interface MatrixJoinedRoom {
     prev_batch: string;
   };
   state: {
+    events: MatrixEvent[];
+  };
+  ephemeral?: {
     events: MatrixEvent[];
   };
   summary: {
@@ -59,6 +65,7 @@ export interface MatrixSyncResponse {
   };
   presence?: { events: MatrixEvent[] };
   account_data?: { events: MatrixEvent[] };
+  ephemeral?: { events: MatrixEvent[] };
 }
 
 export interface MatrixMessagesResponse {
@@ -161,23 +168,67 @@ export const matrixApi = {
     return res.json();
   },
 
+  sendTyping: async (
+    homeserver: string,
+    accessToken: string,
+    roomId: string,
+    userId: string,
+    typing: boolean,
+    timeout = 30000
+  ): Promise<void> => {
+    const url = buildMatrixUrl(
+      `/api/matrix/rooms/${encodeURIComponent(roomId)}/typing/${encodeURIComponent(userId)}`,
+      { homeserver }
+    );
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: buildHeaders(accessToken, { 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ typing, timeout }),
+    });
+    // Typing notifications are fire-and-forget, don't throw on error
+    if (!res.ok) {
+      console.warn('Failed to send typing notification:', res.status);
+    }
+  },
+
+  uploadMedia: async (
+    homeserver: string,
+    accessToken: string,
+    roomId: string,
+    file: File
+  ): Promise<{ content_uri: string }> => {
+    const url = apiUrl(`/api/matrix/rooms/${encodeURIComponent(roomId)}/upload?homeserver=${encodeURIComponent(homeserver)}`);
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${accessToken}` },
+      body: formData,
+    });
+    await throwIfNotOk(res, 'Failed to upload media');
+    return res.json();
+  },
+
   sendMessage: async (
     homeserver: string,
     accessToken: string,
     roomId: string,
     body: string,
-    options: { msgtype?: string; format?: string; formattedBody?: string } = {}
+    options: { msgtype?: string; format?: string; formattedBody?: string; url?: string; info?: Record<string, unknown> } = {}
   ): Promise<{ event_id: string }> => {
     const url = buildMatrixUrl(`/api/matrix/rooms/${encodeURIComponent(roomId)}/send`, { homeserver });
+    const messageBody: Record<string, unknown> = {
+      msgtype: options.msgtype || 'm.text',
+      body,
+    };
+    if (options.format) messageBody.format = options.format;
+    if (options.formattedBody) messageBody.formatted_body = options.formattedBody;
+    if (options.url) messageBody.url = options.url;
+    if (options.info) messageBody.info = options.info;
     const res = await fetch(url, {
       method: 'PUT',
       headers: buildHeaders(accessToken, { 'Content-Type': 'application/json' }),
-      body: JSON.stringify({
-        msgtype: options.msgtype || 'm.text',
-        body,
-        format: options.format,
-        formattedBody: options.formattedBody,
-      }),
+      body: JSON.stringify(messageBody),
     });
     await throwIfNotOk(res, 'Failed to send message');
     return res.json();

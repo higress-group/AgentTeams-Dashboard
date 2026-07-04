@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Check, Clock, AlertCircle } from 'lucide-react';
 import type { DisplayMessage } from '@/hooks/use-matrix';
+import { useMatrixStore } from '@/lib/matrix-store';
 import { formatTime, getAvatarColor } from './format';
 import { MarkdownMessage } from './markdown-message';
 
@@ -29,6 +30,7 @@ export function MessageBubble({
   const time = formatTime(message.timestamp);
   const isNotice = message.type === 'm.notice';
   const avatarColor = getAvatarColor(message.sender);
+  const homeserver = useMatrixStore((s) => s.homeserver);
 
   return (
     <div
@@ -63,7 +65,7 @@ export function MessageBubble({
           </div>
         )}
         <div
-          className={`rounded-xl px-3 py-2 text-sm break-words inline-block ${
+          className={`rounded-xl px-3 py-2 text-sm break-words inline-block overflow-hidden ${
             message.isMe
               ? 'bg-orange-500/15 text-foreground rounded-tr-sm'
               : isNotice
@@ -74,6 +76,10 @@ export function MessageBubble({
           <MarkdownMessage
             content={message.content}
             formattedContent={message.formattedContent}
+            msgType={message.type}
+            mediaUrl={message.mediaUrl}
+            mediaInfo={message.mediaInfo}
+            homeserver={homeserver}
           />
         </div>
         {message.isMe && (

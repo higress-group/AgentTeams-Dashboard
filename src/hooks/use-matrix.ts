@@ -1,13 +1,53 @@
 // React Query hooks for Matrix Client-Server API
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { matrixApi, MatrixEvent } from '@/lib/matrix-api';
 import { useMatrixStore } from '@/lib/matrix-store';
+import { create } from 'zustand';
 
 // Helper to get Matrix connection params
 function useMatrixParams() {
-  const { homeserver, accessToken, isLoggedIn } = useMatrixStore();
-  return { homeserver, accessToken, isLoggedIn };
+  const { homeserver, accessToken, isLoggedIn, userId } = useMatrixStore();
+  return { homeserver, accessToken, isLoggedIn, userId };
 }
+
+// ============ Typing Users Store ============
+
+interface TypingUser {
+  userId: string;
+  displayName: string;
+}
+
+interface TypingStore {
+  typingUsers: Record<string, TypingUser[]>;
+  setTypingUsers: (_roomId: string, _users: TypingUser[]) => void;
+  clearExpired: () => void;
+  expiryMap: Record<string, number>;
+}
+
+export const useTypingStore = create<TypingStore>()((set, get) => ({
+  typingUsers: {},
+  expiryMap: {},
+  setTypingUsers: (roomId: string, users: TypingUser[]) => {
+    set((state) => ({
+      typingUsers: { ...state.typingUsers, [roomId]: users },
+      expiryMap: { ...state.expiryMap, [roomId]: Date.now() + 15000 }, // Expire after 15s
+    }));
+  },
+  clearExpired: () => {
+    const now = Date.now();
+    const { expiryMap, typingUsers } = get();
+    const newTyping: Record<string, TypingUser[]> = {};
+    const newExpiry: Record<string, number> = {};
+    for (const [roomId, expiry] of Object.entries(expiryMap)) {
+      if (expiry > now) {
+        newTyping[roomId] = typingUsers[roomId] || [];
+        newExpiry[roomId] = expiry;
+      }
+    }
+    set({ typingUsers: newTyping, expiryMap: newExpiry });
+  },
+}));
 
 // ============ Room Messages (Infinite Scroll) ============
 
@@ -90,11 +130,12 @@ export function useMatrixSendMessage() {
   const { homeserver, accessToken } = useMatrixParams();
 
   return useMutation({
-    mutationFn: async ({ roomId, body, formattedBody }: { roomId: string; body: string; formattedBody?: string }) => {
+    mutationFn: async ({ roomId, body, formattedBody, extra }: { roomId: string; body: string; formattedBody?: string; extra?: Record<string, unknown> }) => {
       if (!homeserver || !accessToken) throw new Error('Not logged in to Matrix');
       return matrixApi.sendMessage(homeserver, accessToken, roomId, body, {
         format: formattedBody ? 'org.matrix.custom.html' : undefined,
         formattedBody,
+        ...extra,
       });
     },
     onSuccess: (_, variables) => {
@@ -102,6 +143,106 @@ export function useMatrixSendMessage() {
       queryClient.invalidateQueries({ queryKey: ['matrix-messages', variables.roomId] });
     },
   });
+}
+
+// ============ Upload Media Mutation ============
+
+export function useMatrixUploadMedia() {
+  const { homeserver, accessToken } = useMatrixParams();
+
+  return useMutation({
+    mutationFn: async ({ roomId, file }: { roomId: string; file: File }) => {
+      if (!homeserver || !accessToken) throw new Error('Not logged in to Matrix');
+      return matrixApi.uploadMedia(homeserver, accessToken, roomId, file);
+    },
+  });
+}
+
+// ============ Send Typing Notification ============
+
+export function useMatrixSendTyping() {
+  const { homeserver, accessToken, userId } = useMatrixParams();
+
+  return useMutation({
+    mutationFn: async ({ roomId, typing }: { roomId: string; typing: boolean }) => {
+      if (!homeserver || !accessToken || !userId) return;
+      return matrixApi.sendTyping(homeserver, accessToken, roomId, userId, typing);
+    },
+  });
+}
+
+// ============ Typing Users Hook ============
+
+export function useMatrixTypingUsers(roomId: string): TypingUser[] {
+  const { userId } = useMatrixParams();
+  const typingUsers = useTypingStore((s) => s.typingUsers[roomId] || []);
+
+  // Clear expired typing indicators periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      useTypingStore.getState().clearExpired();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Filter out current user
+  return typingUsers.filter((u) => u.userId !== userId);
+}
+
+// ============ Typing Sync (lightweight sync for typing notifications) ============
+
+export function useTypingSync(roomId: string | null) {
+  const { homeserver, accessToken, isLoggedIn } = useMatrixParams();
+  const setTypingUsers = useTypingStore((s) => s.setTypingUsers);
+
+  useEffect(() => {
+    if (!isLoggedIn || !homeserver || !accessToken || !roomId) return;
+
+    let syncToken: string | undefined;
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const poll = async () => {
+      if (cancelled) return;
+      try {
+        const resp = await matrixApi.sync(homeserver, accessToken, syncToken, 5000);
+        if (cancelled) return;
+        syncToken = resp.next_batch;
+
+        // Process typing events from joined rooms
+        const joinedRooms = resp.rooms?.join;
+        if (joinedRooms) {
+          for (const [rid, roomData] of Object.entries(joinedRooms)) {
+            const ephemeralEvents = roomData.ephemeral?.events || [];
+            for (const event of ephemeralEvents) {
+              if (event.type === 'm.typing' && rid === roomId) {
+                const typingUserIds = (event.content?.user_ids as string[]) || [];
+                // Convert to TypingUser objects (we'll use userId as displayName for now)
+                const users = typingUserIds.map((uid) => ({
+                  userId: uid,
+                  displayName: uid.startsWith('@') ? uid.split(':')[0].slice(1) : uid,
+                }));
+                setTypingUsers(rid, users);
+              }
+            }
+          }
+        }
+      } catch {
+        // Silently ignore sync errors for typing
+      }
+
+      if (!cancelled) {
+        timeoutId = setTimeout(poll, 3000); // Poll every 3s for typing
+      }
+    };
+
+    poll();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [homeserver, accessToken, isLoggedIn, roomId, setTypingUsers]);
 }
 
 // ============ Login Mutation ============
@@ -146,6 +287,8 @@ export interface DisplayMessage {
   type: string;
   isMe: boolean;
   status?: 'sending' | 'sent' | 'error';
+  mediaUrl?: string;
+  mediaInfo?: { mimetype?: string; size?: number; w?: number; h?: number };
 }
 
 export function formatMatrixEvent(event: MatrixEvent, currentUserId: string): DisplayMessage | null {
@@ -165,5 +308,7 @@ export function formatMatrixEvent(event: MatrixEvent, currentUserId: string): Di
     timestamp: event.origin_server_ts,
     type: event.content.msgtype || 'm.text',
     isMe: event.sender === currentUserId,
+    mediaUrl: event.content.url as string | undefined,
+    mediaInfo: event.content.info as { mimetype?: string; size?: number; w?: number; h?: number } | undefined,
   };
 }

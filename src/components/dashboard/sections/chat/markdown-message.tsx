@@ -14,6 +14,10 @@ import { renderFormattedContent } from './format';
 interface MarkdownMessageProps {
   content: string;
   formattedContent?: string | null;
+  msgType?: string;
+  mediaUrl?: string;
+  mediaInfo?: { mimetype?: string; size?: number; w?: number; h?: number };
+  homeserver?: string;
 }
 
 function CodeBlock({ language, children }: { language?: string; children: string }) {
@@ -48,6 +52,7 @@ function CodeBlock({ language, children }: { language?: string; children: string
 type ContentPart =
   | { type: 'text'; text: string }
   | { type: 'card'; payload: Record<string, unknown> }
+  | { type: 'tool_call'; payload: Record<string, unknown> }
   | { type: 'thinking'; content: string };
 
 function parseCustomBlocks(content: string): ContentPart[] {
@@ -63,7 +68,12 @@ function parseCustomBlocks(content: string): ContentPart[] {
     const full = match[0];
     if (full.startsWith('```card')) {
       try {
-        parts.push({ type: 'card', payload: JSON.parse(match[2]) });
+        const parsed = JSON.parse(match[2]);
+        if (parsed.type === 'tool_call' || parsed.tool_name) {
+          parts.push({ type: 'tool_call', payload: parsed });
+        } else {
+          parts.push({ type: 'card', payload: parsed });
+        }
       } catch {
         parts.push({ type: 'text', text: full });
       }
@@ -78,8 +88,26 @@ function parseCustomBlocks(content: string): ContentPart[] {
   return parts;
 }
 
-export function MarkdownMessage({ content, formattedContent }: MarkdownMessageProps) {
+export function MarkdownMessage({ content, formattedContent, msgType, mediaUrl, mediaInfo, homeserver }: MarkdownMessageProps) {
   const source = formattedContent || content;
+
+  // Resolve mxc:// URL to HTTP URL via Matrix media API
+  const resolvedMediaUrl = useMemo(() => {
+    if (!mediaUrl) return undefined;
+    if (mediaUrl.startsWith('http')) return mediaUrl;
+    // mxc:// URLs: convert to /_matrix/media/v3/download/serverName/mediaId
+    if (mediaUrl.startsWith('mxc://')) {
+      const parts = mediaUrl.replace('mxc://', '').split('/');
+      if (parts.length >= 2) {
+        const serverName = parts[0];
+        const mediaId = parts.slice(1).join('/');
+        // Use the homeserver as the base for media downloads
+        const base = homeserver || '';
+        return `${base}/_matrix/media/v3/download/${serverName}/${mediaId}`;
+      }
+    }
+    return undefined;
+  }, [mediaUrl, homeserver]);
 
   const html = useMemo(() => {
     if (formattedContent) {
@@ -87,6 +115,43 @@ export function MarkdownMessage({ content, formattedContent }: MarkdownMessagePr
     }
     return undefined;
   }, [formattedContent, content]);
+
+  // Render media messages (m.image, m.file)
+  if (msgType === 'm.image' && resolvedMediaUrl) {
+    return (
+      <div className="matrix-message-content">
+        <img
+          src={resolvedMediaUrl}
+          alt={content}
+          className="max-w-full max-h-64 rounded-lg object-contain"
+          loading="lazy"
+        />
+        {content && <p className="text-xs text-muted-foreground mt-1">{content}</p>}
+      </div>
+    );
+  }
+
+  if (msgType === 'm.file' && resolvedMediaUrl) {
+    const sizeText = mediaInfo?.size
+      ? mediaInfo.size > 1024 * 1024
+        ? `(${(mediaInfo.size / (1024 * 1024)).toFixed(1)} MB)`
+        : `(${(mediaInfo.size / 1024).toFixed(1)} KB)`
+      : '';
+    return (
+      <div className="matrix-message-content">
+        <a
+          href={resolvedMediaUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-orange-600 hover:underline"
+        >
+          <span>📎</span>
+          <span>{content}</span>
+          {sizeText && <span className="text-xs text-muted-foreground">{sizeText}</span>}
+        </a>
+      </div>
+    );
+  }
 
   // For HTML formatted_body, render with custom block parsing
   if (html) {
@@ -104,6 +169,9 @@ export function MarkdownMessage({ content, formattedContent }: MarkdownMessagePr
             );
           }
           if (part.type === 'card') {
+            return <StreamingCard key={idx} payload={part.payload} />;
+          }
+          if (part.type === 'tool_call') {
             return <StreamingCard key={idx} payload={part.payload} />;
           }
           return <ThinkingCard key={idx} content={part.content} />;

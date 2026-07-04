@@ -12,7 +12,7 @@ export async function PUT(
     const accessToken = getAccessToken(request);
 
     const body = await request.json();
-    const { msgtype = 'm.text', body: messageBody, format, formattedBody } = body;
+    const { msgtype = 'm.text', body: messageBody, format, formattedBody, url: mediaUrl, info } = body;
 
     if (!messageBody) {
       return NextResponse.json({ error: 'Missing message body' }, { status: 400 });
@@ -22,7 +22,7 @@ export async function PUT(
     const encodedRoomId = encodeURIComponent(roomId);
     const targetUrl = `${homeserver}/_matrix/client/v3/rooms/${encodedRoomId}/send/m.room.message/${txnId}`;
 
-    const messageContent: Record<string, string> = {
+    const messageContent: Record<string, unknown> = {
       msgtype,
       body: messageBody,
     };
@@ -30,6 +30,12 @@ export async function PUT(
     if (format && formattedBody) {
       messageContent.format = format;
       messageContent.formatted_body = formattedBody;
+    }
+    if (mediaUrl) {
+      messageContent.url = mediaUrl;
+    }
+    if (info) {
+      messageContent.info = info;
     }
 
     const controller = new AbortController();
