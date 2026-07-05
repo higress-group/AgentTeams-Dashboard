@@ -23,23 +23,30 @@ export function useDeploymentMode() {
 
   const controllerKubeMode = version?.kubeMode ?? clusterStatus?.kubeMode;
 
+  // Always consult the mode API to check for env var override (highest priority)
   const { data: fallbackMode, isLoading: fallbackLoading } = useQuery<ModeResponse>({
     queryKey: ['hiclaw-mode'],
     queryFn: fetchMode,
-    // Only consult filesystem fallback when controller hasn't returned a value yet.
-    enabled: controllerKubeMode === undefined,
     refetchInterval: false,
     retry: 1,
     throwOnError: false,
   });
 
-  const isLoading = versionLoading || clusterLoading || (controllerKubeMode === undefined && fallbackLoading);
+  const isLoading = versionLoading || clusterLoading || fallbackLoading;
 
+  // Env var (via /api/hiclaw/mode with source='env') overrides controller's kubeMode
+  if (fallbackMode?.source === 'env') {
+    const mode = fallbackMode.mode;
+    return { mode, isKube: mode === 'k8s', isEmbedded: mode === 'embedded', isLoading } as const;
+  }
+
+  // Controller API response is the next priority
   if (controllerKubeMode !== undefined) {
     const mode = controllerKubeMode ? 'k8s' : 'embedded';
     return { mode, isKube: controllerKubeMode, isEmbedded: !controllerKubeMode, isLoading } as const;
   }
 
+  // Filesystem fallback
   if (fallbackMode) {
     const mode = fallbackMode.mode;
     return { mode, isKube: mode === 'k8s', isEmbedded: mode === 'embedded', isLoading } as const;

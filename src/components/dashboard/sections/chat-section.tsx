@@ -52,7 +52,7 @@ export function ChatSection() {
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="flex flex-col h-[calc(100vh-3rem)] min-h-0 overflow-hidden">
       {/* Compact header bar */}
       <div className="shrink-0 px-3 py-1.5 border-b border-border flex items-center justify-between bg-card/30">
         <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export function ChatSection() {
         />
 
         {/* Center: Chat panel */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0">
           {selectedRoom ? (
             <ChatPanel room={selectedRoom} />
           ) : (
