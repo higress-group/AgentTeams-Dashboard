@@ -16,6 +16,7 @@ import type {
 import { toast } from 'sonner';
 import { useNotificationStore } from '@/lib/notification-store';
 import { formatErrorMessage } from '@/lib/api-error';
+import { auditMutation } from '@/lib/audit-store';
 
 function useNotify() {
   const addNotification = useNotificationStore((s) => s.addNotification);
@@ -34,10 +35,12 @@ export function useCreateWorker() {
       queryClient.invalidateQueries({ queryKey: ['hiclaw-cluster-status'] });
       toast.success(`Worker "${variables.name}" 创建成功`);
       addNotification({ type: 'success', title: 'Worker 创建成功', message: `Worker "${variables.name}" 已创建` });
+      auditMutation('worker', variables.name, 'create');
     },
     onError: (err, variables) => {
       toast.error(`Worker "${variables.name}" 创建失败: ${formatErrorMessage(err)}`);
       addNotification({ type: 'error', title: 'Worker 创建失败', message: formatErrorMessage(err) });
+      auditMutation('worker', variables.name, 'create-failed', formatErrorMessage(err), 'error');
     },
   });
 }
@@ -65,6 +68,7 @@ export function useDeleteWorker() {
       queryClient.invalidateQueries({ queryKey: ['hiclaw-cluster-status'] });
       toast.success(`Worker "${name}" 已删除`);
       addNotification({ type: 'success', title: 'Worker 已删除', message: `Worker "${name}" 已删除` });
+      auditMutation('worker', name, 'delete');
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['hiclaw-workers'] }),
   });
@@ -112,6 +116,7 @@ export function useWakeWorker() {
     onSuccess: (_, name) => {
       toast.success(`Worker "${name}" 已唤醒`);
       addNotification({ type: 'success', title: 'Worker 已唤醒', message: `Worker "${name}" 已唤醒` });
+      auditMutation('worker', name, 'wake');
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['hiclaw-workers'] }),
   });
@@ -139,6 +144,7 @@ export function useSleepWorker() {
     onSuccess: (_, name) => {
       toast.success(`Worker "${name}" 已休眠`);
       addNotification({ type: 'success', title: 'Worker 已休眠', message: `Worker "${name}" 已休眠` });
+      auditMutation('worker', name, 'sleep');
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['hiclaw-workers'] }),
   });
@@ -174,10 +180,12 @@ export function useCreateTeam() {
       queryClient.invalidateQueries({ queryKey: ['hiclaw-cluster-status'] });
       toast.success(`团队 "${variables.name}" 创建成功`);
       addNotification({ type: 'success', title: '团队创建成功', message: `团队 "${variables.name}" 已创建` });
+      auditMutation('team', variables.name, 'create');
     },
     onError: (err, variables) => {
       toast.error(`团队 "${variables.name}" 创建失败: ${formatErrorMessage(err)}`);
       addNotification({ type: 'error', title: '团队创建失败', message: formatErrorMessage(err) });
+      auditMutation('team', variables.name, 'create-failed', formatErrorMessage(err), 'error');
     },
   });
 }
@@ -193,10 +201,12 @@ export function useDeleteTeam() {
       queryClient.invalidateQueries({ queryKey: ['hiclaw-cluster-status'] });
       toast.success(`团队 "${name}" 已删除`);
       addNotification({ type: 'success', title: '团队已删除', message: `团队 "${name}" 已删除` });
+      auditMutation('team', name, 'delete');
     },
     onError: (err, name) => {
       toast.error(`团队 "${name}" 删除失败: ${formatErrorMessage(err)}`);
       addNotification({ type: 'error', title: '团队删除失败', message: formatErrorMessage(err) });
+      auditMutation('team', name, 'delete-failed', formatErrorMessage(err), 'error');
     },
   });
 }
@@ -270,10 +280,12 @@ export function useCreateManager() {
       queryClient.invalidateQueries({ queryKey: ['hiclaw-managers'] });
       toast.success(`Manager "${variables.name}" 创建成功`);
       addNotification({ type: 'success', title: 'Manager 创建成功', message: `Manager "${variables.name}" 已创建` });
+      auditMutation('manager', variables.name, 'create');
     },
     onError: (err, variables) => {
       toast.error(`Manager "${variables.name}" 创建失败: ${formatErrorMessage(err)}`);
       addNotification({ type: 'error', title: 'Manager 创建失败', message: formatErrorMessage(err) });
+      auditMutation('manager', variables.name, 'create-failed', formatErrorMessage(err), 'error');
     },
   });
 }
@@ -288,10 +300,12 @@ export function useDeleteManager() {
       queryClient.invalidateQueries({ queryKey: ['hiclaw-managers'] });
       toast.success(`Manager "${name}" 已删除`);
       addNotification({ type: 'success', title: 'Manager 已删除', message: `Manager "${name}" 已删除` });
+      auditMutation('manager', name, 'delete');
     },
     onError: (err, name) => {
       toast.error(`Manager "${name}" 删除失败: ${formatErrorMessage(err)}`);
       addNotification({ type: 'error', title: 'Manager 删除失败', message: formatErrorMessage(err) });
+      auditMutation('manager', name, 'delete-failed', formatErrorMessage(err), 'error');
     },
   });
 }

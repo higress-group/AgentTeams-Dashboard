@@ -28,12 +28,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import type { WorkerResponse, TeamResponse, ManagerResponse, InfrastructureInfo } from '@/lib/hiclaw-api';
 import { useClusterStatus } from '@/hooks/use-hiclaw-cluster-status';
 import { useVersion } from '@/hooks/use-hiclaw-version';
 import { useWorkers } from '@/hooks/use-hiclaw-workers';
 import { useTeams } from '@/hooks/use-hiclaw-teams';
 import { useManagers } from '@/hooks/use-hiclaw-managers';
 import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
+import { computeInsights, type Insight } from '@/lib/insights-engine';
 import { useDeploymentMode } from '@/hooks/use-deployment-mode';
 import { useHiClawStore } from '@/lib/hiclaw-store';
 import { WORKER_PHASE_COLORS } from '@/lib/phase-colors';
@@ -380,6 +383,15 @@ export function OverviewSection() {
         </motion.div>
       </div>
 
+      {/* ===== Insights Bar ===== */}
+      <InsightsBar
+        workers={workers}
+        teams={teams}
+        managers={managers}
+        infrastructure={infrastructure ?? undefined}
+        isConnected={isConnected}
+      />
+
       {/* ===== Row 3: Charts (two-column) ===== */}
       {isConnected && workers && workers.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -571,5 +583,72 @@ export function OverviewSection() {
         </Card>
       </motion.div>
     </div>
+  );
+}
+
+// ============ Insights Bar ============
+function InsightsBar({
+  workers,
+  teams,
+  managers,
+  infrastructure,
+  isConnected,
+}: {
+  workers: WorkerResponse[] | undefined;
+  teams: TeamResponse[] | undefined;
+  managers: ManagerResponse[] | undefined;
+  infrastructure: InfrastructureInfo | undefined;
+  isConnected: boolean;
+}) {
+  const insights = useMemo(
+    () => computeInsights(workers, teams, managers, infrastructure, isConnected),
+    [workers, teams, managers, infrastructure, isConnected]
+  );
+
+  if (insights.length === 0) return null;
+
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+      {insights.map((insight) => (
+        <InsightBadge key={insight.id} insight={insight} />
+      ))}
+    </div>
+  );
+}
+
+function InsightBadge({ insight }: { insight: Insight }) {
+  const Icon =
+    insight.severity === 'critical'
+      ? XCircle
+      : insight.severity === 'warning'
+        ? AlertTriangle
+        : insight.category === 'health'
+          ? CheckCircle2
+          : Info;
+
+  const colorClass =
+    insight.severity === 'critical'
+      ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20'
+      : insight.severity === 'warning'
+        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+        : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Badge
+          variant="outline"
+          className={`gap-1.5 text-[10px] whitespace-nowrap cursor-default ${colorClass}`}
+        >
+          <Icon className="w-3 h-3 shrink-0" />
+          {insight.message}
+        </Badge>
+      </TooltipTrigger>
+      {insight.detail && (
+        <TooltipContent>
+          <p className="text-xs max-w-xs">{insight.detail}</p>
+        </TooltipContent>
+      )}
+    </Tooltip>
   );
 }

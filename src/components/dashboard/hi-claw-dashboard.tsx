@@ -32,6 +32,7 @@ import { useActiveSection } from './use-active-section';
 import { navItems, isNavItemVisible, createActions, isCreateActionVisible } from './nav-items';
 import { useDeploymentMode } from '@/hooks/use-deployment-mode';
 import { useEnsureAiGateway } from '@/hooks/use-ensure-ai-gateway';
+import { usePhaseWatcher } from '@/hooks/use-phase-watcher';
 
 // Lazy load sections for performance
 const OverviewSection = lazy(() => import('./sections/overview-section').then(m => ({ default: m.OverviewSection })));
@@ -70,6 +71,7 @@ export function HiClawDashboard() {
 
   // Auto-configure Higress AI gateway on first load
   useEnsureAiGateway();
+  usePhaseWatcher();
   useHiClawStatus();
   const { data: workers } = useWorkers();
   const { data: teams } = useTeams();

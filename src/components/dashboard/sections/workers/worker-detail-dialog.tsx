@@ -3,6 +3,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge, RuntimeBadge } from '@/components/dashboard/phase-badge';
+import { HealthRing } from '@/components/dashboard/health-ring';
+import { useAgentHealth } from '@/hooks/use-agent-health';
 import { RUNTIME_LABELS } from '@/lib/phase-colors';
 import type { WorkerResponse } from '@/lib/hiclaw-api';
 
@@ -42,6 +44,7 @@ export function WorkerDetailDialog({
               <PhaseBadge kind="worker" phase={worker.phase} />
               <RuntimeBadge runtime={worker.runtime} />
             </div>
+            <WorkerHealthBreakdown worker={worker} />
             {DETAIL_FIELDS.map(([label, read]) => (
               <div
                 key={label}
@@ -79,5 +82,37 @@ export function WorkerDetailDialog({
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function WorkerHealthBreakdown({ worker }: { worker: WorkerResponse }) {
+  const health = useAgentHealth(worker);
+  if (!health) return null;
+
+  return (
+    <div className="flex items-center gap-4 p-3 rounded-lg bg-muted/30 border border-border/50">
+      <HealthRing score={health.overall} size={56} strokeWidth={4} label={health.label} />
+      <div className="flex-1 space-y-1.5">
+        <HealthBar label="可用性" value={health.availability} />
+        <HealthBar label="稳定性" value={health.stability} />
+        <HealthBar label="就绪度" value={health.readiness} />
+      </div>
+    </div>
+  );
+}
+
+function HealthBar({ label, value }: { label: string; value: number }) {
+  const color = value >= 80 ? 'bg-emerald-500' : value >= 60 ? 'bg-green-500' : value >= 40 ? 'bg-amber-500' : 'bg-red-500';
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] text-muted-foreground w-10">{label}</span>
+      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${color}`}
+          style={{ width: `${value}%` }}
+        />
+      </div>
+      <span className="text-[10px] font-mono w-6 text-right">{value}</span>
+    </div>
   );
 }

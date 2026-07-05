@@ -1,0 +1,161 @@
+// Insights Engine for Overview Dashboard
+// Automatically detects anomalies and generates actionable insights
+
+import type { WorkerResponse, TeamResponse, ManagerResponse, InfrastructureInfo } from '@/lib/hiclaw-api';
+
+export interface Insight {
+  id: string;
+  severity: 'info' | 'warning' | 'critical';
+  category: 'health' | 'capacity' | 'configuration' | 'connectivity';
+  message: string;
+  detail?: string;
+  actionSection?: string; // section ID to navigate to
+}
+
+export function computeInsights(
+  workers: WorkerResponse[] | undefined,
+  teams: TeamResponse[] | undefined,
+  managers: ManagerResponse[] | undefined,
+  infrastructure: InfrastructureInfo | undefined,
+  isConnected: boolean
+): Insight[] {
+  const insights: Insight[] = [];
+
+  // Connection
+  if (!isConnected) {
+    insights.push({
+      id: 'disconnected',
+      severity: 'critical',
+      category: 'connectivity',
+      message: 'Controller 未连接',
+      detail: '无法连接到 HiClaw Controller，请检查网络和配置',
+    });
+  }
+
+  if (!workers) return insights;
+
+  // Failed workers
+  const failedWorkers = workers.filter((w) => w.phase === 'Failed');
+  if (failedWorkers.length > 0) {
+    insights.push({
+      id: 'failed-workers',
+      severity: 'critical',
+      category: 'health',
+      message: `${failedWorkers.length} 个 Worker 处于失败状态`,
+      detail: failedWorkers.map((w) => w.name).join(', '),
+      actionSection: 'workers',
+    });
+  }
+
+  // Pending workers (stuck)
+  const pendingWorkers = workers.filter((w) => w.phase === 'Pending');
+  if (pendingWorkers.length > 2) {
+    insights.push({
+      id: 'stuck-pending',
+      severity: 'warning',
+      category: 'health',
+      message: `${pendingWorkers.length} 个 Worker 长时间处于 Pending`,
+      detail: pendingWorkers.map((w) => w.name).join(', '),
+      actionSection: 'workers',
+    });
+  }
+
+  // Workers without teams
+  const unassignedWorkers = workers.filter((w) => !w.team);
+  if (unassignedWorkers.length > 0) {
+    insights.push({
+      id: 'unassigned-workers',
+      severity: 'info',
+      category: 'configuration',
+      message: `${unassignedWorkers.length} 个 Worker 未分配团队`,
+      detail: unassignedWorkers.map((w) => w.name).join(', '),
+      actionSection: 'teams',
+    });
+  }
+
+  // Workers without model
+  const noModelWorkers = workers.filter((w) => !w.model);
+  if (noModelWorkers.length > 0) {
+    insights.push({
+      id: 'no-model-workers',
+      severity: 'warning',
+      category: 'configuration',
+      message: `${noModelWorkers.length} 个 Worker 未配置模型`,
+      detail: noModelWorkers.map((w) => w.name).join(', '),
+      actionSection: 'workers',
+    });
+  }
+
+  // Teams analysis
+  if (teams) {
+    const degradedTeams = teams.filter((t) => t.phase === 'Degraded');
+    if (degradedTeams.length > 0) {
+      insights.push({
+        id: 'degraded-teams',
+        severity: 'warning',
+        category: 'health',
+        message: `${degradedTeams.length} 个团队处于降级状态`,
+        detail: degradedTeams.map((t) => t.teamName || t.name).join(', '),
+        actionSection: 'teams',
+      });
+    }
+
+    const failedTeams = teams.filter((t) => t.phase === 'Failed');
+    if (failedTeams.length > 0) {
+      insights.push({
+        id: 'failed-teams',
+        severity: 'critical',
+        category: 'health',
+        message: `${failedTeams.length} 个团队处于失败状态`,
+        detail: failedTeams.map((t) => t.teamName || t.name).join(', '),
+        actionSection: 'teams',
+      });
+    }
+
+    // Teams with low readiness
+    const lowReadinessTeams = teams.filter(
+      (t) => t.totalWorkers > 0 && t.readyWorkers / t.totalWorkers < 0.5
+    );
+    if (lowReadinessTeams.length > 0) {
+      insights.push({
+        id: 'low-readiness',
+        severity: 'warning',
+        category: 'capacity',
+        message: `${lowReadinessTeams.length} 个团队就绪率低于 50%`,
+        detail: lowReadinessTeams.map((t) => `${t.teamName || t.name} (${t.readyWorkers}/${t.totalWorkers})`).join(', '),
+        actionSection: 'teams',
+      });
+    }
+  }
+
+  // Infrastructure
+  if (infrastructure) {
+    const unhealthyServices: string[] = [];
+    if (infrastructure.minio && !infrastructure.minio.healthy) unhealthyServices.push('MinIO');
+    if (infrastructure.higress && !infrastructure.higress.healthy) unhealthyServices.push('Higress');
+    if (infrastructure.matrix && !infrastructure.matrix.healthy) unhealthyServices.push('Matrix');
+    if (infrastructure.kubernetes && !infrastructure.kubernetes.healthy) unhealthyServices.push('Kubernetes');
+
+    if (unhealthyServices.length > 0) {
+      insights.push({
+        id: 'unhealthy-services',
+        severity: 'warning',
+        category: 'connectivity',
+        message: `${unhealthyServices.length} 个基础设施服务异常`,
+        detail: unhealthyServices.join(', '),
+      });
+    }
+  }
+
+  // All good
+  if (insights.length === 0) {
+    insights.push({
+      id: 'all-good',
+      severity: 'info',
+      category: 'health',
+      message: '所有系统运行正常',
+    });
+  }
+
+  return insights;
+}

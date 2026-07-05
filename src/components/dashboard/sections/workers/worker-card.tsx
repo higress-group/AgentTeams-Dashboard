@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge, RuntimeBadge } from '@/components/dashboard/phase-badge';
+import { HealthRingCompact } from '@/components/dashboard/health-ring';
+import { useAgentHealth } from '@/hooks/use-agent-health';
 import type { WorkerResponse } from '@/lib/hiclaw-api';
 
 export function WorkerCard({
@@ -32,6 +34,8 @@ export function WorkerCard({
   onDelete: () => void;
   isActionPending: boolean;
 }) {
+  const health = useAgentHealth(worker);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -65,7 +69,22 @@ export function WorkerCard({
               <Bot className="w-5 h-5 text-orange-500 shrink-0" aria-hidden="true" />
               <span className="font-medium truncate">{worker.name}</span>
             </div>
-            <PhaseBadge kind="worker" phase={worker.phase} />
+            <div className="flex items-center gap-2 shrink-0">
+              {health && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <HealthRingCompact score={health.overall} size={24} />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs font-medium">健康评分: {health.overall}/100 ({health.label})</p>
+                    <p className="text-[10px] text-muted-foreground">可用性 {health.availability} · 稳定性 {health.stability} · 就绪度 {health.readiness}</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <PhaseBadge kind="worker" phase={worker.phase} />
+            </div>
           </div>
 
           <div className="space-y-1.5 text-sm">
