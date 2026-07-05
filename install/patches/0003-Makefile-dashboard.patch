@@ -1,4 +1,6 @@
+From c6e0994e24fb5bd250f4c2c0b8ebc9a8f6db1b5c Mon Sep 17 00:00:00 2001
 From: TaDashboard <dashboard@hiclaw.io>
+Date: Sun, 5 Jul 2026 21:02:06 +0800
 Subject: [PATCH 3/3] feat(Makefile): add Dashboard standalone targets
 
 Add Makefile targets for standalone Dashboard management:
@@ -6,24 +8,47 @@ Add Makefile targets for standalone Dashboard management:
 - update-dashboard: pull latest & recreate
 - uninstall-dashboard: remove container
 ---
- Makefile | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ Makefile | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
+index 24afbcd..bd61e8d 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -41,6 +41,7 @@
- DASHBOARD_IMAGE      ?= $(REGISTRY)/$(REPO)/hiclaw-dashboard
+@@ -33,6 +33,7 @@ OPENHUMAN_WORKER_IMAGE ?= $(REGISTRY)/$(REPO)/hiclaw-openhuman-worker
+ OPENCLAW_BASE_IMAGE  ?= $(REGISTRY)/$(REPO)/openclaw-base
+ CONTROLLER_IMAGE     ?= $(REGISTRY)/$(REPO)/hiclaw-controller
  EMBEDDED_IMAGE       ?= $(REGISTRY)/$(REPO)/hiclaw-embedded
 +DASHBOARD_CONTEXT    ?= ./TaDashboard/
-
- DASHBOARD_TAG      ?= $(DASHBOARD_IMAGE):$(VERSION)
-
-@@ .PHONY declarations (add to the list):
+ 
+ MANAGER_TAG        ?= $(MANAGER_IMAGE):$(VERSION)
+ MANAGER_COPAW_TAG  ?= $(MANAGER_COPAW_IMAGE):$(VERSION)
+@@ -110,6 +111,7 @@ LINES          ?= 50
+         buildx-setup \
+         test test-quick test-installed test-embedded \
+         install install-embedded uninstall uninstall-embedded replay replay-log \
 +        install-dashboard update-dashboard uninstall-dashboard \
-
-@@ (add after the push-embedded target):
-
+         verify wait-ready wait-ready-embedded \
+         generate sync-crds check-crd-sync \
+         status logs \
+@@ -168,6 +170,10 @@ build-embedded: build-hiclaw-controller ## Build embedded all-in-one controller
+ 		-t $(LOCAL_EMBEDDED) \
+ 		.
+ 
++build-dashboard: ## Build TaDashboard image
++	@echo "==> Building TaDashboard image"
++	$(MAKE) -C $(DASHBOARD_CONTEXT) build
++
+ build-worker: ## Build Worker image
+ 	@echo "==> Building Worker image: $(LOCAL_WORKER) (registry: $(HIGRESS_REGISTRY))"
+ 	docker build $(PLATFORM_FLAG) $(REGISTRY_ARG) $(OPENCLAW_BASE_BUILD_ARG) $(SHARED_LIB_CTX) $(DOCKER_BUILD_ARGS) \
+@@ -314,7 +320,19 @@ else
+ 		$(if $(PUSH_LATEST),-t $(EMBEDDED_IMAGE):latest) \
+ 		--push \
+ 		-f hiclaw-controller/Dockerfile.embedded .
+-endif
++	endif
++
 +# --- TaDashboard standalone ---
 +.PHONY: install-dashboard update-dashboard uninstall-dashboard
 +
@@ -35,3 +60,9 @@ diff --git a/Makefile b/Makefile
 +
 +uninstall-dashboard: ## Uninstall TaDashboard
 +	@bash $(DASHBOARD_CONTEXT)/install/hiclaw-dashboard.sh uninstall
+ 
+ push-manager: push-hiclaw-controller buildx-setup ## Build + push multi-arch Manager image (OpenClaw)
+ 	@echo "==> Building + pushing multi-arch Manager: $(MANAGER_TAG) [$(MULTIARCH_PLATFORMS)]"
+-- 
+2.52.0
+
