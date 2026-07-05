@@ -44,6 +44,7 @@ const ChatSection = lazy(() => import('./sections/chat-section').then(m => ({ de
 const OpsSection = lazy(() => import('./sections/ops-section').then(m => ({ default: m.OpsSection })));
 const DocsSection = lazy(() => import('./sections/docs-section').then(m => ({ default: m.DocsSection })));
 const PoliciesSection = lazy(() => import('./sections/policies-section').then(m => ({ default: m.PoliciesSection })));
+const GatewaySection = lazy(() => import('./sections/gateway-section').then(m => ({ default: m.GatewaySection })));
 
 const sectionMap: Record<string, React.ComponentType> = {
   overview: OverviewSection,
@@ -52,6 +53,7 @@ const sectionMap: Record<string, React.ComponentType> = {
   managers: ManagersSection,
   humans: HumansSection,
   chat: ChatSection,
+  gateway: GatewaySection,
   policies: PoliciesSection,
   ops: OpsSection,
   docs: DocsSection,
