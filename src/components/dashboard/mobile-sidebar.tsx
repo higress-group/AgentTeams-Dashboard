@@ -54,7 +54,7 @@ export function MobileSidebar({
                 <div className="w-8 h-8 rounded-lg mesh-gradient flex items-center justify-center text-white font-bold text-sm">
                   H
                 </div>
-                <span className="font-bold text-lg">HiClaw</span>
+                <span className="font-bold text-lg">AgentTeams</span>
               </div>
               <Button variant="ghost" size="icon" onClick={onClose}>
                 <X className="w-5 h-5" />

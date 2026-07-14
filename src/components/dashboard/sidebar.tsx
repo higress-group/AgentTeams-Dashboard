@@ -115,7 +115,7 @@ export function Sidebar({
             animate={{ opacity: 1 }}
             className="flex flex-col min-w-0"
           >
-            <span className="font-bold text-lg leading-tight">HiClaw</span>
+            <span className="font-bold text-lg leading-tight">AgentTeams</span>
             {mode && (
               <span className={`inline-flex items-center gap-1 text-[10px] font-medium leading-tight ${
                 mode === 'embedded' ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'

@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { UpdateManagerRequest, ManagerState } from '@/lib/hiclaw-api';
+import type { UpdateManagerRequest, ManagerState } from '@/lib/agentteams-api';
 import { ModelSelector } from '@/components/dashboard/sections/shared/model-selector';
 
 export type ManagerEditForm = UpdateManagerRequest & { name?: string; state?: string };

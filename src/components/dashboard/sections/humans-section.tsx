@@ -12,16 +12,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
-import { useCreateHuman, useDeleteHuman, useUpdateHuman } from '@/hooks/use-hiclaw-mutations';
+import { useHumans } from '@/hooks/use-agentteams-humans';
+import { useCreateHuman, useDeleteHuman, useUpdateHuman } from '@/hooks/use-agentteams-mutations';
 import { useSearch } from '@/lib/search-context';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useViewMode } from '@/lib/use-view-mode';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { ConfirmDeleteDialog } from '@/components/dashboard/confirm-delete-dialog';
 import { toast } from 'sonner';
-import type { CreateHumanRequest, HumanResponse, UpdateHumanRequest } from '@/lib/hiclaw-api';
+import type { CreateHumanRequest, HumanResponse, UpdateHumanRequest } from '@/lib/agentteams-api';
 import { SORT_OPTIONS, type SortKey } from './humans/human-types';
 import {
   computePhaseStats,
@@ -83,7 +83,7 @@ function EmptyState({ hasQuery, onCreate }: { hasQuery: boolean; onCreate: () =>
 export function HumansSection() {
   const { data: humans, isLoading, isError, refetch, isRefetching } = useHumans();
   const { searchQuery } = useSearch();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const createHuman = useCreateHuman();
   const deleteHuman = useDeleteHuman();
   const updateHuman = useUpdateHuman();
@@ -120,7 +120,7 @@ export function HumansSection() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hiclaw-humans-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `agentteams-humans-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success('Humans 数据已导出');

@@ -8,15 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { useState, useMemo, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SectionHeader } from '@/components/dashboard/section-header';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useCopyToClipboard } from '@/lib/use-copy-to-clipboard';
-import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
+import { useInfrastructure } from '@/hooks/use-agentteams-infrastructure';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useHumans } from '@/hooks/use-agentteams-humans';
 
-const STEPS_KEY = 'hiclaw-quickstart-completed';
+const STEPS_KEY = 'agentteams-quickstart-completed';
 
 function getCompletedSteps(): Set<number> {
   if (typeof window === 'undefined') return new Set();
@@ -56,7 +56,7 @@ function CodeBlock({ code, onCopyAll }: { code: string; onCopyAll?: () => void }
 }
 
 export function QuickstartSection() {
-  const { controllerUrl, isConnected } = useHiClawStore();
+  const { controllerUrl, isConnected } = useAgentTeamsStore();
   const { data: infra } = useInfrastructure();
   const { data: workers } = useWorkers();
   const { data: teams } = useTeams();
@@ -147,7 +147,7 @@ export function QuickstartSection() {
     const checks: { label: string; met: boolean; detail: string }[] = [];
 
     checks.push({
-      label: 'HiClaw Controller 运行中',
+      label: 'AgentTeams Controller 运行中',
       met: isConnected,
       detail: isConnected ? `已连接: ${baseUrl}` : `未连接: ${baseUrl}`,
     });
@@ -204,7 +204,7 @@ export function QuickstartSection() {
     <div className="space-y-6">
       <SectionHeader
         title="快速开始"
-        description="7 步快速上手 HiClaw"
+        description="7 步快速上手 AgentTeams"
         onRefresh={handleRefresh}
       />
 
@@ -230,7 +230,7 @@ export function QuickstartSection() {
               ? '🎉 所有必要步骤已完成！'
               : progressPercent >= 50
                 ? `进展顺利，还剩 ${steps.length - effectiveCompleted.size} 步`
-                : '按照以下步骤开始使用 HiClaw'}
+                : '按照以下步骤开始使用 AgentTeams'}
           </p>
         </CardContent>
       </Card>
@@ -287,7 +287,7 @@ export function QuickstartSection() {
               <p className="text-sm text-muted-foreground">
                 嵌入式模式适用于开发和测试环境，Controller 直接在宿主机上运行。
               </p>
-              <CodeBlock code={`# 下载并启动 Controller\nhiclaw controller start --mode=embedded\n\n# 验证\ncurl ${baseUrl}/healthz`} />
+              <CodeBlock code={`# 下载并启动 Controller\nagentteams controller start --mode=embedded\n\n# 验证\ncurl ${baseUrl}/healthz`} />
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
                   <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">优点</p>
@@ -303,7 +303,7 @@ export function QuickstartSection() {
               <p className="text-sm text-muted-foreground">
                 K8s InCluster 模式适用于生产环境，Controller 在集群内运行并管理 CRD。
               </p>
-              <CodeBlock code={`# 使用 Helm 部署\nhelm install hiclaw ./charts/hiclaw \\\n  --namespace hiclaw-system \\\n  --create-namespace\n\n# 验证\nkubectl get pods -n hiclaw-system\nkubectl port-forward svc/hiclaw-controller 8090:8090 -n hiclaw-system`} />
+              <CodeBlock code={`# 使用 Helm 部署\nhelm install agentteams ./charts/agentteams \\\n  --namespace agentteams-system \\\n  --create-namespace\n\n# 验证\nkubectl get pods -n agentteams-system\nkubectl port-forward svc/agentteams-controller 8090:8090 -n agentteams-system`} />
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
                   <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">优点</p>

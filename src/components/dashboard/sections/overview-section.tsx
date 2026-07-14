@@ -29,16 +29,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { WorkerResponse, TeamResponse, ManagerResponse, InfrastructureInfo } from '@/lib/hiclaw-api';
-import { useClusterStatus } from '@/hooks/use-hiclaw-cluster-status';
-import { useVersion } from '@/hooks/use-hiclaw-version';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
+import type { WorkerResponse, TeamResponse, ManagerResponse, InfrastructureInfo } from '@/lib/agentteams-api';
+import { useClusterStatus } from '@/hooks/use-agentteams-cluster-status';
+import { useVersion } from '@/hooks/use-agentteams-version';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useInfrastructure } from '@/hooks/use-agentteams-infrastructure';
 import { computeInsights, type Insight } from '@/lib/insights-engine';
 import { useDeploymentMode } from '@/hooks/use-deployment-mode';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { WORKER_PHASE_COLORS } from '@/lib/phase-colors';
 import { useNotificationStore } from '@/lib/notification-store';
 import { useCounter } from '@/hooks/use-counter';
@@ -191,7 +191,7 @@ function HealthCard({ name, healthy, icon: Icon, detail }: { name: string; healt
 
 // ============ Main OverviewSection ============
 export function OverviewSection() {
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const { data: clusterStatus } = useClusterStatus();
   const { data: versionData } = useVersion();
   const { data: workers } = useWorkers();

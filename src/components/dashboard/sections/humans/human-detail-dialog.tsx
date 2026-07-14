@@ -7,7 +7,7 @@ import { CopyButton } from '@/components/dashboard/copy-button';
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge } from '@/components/dashboard/phase-badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import type { HumanResponse } from '@/lib/hiclaw-api';
+import type { HumanResponse } from '@/lib/agentteams-api';
 import { PERMISSION_BADGE_CLASSES, PERMISSION_LABELS } from './human-types';
 import { getAccessSummary } from '@/lib/rbac-engine';
 

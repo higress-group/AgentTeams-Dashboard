@@ -4,21 +4,21 @@ import { useState, useEffect, useRef, memo } from 'react';
 import { MessageProcessor, Catalog } from '@a2ui/web_core/v0_9';
 import { A2uiSurface, basicCatalog, type ReactComponentImplementation } from '@a2ui/react/v0_9';
 import type { A2uiMessage } from '@a2ui/web_core/v0_9';
-import { hiclawChatCatalog } from '@/lib/a2ui/catalog';
+import { agentteamsChatCatalog } from '@/lib/a2ui/catalog';
 
 // Merge the basic catalog with our custom chat catalog
 const mergedComponents = new Map([
   ...basicCatalog.components,
-  ...hiclawChatCatalog.components,
+  ...agentteamsChatCatalog.components,
 ]);
 const mergedFunctions = new Map([
   ...basicCatalog.functions,
-  ...hiclawChatCatalog.functions,
+  ...agentteamsChatCatalog.functions,
 ]);
 
 // Create a merged catalog
 const chatCatalog = new Catalog<ReactComponentImplementation>(
-  'hiclaw-chat-merged',
+  'agentteams-chat-merged',
   Array.from(mergedComponents.values()),
   Array.from(mergedFunctions.values())
 );

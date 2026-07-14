@@ -18,7 +18,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Missing message body' }, { status: 400 });
     }
 
-    const txnId = `hiclaw_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const txnId = `agentteams_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const encodedRoomId = encodeURIComponent(roomId);
     const targetUrl = `${homeserver}/_matrix/client/v3/rooms/${encodedRoomId}/send/m.room.message/${txnId}`;
 

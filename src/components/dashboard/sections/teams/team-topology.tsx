@@ -4,7 +4,7 @@ import { Bot, Crown, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge } from '@/components/dashboard/phase-badge';
-import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import { getWorkersForTeam } from './team-selectors';
 
 export function TeamTopologyDiagram({

@@ -48,7 +48,7 @@ export const usePolicyStore = create<PolicyState>()(
       },
     }),
     {
-      name: 'hiclaw-policies',
+      name: 'agentteams-policies',
       version: 1,
     }
   )

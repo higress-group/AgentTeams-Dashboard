@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { CreateTeamRequest } from '@/lib/hiclaw-api';
+import type { CreateTeamRequest } from '@/lib/agentteams-api';
 
 export function TeamCreateDialog({
   open,

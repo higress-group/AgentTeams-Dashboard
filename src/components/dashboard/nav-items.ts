@@ -15,7 +15,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-export const STORAGE_KEY = 'hiclaw-active-section';
+export const STORAGE_KEY = 'agentteams-active-section';
 
 export type DeploymentMode = 'embedded' | 'k8s';
 

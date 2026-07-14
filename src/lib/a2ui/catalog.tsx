@@ -335,8 +335,8 @@ const StatusBadge = createComponentImplementation(
 
 // ─── Create the catalog ──────────────────────────────────────────────────────
 
-export const hiclawChatCatalog = new Catalog<ReactComponentImplementation>(
-  'hiclaw-chat',
+export const agentteamsChatCatalog = new Catalog<ReactComponentImplementation>(
+  'agentteams-chat',
   [
     ThinkingBlock,
     ToolCallBlock,

@@ -33,7 +33,7 @@ import {
   useAiRoutes,
   useCreateAiRoute,
   useDeleteAiRoute,
-} from '@/hooks/use-hiclaw-models';
+} from '@/hooks/use-agentteams-models';
 import {
   PROVIDER_TYPES,
   PROVIDERS_NEED_BASE_URL,
@@ -341,7 +341,7 @@ export function ModelsSection() {
                   onChange={(e) =>
                     setRouteForm({ ...routeForm, name: e.target.value })
                   }
-                  placeholder="例如 hiclaw-default"
+                  placeholder="例如 agentteams-default"
                 />
               </div>
               <div>

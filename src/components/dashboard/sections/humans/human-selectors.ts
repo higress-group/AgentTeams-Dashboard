@@ -1,4 +1,4 @@
-import type { HumanResponse } from '@/lib/hiclaw-api';
+import type { HumanResponse } from '@/lib/agentteams-api';
 import type { SortKey } from './human-types';
 
 export function filterHumans(

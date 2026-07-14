@@ -1,6 +1,6 @@
 # TaDashboard
 
-> AgentTeams (HiClaw) 的 Web 管理面板
+> AgentTeams 的 Web 管理面板
 
 TaDashboard 是一个轻量级 **Next.js** Web 界面，用于可视化管理 [AgentTeams](https://github.com/agentscope-ai/AgentTeams) 集群中的 Worker、Team、Human、Manager 等资源，同时集成 Matrix 聊天能力。
 
@@ -42,10 +42,10 @@ TaDashboard 是一个轻量级 **Next.js** Web 界面，用于可视化管理 [A
 
 ```bash
 # 独立安装脚本
-bash install/hiclaw-dashboard.sh
+bash install/agentteams-dashboard.sh
 
 # 卸载
-bash install/hiclaw-dashboard.sh uninstall
+bash install/agentteams-dashboard.sh uninstall
 ```
 
 默认端口 `13000`，安装后访问 `http://127.0.0.1:13000/`。
@@ -60,7 +60,7 @@ npm install
 
 # 配置环境变量
 cp .env.example .env
-# 编辑 .env 设置 HICLAW_CONTROLLER_URL 和 NEXT_PUBLIC_MATRIX_API_URL
+# 编辑 .env 设置 AGENTTEAMS_CONTROLLER_URL 和 NEXT_PUBLIC_MATRIX_API_URL
 
 # 开发模式
 npm run dev
@@ -73,11 +73,11 @@ npm start
 ### Docker 构建
 
 ```bash
-docker build -t hiclaw-dashboard:latest .
+docker build -t agentteams-dashboard:latest .
 docker run -p 3000:3000 \
-  -e HICLAW_CONTROLLER_URL=http://host.docker.internal:8090 \
+  -e AGENTTEAMS_CONTROLLER_URL=http://host.docker.internal:8090 \
   -e NEXT_PUBLIC_MATRIX_API_URL=http://host.docker.internal:6167 \
-  hiclaw-dashboard:latest
+  agentteams-dashboard:latest
 ```
 
 ---
@@ -86,11 +86,11 @@ docker run -p 3000:3000 \
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
-| `HICLAW_CONTROLLER_URL` | HiClaw Controller 地址（服务端代理用） | `http://hiclaw-controller.hiclaw-system:8090` |
-| `NEXT_PUBLIC_HICLAW_CONTROLLER_URL` | 浏览器端 Controller URL（可选） | — |
+| `AGENTTEAMS_CONTROLLER_URL` | AgentTeams Controller 地址（服务端代理用） | `http://agentteams-controller.agentteams-system:8090` |
+| `NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL` | 浏览器端 Controller URL（可选） | — |
 | `NEXT_PUBLIC_MATRIX_API_URL` | Matrix Homeserver 地址 | — |
-| `HICLAW_AUTH_TOKEN` | Controller 认证 Token | — |
-| `HICLAW_AUTH_TOKEN_FILE` | Token 文件路径（支持轮转） | — |
+| `AGENTTEAMS_AUTH_TOKEN` | Controller 认证 Token | — |
+| `AGENTTEAMS_AUTH_TOKEN_FILE` | Token 文件路径（支持轮转） | — |
 | `DATABASE_URL` | SQLite 数据库路径 | `file:./db/dashboard.db` |
 | `NEXT_PUBLIC_BASE_PATH` | URL 基础路径（嵌入部署时用） | `/dashboard` |
 
@@ -101,7 +101,7 @@ docker run -p 3000:3000 \
 ```
 ├── src/
 │   ├── app/
-│   │   ├── api/              # 代理 API（hiclaw + matrix）
+│   │   ├── api/              # 代理 API（agentteams + matrix）
 │   │   ├── globals.css
 │   │   ├── layout.tsx
 │   │   └── page.tsx
@@ -139,9 +139,9 @@ docker run -p 3000:3000 \
 
 ### 代理层
 
-- 前端不直接访问 HiClaw Controller 或 Matrix Homeserver
+- 前端不直接访问 AgentTeams Controller 或 Matrix Homeserver
 - 所有请求通过 Next.js API Route 代理：
-  - `/api/hiclaw/*` → HiClaw Controller
+  - `/api/agentteams/*` → AgentTeams Controller
   - `/api/matrix/*` → Matrix Homeserver
 - `proxy-helper.ts` 负责请求转发、认证头注入、超时与错误处理
 
@@ -162,4 +162,4 @@ docker run -p 3000:3000 \
 ## 相关仓库
 
 - [AgentTeams](https://github.com/agentscope-ai/AgentTeams) — 多智能体协作运行时
-- [HiClaw](https://github.com/higress-group/hiclaw) — Controller
+- [AgentTeams Controller](https://github.com/higress-group/hiclaw) — Controller

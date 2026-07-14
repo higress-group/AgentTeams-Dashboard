@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { CreateHumanRequest } from '@/lib/hiclaw-api';
+import type { CreateHumanRequest } from '@/lib/agentteams-api';
 import { PERMISSION_LABELS, PERMISSION_LEVELS } from './human-types';
 
 export function HumanCreateDialog({

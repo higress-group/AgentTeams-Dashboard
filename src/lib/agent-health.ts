@@ -1,7 +1,7 @@
 // Agent Health Scoring System
 // Computes a composite 0-100 health score from WorkerResponse fields
 
-import type { WorkerResponse, WorkerPhase } from '@/lib/hiclaw-api';
+import type { WorkerResponse, WorkerPhase } from '@/lib/agentteams-api';
 
 export interface AgentHealthScore {
   overall: number;        // 0-100 composite

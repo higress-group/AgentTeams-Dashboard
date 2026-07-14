@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import type { UpdateWorkerRequest, WorkerRuntime } from '@/lib/hiclaw-api';
+import type { UpdateWorkerRequest, WorkerRuntime } from '@/lib/agentteams-api';
 import { ModelSelector } from '@/components/dashboard/sections/shared/model-selector';
 import { McpServersField } from './worker-create-dialog';
 

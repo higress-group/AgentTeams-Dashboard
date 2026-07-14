@@ -21,7 +21,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import type { ManagerResponse } from '@/lib/hiclaw-api';
+import type { ManagerResponse } from '@/lib/agentteams-api';
 
 export function ManagerTable({
   managers,

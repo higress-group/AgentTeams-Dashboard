@@ -36,7 +36,7 @@ import {
 import { NotificationPopover } from './notification-popover';
 import { createActions, isCreateActionVisible, type CreateAction, type DeploymentMode } from './nav-items';
 import { CommandPalette, useGlobalSearch, type SearchResult } from './command-palette';
-import type { WorkerResponse, TeamResponse, ManagerResponse, HumanResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse, TeamResponse, ManagerResponse, HumanResponse } from '@/lib/agentteams-api';
 
 interface DashboardHeaderProps {
   isConnected: boolean;

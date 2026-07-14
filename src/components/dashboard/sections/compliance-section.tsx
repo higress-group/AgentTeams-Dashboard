@@ -24,10 +24,10 @@ import { usePolicyStore } from '@/lib/policy-store';
 import { evaluatePolicies } from '@/lib/policy-engine';
 import { getAccessSummary } from '@/lib/rbac-engine';
 import { useAuditStore } from '@/lib/audit-store';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useHumans } from '@/hooks/use-agentteams-humans';
 
 const PERM_ICONS: Record<string, React.ReactNode> = {
   view: <Eye className="w-3 h-3" />,

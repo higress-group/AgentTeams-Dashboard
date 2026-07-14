@@ -1,4 +1,4 @@
-import type { TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import type { SortKey } from './team-types';
 
 export function filterTeams(

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge } from '@/components/dashboard/phase-badge';
 import { PERMISSION_BADGE_CLASSES, PERMISSION_LABELS } from './human-types';
-import type { HumanResponse } from '@/lib/hiclaw-api';
+import type { HumanResponse } from '@/lib/agentteams-api';
 
 function permissionLabel(h: HumanResponse): string {
   const level = h.permissionLevel || 1;

@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { UpdateHumanRequest } from '@/lib/hiclaw-api';
+import type { UpdateHumanRequest } from '@/lib/agentteams-api';
 import { PERMISSION_LABELS, PERMISSION_LEVELS } from './human-types';
 
 export type HumanEditForm = UpdateHumanRequest & { name?: string };

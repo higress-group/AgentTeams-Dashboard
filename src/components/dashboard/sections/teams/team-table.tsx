@@ -24,7 +24,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import type { TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 
 export function TeamTable({
   teams,

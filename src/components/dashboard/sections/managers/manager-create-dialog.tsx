@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { CreateManagerRequest } from '@/lib/hiclaw-api';
+import type { CreateManagerRequest } from '@/lib/agentteams-api';
 import { ModelSelector } from '@/components/dashboard/sections/shared/model-selector';
 
 export function ManagerCreateDialog({

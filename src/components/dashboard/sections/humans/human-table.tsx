@@ -15,7 +15,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import type { HumanResponse } from '@/lib/hiclaw-api';
+import type { HumanResponse } from '@/lib/agentteams-api';
 
 function permissionLabel(level: number): string {
   return PERMISSION_LABELS[level] || `L${level}`;

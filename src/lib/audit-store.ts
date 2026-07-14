@@ -49,7 +49,7 @@ export const useAuditStore = create<AuditState>()(
       },
     }),
     {
-      name: 'hiclaw-audit',
+      name: 'agentteams-audit',
       version: 1,
       partialize: (state) => ({
         events: state.events.slice(0, PERSIST_MAX),

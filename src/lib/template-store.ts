@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CreateWorkerRequest } from '@/lib/hiclaw-api';
+import type { CreateWorkerRequest } from '@/lib/agentteams-api';
 
 export interface WorkerTemplate {
   id: string;
@@ -43,7 +43,7 @@ export const useTemplateStore = create<TemplateState>()(
       },
     }),
     {
-      name: 'hiclaw-templates',
+      name: 'agentteams-templates',
       version: 1,
     }
   )

@@ -1,4 +1,4 @@
-export { hiclawChatCatalog } from './catalog';
+export { agentteamsChatCatalog } from './catalog';
 export {
   parseA2uiContent,
   legacyToA2uiMessages,

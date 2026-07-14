@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { HealthRing, HealthRingCompact } from '@/components/dashboard/health-ring';
 import { computeTeamAnalytics } from '@/lib/team-analytics';
 import { RUNTIME_LABELS } from '@/lib/phase-colors';
-import type { TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 
 export function TeamHealthPanel({
   team,

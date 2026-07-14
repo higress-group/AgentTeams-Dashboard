@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { Bot, Users, Crown, UserCheck, Search, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { PhaseBadge } from '@/components/dashboard/phase-badge';
-import type { WorkerResponse, TeamResponse, ManagerResponse, HumanResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse, TeamResponse, ManagerResponse, HumanResponse } from '@/lib/agentteams-api';
 
 export interface SearchResult {
   entity: 'worker' | 'team' | 'manager' | 'human';

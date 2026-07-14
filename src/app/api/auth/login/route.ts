@@ -6,8 +6,8 @@ import { validateHomeserverUrl } from '@/lib/homeserver-allowlist';
 
 const MATRIX_HOMESERVER =
   process.env.NEXT_PUBLIC_MATRIX_API_URL ||
-  process.env.HICLAW_MATRIX_URL ||
-  'http://matrix-local.hiclaw.io:18080';
+  process.env.AGENTTEAMS_MATRIX_URL ||
+  'http://matrix-local.agentteams.io:18080';
 
 export async function POST(request: NextRequest) {
   try {

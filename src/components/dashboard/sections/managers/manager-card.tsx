@@ -13,7 +13,7 @@ import { CheckCircle2, XCircle } from 'lucide-react';
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge, RuntimeBadge } from '@/components/dashboard/phase-badge';
 import { TruncatedId } from '@/components/dashboard/truncated-id';
-import type { ManagerResponse } from '@/lib/hiclaw-api';
+import type { ManagerResponse } from '@/lib/agentteams-api';
 
 export function ManagerCard({
   manager,

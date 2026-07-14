@@ -1,4 +1,4 @@
-import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import type { SortKey } from './manager-types';
 
 const RUNTIME_SKILLS: Record<string, string[]> = {

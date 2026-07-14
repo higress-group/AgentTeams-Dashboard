@@ -65,7 +65,7 @@ export const useNotificationStore = create<NotificationState>()(
       unreadCount: () => get().notifications.filter((n) => !n.read).length,
     }),
     {
-      name: 'hiclaw-notifications',
+      name: 'agentteams-notifications',
       version: 1,
       partialize: (state) => ({
         // Only persist the most recent notifications

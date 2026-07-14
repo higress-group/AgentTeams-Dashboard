@@ -5,6 +5,9 @@ const devOrigins = process.env.ALLOWED_DEV_ORIGINS
   ? process.env.ALLOWED_DEV_ORIGINS.split(",")
   : [];
 
+// monkeycode-ai.online preview domain pattern
+devOrigins.push(".monkeycode-ai.online");
+
 // Base path for embedding TaDashboard as a sub-application (e.g. /dashboard).
 // When empty/unset, TaDashboard runs at the root as a standalone app.
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";

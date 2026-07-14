@@ -1,7 +1,7 @@
 // React hook for Agent Health Scoring
 import { useMemo } from 'react';
 import { computeAgentHealth, type AgentHealthScore } from '@/lib/agent-health';
-import type { WorkerResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse } from '@/lib/agentteams-api';
 
 /**
  * Compute health scores for a single worker.

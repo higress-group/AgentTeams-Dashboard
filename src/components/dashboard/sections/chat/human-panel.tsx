@@ -4,7 +4,7 @@ import { Lock, UserCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
+import { useHumans } from '@/hooks/use-agentteams-humans';
 import { CopyButton } from '@/components/dashboard/copy-button';
 import { getAvatarColor } from './format';
 

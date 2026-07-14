@@ -25,8 +25,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { useCreateWorker, useDeleteWorker } from '@/hooks/use-hiclaw-mutations';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
+import { useCreateWorker, useDeleteWorker } from '@/hooks/use-agentteams-mutations';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
 
 export function SandboxSection() {
   const { data: workers } = useWorkers();

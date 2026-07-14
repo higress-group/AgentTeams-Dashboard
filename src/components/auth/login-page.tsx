@@ -62,7 +62,7 @@ export function LoginPage({ onLoginSuccess, defaultUsername = '' }: LoginPagePro
               <Lock className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-lg">HiClaw Dashboard</CardTitle>
+              <CardTitle className="text-lg">AgentTeams Dashboard</CardTitle>
               <CardDescription>管理员账号登录（首次登录自动注册）</CardDescription>
             </div>
           </div>

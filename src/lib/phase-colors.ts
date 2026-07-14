@@ -1,4 +1,4 @@
-// Shared Phase Colors & Labels for HiClaw Dashboard
+// Shared Phase Colors & Labels for AgentTeams Dashboard
 // Used by overview charts, worker/team/manager sections, and status dots
 
 // ============ Hex Colors (for charts / Recharts) ============

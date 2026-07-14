@@ -40,15 +40,15 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
-import { useVersion } from '@/hooks/use-hiclaw-version';
-import { useHiClawStatus } from '@/hooks/use-hiclaw-status';
-import { useCreateConsumer } from '@/hooks/use-hiclaw-mutations';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useInfrastructure } from '@/hooks/use-agentteams-infrastructure';
+import { useVersion } from '@/hooks/use-agentteams-version';
+import { useAgentTeamsStatus } from '@/hooks/use-agentteams-status';
+import { useCreateConsumer } from '@/hooks/use-agentteams-mutations';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useSearch } from '@/lib/search-context';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { SectionHeader } from '@/components/dashboard/section-header';
-import type { InfrastructureInfo } from '@/lib/hiclaw-api';
+import type { InfrastructureInfo } from '@/lib/agentteams-api';
 
 // ============ Shared Colors ============
 
@@ -91,7 +91,7 @@ const componentNames: Record<string, string> = {
   higress: 'Higress 网关',
   matrix: 'Matrix 通信',
   kubernetes: 'Kubernetes',
-  controller: 'HiClaw Controller',
+  controller: 'AgentTeams Controller',
 };
 
 const componentDescriptions: Record<string, string> = {
@@ -99,7 +99,7 @@ const componentDescriptions: Record<string, string> = {
   higress: '云原生 API 网关',
   matrix: '去中心化即时通信协议',
   kubernetes: '容器编排平台',
-  controller: 'HiClaw 核心控制器',
+  controller: 'AgentTeams 核心控制器',
 };
 
 // ============ Uptime Tracker Hook ============
@@ -337,8 +337,8 @@ function formatRelativeTime(timestamp: number): string {
 export function InfrastructureSection() {
   const { data: infrastructure, isLoading, isError, refetch, isRefetching } = useInfrastructure();
   const { data: versionData } = useVersion();
-  const { data: healthData } = useHiClawStatus();
-  const { isConnected } = useHiClawStore();
+  const { data: healthData } = useAgentTeamsStatus();
+  const { isConnected } = useAgentTeamsStore();
   const { searchQuery } = useSearch();
   const createConsumer = useCreateConsumer();
   const [consumerOpen, setConsumerOpen] = useState(false);
@@ -430,7 +430,7 @@ export function InfrastructureSection() {
         }
       } else {
         // Use infrastructure API for others
-        const res = await fetch(apiUrl('/api/hiclaw/infrastructure'), {
+        const res = await fetch(apiUrl('/api/agentteams/infrastructure'), {
           signal: AbortSignal.timeout(8000),
         });
         if (res.ok) {

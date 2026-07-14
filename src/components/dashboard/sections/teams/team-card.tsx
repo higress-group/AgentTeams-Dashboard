@@ -17,7 +17,7 @@ import {
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge } from '@/components/dashboard/phase-badge';
 import { CopyButton } from '@/components/dashboard/copy-button';
-import type { TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 
 export function TeamCard({
   team,

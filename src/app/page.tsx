@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { HiClawDashboard } from '@/components/dashboard/hi-claw-dashboard';
+import { AgentTeamsDashboard } from '@/components/dashboard/agent-teams-dashboard';
 import { LoginPage } from '@/components/auth/login-page';
 import { SetupWizard } from '@/components/setup/setup-wizard';
 import { QueryProvider } from '@/lib/query-provider';
@@ -41,7 +41,7 @@ export default function Home() {
 
   const checkSetup = async () => {
     try {
-      const res = await fetch(apiUrl('/api/hiclaw/setup/status/'), {
+      const res = await fetch(apiUrl('/api/agentteams/setup/status/'), {
         credentials: 'same-origin',
       });
       const data = await res.json().catch(() => ({}));
@@ -93,7 +93,7 @@ export default function Home() {
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
       <QueryProvider>
         <SearchProvider>
-          <HiClawDashboard />
+          <AgentTeamsDashboard />
         </SearchProvider>
       </QueryProvider>
     </ThemeProvider>
