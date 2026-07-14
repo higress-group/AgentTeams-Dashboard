@@ -4,11 +4,11 @@
 
 import { useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
 import { useNotificationStore } from '@/lib/notification-store';
-import type { WorkerResponse, TeamResponse, ManagerResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse, TeamResponse, ManagerResponse } from '@/lib/agentteams-api';
 
 function detectWorkerChanges(prev: WorkerResponse[], curr: WorkerResponse[]) {
   const prevMap = new Map(prev.map((w) => [w.name, w]));

@@ -21,15 +21,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SectionHeader } from '@/components/dashboard/section-header';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
+import { useHumans } from '@/hooks/use-agentteams-humans';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
 import { useMatrixStore } from '@/lib/matrix-store';
-import { useHiClawStore } from '@/lib/hiclaw-store';
-import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
+import { useInfrastructure } from '@/hooks/use-agentteams-infrastructure';
 
-import type { HumanResponse } from '@/lib/hiclaw-api';
+import type { HumanResponse } from '@/lib/agentteams-api';
 
 const permissionLevelMap: Record<number, { label: string; color: string; icon: typeof Shield }> = {
   3: { label: '管理员', color: 'bg-red-500/10 text-red-600 dark:text-red-400', icon: Shield },
@@ -189,7 +189,7 @@ export function SecuritySection() {
   const { data: managers } = useManagers();
   const { data: infra } = useInfrastructure();
   const matrixStore = useMatrixStore();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
 
   const handleRefresh = useCallback(() => {
     refetchHumans();
@@ -286,7 +286,7 @@ export function SecuritySection() {
     <div className="space-y-6">
       <SectionHeader
         title="安全模型"
-        description="HiClaw 安全架构、权限管理和合规检查"
+        description="AgentTeams 安全架构、权限管理和合规检查"
         isLive={isConnected}
         onRefresh={handleRefresh}
       />

@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import { Cpu, Code, Terminal, Layers, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -59,10 +59,10 @@ const runtimeInfo = [
 
 export function RuntimeSection() {
   const { data: workers } = useWorkers();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const queryClient = useQueryClient();
   const handleRefresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['hiclaw-workers'] });
+    queryClient.invalidateQueries({ queryKey: ['agentteams-workers'] });
   }, [queryClient]);
 
   const runtimeCounts = useMemo(() => {
@@ -77,7 +77,7 @@ export function RuntimeSection() {
     <div className="space-y-6">
       <SectionHeader
         title="多运行时"
-        description="HiClaw 支持的 Worker 运行时类型"
+        description="AgentTeams 支持的 Worker 运行时类型"
         isLive={isConnected}
         onRefresh={handleRefresh}
       />

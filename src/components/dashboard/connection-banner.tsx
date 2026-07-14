@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { WifiOff, Settings, RefreshCw, Clock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -15,7 +15,7 @@ export function ConnectionBanner() {
     reconnectInterval,
     checkConnection,
     openSettings,
-  } = useHiClawStore();
+  } = useAgentTeamsStore();
 
   const intervalSec = Math.round(reconnectInterval / 1000);
   const startTimeRef = useRef<number | null>(null);
@@ -54,7 +54,7 @@ export function ConnectionBanner() {
     <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 flex items-center justify-between gap-2">
       <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 min-w-0">
         <WifiOff className="w-4 h-4 shrink-0" />
-        <span className="font-medium shrink-0">未连接到 HiClaw Controller</span>
+        <span className="font-medium shrink-0">未连接到 AgentTeams Controller</span>
         <span className="text-amber-500/70 truncate text-xs">({controllerUrl})</span>
         {connectionError && (
           <span className="text-amber-500/70 text-xs shrink-0">- {connectionError}</span>

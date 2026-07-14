@@ -16,7 +16,7 @@ const ALLOWED_HOSTS = [
 ];
 
 export function getHigressConsoleURL(request?: NextRequest): string {
-  const fromEnv = process.env.HICLAW_AI_GATEWAY_ADMIN_URL;
+  const fromEnv = process.env.AGENTTEAMS_AI_GATEWAY_ADMIN_URL;
   if (!request) {
     return fromEnv || 'http://127.0.0.1:8001';
   }

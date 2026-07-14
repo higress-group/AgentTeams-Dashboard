@@ -2,9 +2,9 @@
 
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { TopologyCanvas } from '@/components/dashboard/topology/topology-canvas';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
 
 export function TopologySection() {
   const { data: workers } = useWorkers();

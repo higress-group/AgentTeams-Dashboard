@@ -15,9 +15,9 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { useTroubleshoot } from '@/hooks/use-hiclaw-troubleshoot';
-import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
-import { useLogs } from '@/hooks/use-hiclaw-logs';
+import { useTroubleshoot } from '@/hooks/use-agentteams-troubleshoot';
+import { useInfrastructure } from '@/hooks/use-agentteams-infrastructure';
+import { useLogs } from '@/hooks/use-agentteams-logs';
 
 const COMPONENTS = [
   { value: 'controller', label: 'Controller' },

@@ -29,7 +29,7 @@ function resolveMinioHost(endpointHost: string): string {
 
   // In embedded mode the controller often advertises MinIO as 127.0.0.1:9000,
   // but the dashboard runs in a different container. Fall back to the controller host.
-  const controllerUrl = process.env.HICLAW_CONTROLLER_URL || '';
+  const controllerUrl = process.env.AGENTTEAMS_CONTROLLER_URL || '';
   if (controllerUrl) {
     try {
       const parsed = new URL(controllerUrl);
@@ -44,11 +44,11 @@ function resolveMinioHost(endpointHost: string): string {
 }
 
 export function getMinioConfigFromEnv(): MinioConfig | null {
-  const endpoint = process.env.HICLAW_FS_ENDPOINT || process.env.HICLAW_MINIO_ENDPOINT || '';
+  const endpoint = process.env.AGENTTEAMS_FS_ENDPOINT || process.env.AGENTTEAMS_MINIO_ENDPOINT || '';
   const accessKey =
-    process.env.HICLAW_FS_ACCESS_KEY || process.env.HICLAW_MINIO_USER || '';
+    process.env.AGENTTEAMS_FS_ACCESS_KEY || process.env.AGENTTEAMS_MINIO_USER || '';
   const secretKey =
-    process.env.HICLAW_FS_SECRET_KEY || process.env.HICLAW_MINIO_PASSWORD || '';
+    process.env.AGENTTEAMS_FS_SECRET_KEY || process.env.AGENTTEAMS_MINIO_PASSWORD || '';
 
   if (!endpoint || !accessKey || !secretKey) {
     return null;
@@ -61,19 +61,19 @@ export function getMinioConfigFromEnv(): MinioConfig | null {
     useSSL,
     accessKey,
     secretKey,
-    region: process.env.HICLAW_FS_REGION || 'us-east-1',
+    region: process.env.AGENTTEAMS_FS_REGION || 'us-east-1',
   };
 }
 
 export function getMinioBucket(): string | null {
-  return process.env.HICLAW_FS_BUCKET || process.env.HICLAW_MINIO_BUCKET || null;
+  return process.env.AGENTTEAMS_FS_BUCKET || process.env.AGENTTEAMS_MINIO_BUCKET || null;
 }
 
 export function createMinioClient(config?: MinioConfig): Minio.Client {
   const cfg = config || getMinioConfigFromEnv();
   if (!cfg) {
     throw new Error(
-      'MinIO is not configured. Set HICLAW_FS_ENDPOINT, HICLAW_FS_ACCESS_KEY and HICLAW_FS_SECRET_KEY.'
+      'MinIO is not configured. Set AGENTTEAMS_FS_ENDPOINT, AGENTTEAMS_FS_ACCESS_KEY and AGENTTEAMS_FS_SECRET_KEY.'
     );
   }
   return new Minio.Client({

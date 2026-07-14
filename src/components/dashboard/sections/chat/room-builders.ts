@@ -1,4 +1,4 @@
-import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import type { RoomInfo } from './room-info';
 
 export function buildRooms(

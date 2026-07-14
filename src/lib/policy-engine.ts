@@ -1,7 +1,7 @@
 // Policy Engine — Declarative Governance Rules
 // Evaluates policies against current entity state and returns violations
 
-import type { WorkerResponse, TeamResponse, ManagerResponse, HumanResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse, TeamResponse, ManagerResponse, HumanResponse } from '@/lib/agentteams-api';
 
 export interface Policy {
   id: string;

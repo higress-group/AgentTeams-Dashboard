@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useHumans } from '@/hooks/use-agentteams-humans';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useMatrixStore } from '@/lib/matrix-store';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { MessageSquare, PanelRightOpen, PanelRightClose } from 'lucide-react';
@@ -24,7 +24,7 @@ export function ChatSection() {
   const { data: teams, isLoading: teamsLoading, refetch: refetchTeams } = useTeams();
   const { data: managers, isLoading: managersLoading, refetch: refetchManagers } = useManagers();
   const { isLoading: humansLoading, refetch: refetchHumans } = useHumans();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const { isLoggedIn, userId, logout } = useMatrixStore();
 
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);

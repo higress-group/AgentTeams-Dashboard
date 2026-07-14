@@ -47,7 +47,7 @@ import {
   useDeleteBucket,
   useBucketStats,
   useBulkDeleteObjects,
-} from '@/hooks/use-hiclaw-storage';
+} from '@/hooks/use-agentteams-storage';
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;

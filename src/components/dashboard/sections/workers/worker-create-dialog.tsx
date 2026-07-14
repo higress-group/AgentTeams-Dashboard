@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import type { CreateWorkerRequest } from '@/lib/hiclaw-api';
+import type { CreateWorkerRequest } from '@/lib/agentteams-api';
 import { ModelSelector } from '@/components/dashboard/sections/shared/model-selector';
 
 export function WorkerCreateDialog({

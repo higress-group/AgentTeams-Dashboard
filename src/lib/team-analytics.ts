@@ -1,7 +1,7 @@
 // Team Readiness & Composition Analysis
 // Computes team-level health and readiness metrics
 
-import type { TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import { computeAgentHealth } from '@/lib/agent-health';
 
 export interface TeamAnalytics {

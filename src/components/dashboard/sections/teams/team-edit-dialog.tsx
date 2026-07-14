@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { UpdateTeamRequest } from '@/lib/hiclaw-api';
+import type { UpdateTeamRequest } from '@/lib/agentteams-api';
 
 export type TeamEditForm = UpdateTeamRequest & { name?: string };
 

@@ -12,18 +12,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useCreateTeam, useDeleteTeam, useUpdateTeam } from '@/hooks/use-hiclaw-mutations';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useCreateTeam, useDeleteTeam, useUpdateTeam } from '@/hooks/use-agentteams-mutations';
 import { useSearch } from '@/lib/search-context';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useViewMode } from '@/lib/use-view-mode';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { ConfirmDeleteDialog } from '@/components/dashboard/confirm-delete-dialog';
 import { toast } from 'sonner';
-import type { CreateTeamRequest, UpdateTeamRequest, TeamResponse, WorkerResponse, ManagerResponse } from '@/lib/hiclaw-api';
+import type { CreateTeamRequest, UpdateTeamRequest, TeamResponse, WorkerResponse, ManagerResponse } from '@/lib/agentteams-api';
 import { ITEMS_PER_PAGE, SORT_OPTIONS, type SortKey } from './teams/team-types';
 import {
   filterTeams,
@@ -90,7 +90,7 @@ export function TeamsSection() {
   const { data: workers } = useWorkers();
   const { data: managers } = useManagers();
   const { searchQuery } = useSearch();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const createTeam = useCreateTeam();
   const deleteTeam = useDeleteTeam();
   const updateTeam = useUpdateTeam();
@@ -141,7 +141,7 @@ export function TeamsSection() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hiclaw-teams-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `agentteams-teams-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success('团队数据已导出');

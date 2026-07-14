@@ -19,10 +19,10 @@ import { Button } from '@/components/ui/button';
 import { usePolicyStore } from '@/lib/policy-store';
 import { evaluatePolicies, type PolicyViolation } from '@/lib/policy-engine';
 import { determineRemediation } from '@/lib/remediation-engine';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useHumans } from '@/hooks/use-agentteams-humans';
 import { BUILTIN_POLICIES } from '@/lib/policy-engine';
 
 export function PoliciesSection() {

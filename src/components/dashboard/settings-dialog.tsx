@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import {
   Dialog,
   DialogContent,
@@ -21,13 +21,13 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Wifi, WifiOff, Loader2, RotateCcw, Clock, Server, History, Stethoscope } from 'lucide-react';
-import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
+import { useInfrastructure } from '@/hooks/use-agentteams-infrastructure';
 import { TroubleshootTab } from './settings/troubleshoot-tab';
 
-// Empty default means "use the server-side HICLAW_CONTROLLER_URL" so the same
+// Empty default means "use the server-side AGENTTEAMS_CONTROLLER_URL" so the same
 // image works in embedded (localhost) and Kubernetes (in-cluster) modes.
 const DEFAULT_URL =
-  (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_HICLAW_CONTROLLER_URL) ||
+  (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL) ||
   '';
 
 export function SettingsDialog() {
@@ -46,7 +46,7 @@ export function SettingsDialog() {
     connectionLatency,
     lastConnectedAt,
     connectionHistory,
-  } = useHiClawStore();
+  } = useAgentTeamsStore();
 
   const { data: infrastructure } = useInfrastructure();
 
@@ -82,8 +82,8 @@ export function SettingsDialog() {
     const start = performance.now();
     try {
       const testPath = tempUrl.trim()
-        ? `/api/hiclaw/healthz/?controllerUrl=${encodeURIComponent(tempUrl)}`
-        : '/api/hiclaw/healthz/';
+        ? `/api/agentteams/healthz/?controllerUrl=${encodeURIComponent(tempUrl)}`
+        : '/api/agentteams/healthz/';
       const res = await fetch(testPath);
       const latency = Math.round(performance.now() - start);
       if (res.ok) {
@@ -135,7 +135,7 @@ export function SettingsDialog() {
                   id="controller-url"
                   value={tempUrl}
                   onChange={(e) => { setTempUrl(e.target.value); setTestResult(null); }}
-                  placeholder="留空以使用服务端配置 (HICLAW_CONTROLLER_URL)"
+                  placeholder="留空以使用服务端配置 (AGENTTEAMS_CONTROLLER_URL)"
                   className="flex-1"
                 />
                 <Button variant="outline" size="icon" onClick={handleReset} title="重置为默认">

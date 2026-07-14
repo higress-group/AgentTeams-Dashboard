@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { WorkerResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse } from '@/lib/agentteams-api';
 
 export function WorkerTable({
   workers,

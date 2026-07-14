@@ -49,7 +49,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
         payload.openaiBaseUrl = baseUrl.trim();
       }
 
-      const res = await fetch(apiUrl('/api/hiclaw/setup/'), {
+      const res = await fetch(apiUrl('/api/agentteams/setup/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

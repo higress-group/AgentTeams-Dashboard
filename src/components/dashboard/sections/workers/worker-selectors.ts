@@ -1,4 +1,4 @@
-import type { WorkerResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse } from '@/lib/agentteams-api';
 import type { SortKey } from './worker-types';
 
 export function filterWorkers(

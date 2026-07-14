@@ -144,16 +144,16 @@ Add TaDashboard as an optional component in the AgentTeams installation:
 - Dashboard container startup after embedded controller
 - Bilingual messages (zh/en)
 - LAN-accessible by default (bind 0.0.0.0)
-- Add verification check in hiclaw-verify.sh
+- Add verification check in agentteams-verify.sh
 - Add Makefile targets: install-dashboard, update-dashboard, uninstall-dashboard
 
 Environment variables:
-- HICLAW_DASHBOARD (default: 1) - Enable/disable dashboard installation
-- HICLAW_PORT_DASHBOARD (default: 13000) - Dashboard host port
-- HICLAW_DASHBOARD_IMAGE (default: hiclaw-dashboard:latest) - Dashboard image
-- HICLAW_AI_GATEWAY_ADMIN_URL (auto-detected) - Higress Console URL
+- AGENTTEAMS_DASHBOARD (default: 1) - Enable/disable dashboard installation
+- AGENTTEAMS_PORT_DASHBOARD (default: 13000) - Dashboard host port
+- AGENTTEAMS_DASHBOARD_IMAGE (default: agentteams-dashboard:latest) - Dashboard image
+- AGENTTEAMS_AI_GATEWAY_ADMIN_URL (auto-detected) - Higress Console URL
 
-Co-authored-by: TaDashboard <dashboard@hiclaw.io>"
+Co-authored-by: TaDashboard <dashboard@agentteams.io>"
     
     ok "更改已提交"
 }
@@ -184,7 +184,7 @@ TaDashboard 是一个基于 Next.js 的 Web 管理面板，用于可视化管理
 
 ## 变更内容
 
-### 1. \`install/hiclaw-install.sh\`
+### 1. \`install/agentteams-install.sh\`
 - 添加 Dashboard 安装向导步骤 (\`step_dashboard\`)
 - 支持配置端口号（默认 13000）、镜像名称、Higress Console URL
 - 自动检测 Higress Console URL 实现共用登录
@@ -192,7 +192,7 @@ TaDashboard 是一个基于 Next.js 的 Web 管理面板，用于可视化管理
 - 支持中英文双语消息
 - 默认绑定 0.0.0.0 支持局域网访问
 
-### 2. \`install/hiclaw-verify.sh\`
+### 2. \`install/agentteams-verify.sh\`
 - 添加 Dashboard 可访问性检查
 - 验证 HTTP 200 响应
 
@@ -205,22 +205,22 @@ TaDashboard 是一个基于 Next.js 的 Web 管理面板，用于可视化管理
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| \`HICLAW_DASHBOARD\` | \`1\` | 是否安装 Dashboard (1=是, 0=否) |
-| \`HICLAW_PORT_DASHBOARD\` | \`13000\` | Dashboard 主机端口 |
-| \`HICLAW_DASHBOARD_IMAGE\` | \`hiclaw-dashboard:latest\` | Dashboard 镜像 |
-| \`HICLAW_AI_GATEWAY_ADMIN_URL\` | 自动检测 | Higress Console URL (共用登录) |
+| \`AGENTTEAMS_DASHBOARD\` | \`1\` | 是否安装 Dashboard (1=是, 0=否) |
+| \`AGENTTEAMS_PORT_DASHBOARD\` | \`13000\` | Dashboard 主机端口 |
+| \`AGENTTEAMS_DASHBOARD_IMAGE\` | \`agentteams-dashboard:latest\` | Dashboard 镜像 |
+| \`AGENTTEAMS_AI_GATEWAY_ADMIN_URL\` | 自动检测 | Higress Console URL (共用登录) |
 
 ## 测试步骤
 
 \`\`\`bash
 # 1. 安装 AgentTeams（包含 Dashboard）
-bash install/hiclaw-install.sh
+bash install/agentteams-install.sh
 
 # 2. 验证 Dashboard 可访问
 curl -s http://localhost:13000/ | head -5
 
 # 3. 验证安装脚本
-bash install/hiclaw-verify.sh
+bash install/agentteams-verify.sh
 
 # 4. 使用 Makefile
 make install-dashboard
@@ -231,7 +231,7 @@ make uninstall-dashboard
 ## 检查清单
 
 - [x] 代码通过 shellcheck 检查
-- [x] 支持非交互模式 (\`HICLAW_NON_INTERACTIVE=1\`)
+- [x] 支持非交互模式 (\`AGENTTEAMS_NON_INTERACTIVE=1\`)
 - [x] 支持中英文双语
 - [x] 容器使用 Docker 网络连接
 - [x] 自动等待容器就绪
@@ -242,7 +242,7 @@ make uninstall-dashboard
 
 - TaDashboard 仓库: https://github.com/higress-group/TaDashboard
 - A2UI 协议: https://a2ui.org/
-- 安装脚本: https://github.com/higress-group/TaDashboard/blob/main/install/hiclaw-dashboard.sh
+- 安装脚本: https://github.com/higress-group/TaDashboard/blob/main/install/agentteams-dashboard.sh
 - 集成文档: https://github.com/higress-group/TaDashboard/blob/main/install/AGENTTEAMS_PATCH.md"
     
     # 尝试使用 gh CLI 创建 PR

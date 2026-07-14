@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HiClaw Dashboard - AI 集群管理面板",
-  description: "HiClaw 控制器仪表盘，管理 Workers、Teams、Managers 和基础设施",
+  title: "AgentTeams Dashboard - AI 集群管理面板",
+  description: "AgentTeams 控制器仪表盘，管理 Workers、Teams、Managers 和基础设施",
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },

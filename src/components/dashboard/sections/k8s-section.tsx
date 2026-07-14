@@ -32,13 +32,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useCreateHuman, useDeleteHuman } from '@/hooks/use-hiclaw-mutations';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useHumans } from '@/hooks/use-agentteams-humans';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useCreateHuman, useDeleteHuman } from '@/hooks/use-agentteams-mutations';
 import { useSearch } from '@/lib/search-context';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useCopyToClipboard } from '@/lib/use-copy-to-clipboard';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { StatusDot } from '@/components/dashboard/status-dot';
@@ -59,7 +59,7 @@ import type {
   TeamResponse,
   HumanResponse,
   ManagerResponse,
-} from '@/lib/hiclaw-api';
+} from '@/lib/agentteams-api';
 
 type CRDResource = {
   kind: string;
@@ -312,7 +312,7 @@ export function K8sSection() {
   const { data: humans, isLoading: humansLoading, isError: humansError, refetch: refetchHumans } = useHumans();
   const { data: managers, isLoading: managersLoading, isError: managersError, refetch: refetchManagers } = useManagers();
   const { searchQuery } = useSearch();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const createHuman = useCreateHuman();
   const deleteHuman = useDeleteHuman();
 
@@ -553,7 +553,7 @@ export function K8sSection() {
         </CardHeader>
         <CardContent className="p-4 pt-0">
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p>HiClaw Controller 基于 Kubernetes Controller 模式，持续调谐 CRD 资源：</p>
+            <p>AgentTeams Controller 基于 Kubernetes Controller 模式，持续调谐 CRD 资源：</p>
             <ol className="list-decimal list-inside space-y-1 ml-2">
               <li>Watch 监听 Worker/Team/Human/Manager CRD 变更事件</li>
               <li>对比期望状态（Spec）与实际状态（Status）</li>
@@ -564,7 +564,7 @@ export function K8sSection() {
             <div className="mt-3 p-3 rounded-lg bg-muted/30 border border-border/50">
               <p className="text-xs">
                 <strong className="text-foreground">CRD 类型说明：</strong>
-                Worker、Team、Human、Manager 均为 HiClaw 自定义资源定义（CRD），
+                Worker、Team、Human、Manager 均为 AgentTeams 自定义资源定义（CRD），
                 由 Controller 统一管理生命周期。点击上方卡片可按类型筛选，点击
                 <Code2 className="w-3 h-3 inline mx-0.5" />
                 按钮查看资源的 JSON 表示。

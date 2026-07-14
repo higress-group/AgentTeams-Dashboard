@@ -9,7 +9,7 @@ import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge, RuntimeBadge } from '@/components/dashboard/phase-badge';
 import { HealthRingCompact } from '@/components/dashboard/health-ring';
 import { useAgentHealth } from '@/hooks/use-agent-health';
-import type { WorkerResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse } from '@/lib/agentteams-api';
 
 export function WorkerCard({
   worker,

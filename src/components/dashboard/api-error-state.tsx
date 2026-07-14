@@ -2,7 +2,7 @@
 
 import { WifiOff, Settings, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface ApiErrorStateProps {
@@ -11,7 +11,7 @@ interface ApiErrorStateProps {
 }
 
 export function ApiErrorState({ message, onRetry }: ApiErrorStateProps) {
-  const { openSettings } = useHiClawStore();
+  const { openSettings } = useAgentTeamsStore();
   const queryClient = useQueryClient();
 
   const handleRetry = () => {
@@ -27,9 +27,9 @@ export function ApiErrorState({ message, onRetry }: ApiErrorStateProps) {
       <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
         <WifiOff className="w-8 h-8 text-amber-500" />
       </div>
-      <p className="text-lg font-medium mb-1">未连接到 HiClaw Controller</p>
+      <p className="text-lg font-medium mb-1">未连接到 AgentTeams Controller</p>
       <p className="text-sm text-muted-foreground mb-6 text-center max-w-md">
-        {message || '无法连接到 HiClaw Controller，请检查网络连接和 Controller 地址配置'}
+        {message || '无法连接到 AgentTeams Controller，请检查网络连接和 Controller 地址配置'}
       </p>
       <div className="flex items-center gap-3">
         <Button variant="outline" size="sm" onClick={openSettings}>

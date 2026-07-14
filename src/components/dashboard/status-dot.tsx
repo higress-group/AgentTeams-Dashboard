@@ -1,6 +1,6 @@
 'use client';
 
-import type { WorkerPhase, ManagerPhase, TeamPhase, HumanPhase } from '@/lib/hiclaw-api';
+import type { WorkerPhase, ManagerPhase, TeamPhase, HumanPhase } from '@/lib/agentteams-api';
 
 type StatusPhase = WorkerPhase | ManagerPhase | TeamPhase | HumanPhase;
 

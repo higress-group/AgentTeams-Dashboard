@@ -24,23 +24,23 @@ import { useCallback } from 'react';
 export function ArchitectureSection() {
   const queryClient = useQueryClient();
   const handleRefresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['hiclaw-workers'] });
-    queryClient.invalidateQueries({ queryKey: ['hiclaw-teams'] });
-    queryClient.invalidateQueries({ queryKey: ['hiclaw-managers'] });
+    queryClient.invalidateQueries({ queryKey: ['agentteams-workers'] });
+    queryClient.invalidateQueries({ queryKey: ['agentteams-teams'] });
+    queryClient.invalidateQueries({ queryKey: ['agentteams-managers'] });
   }, [queryClient]);
 
   return (
     <div className="space-y-6">
       <SectionHeader
         title="架构"
-        description="HiClaw 系统架构概览"
+        description="AgentTeams 系统架构概览"
         onRefresh={handleRefresh}
       />
 
       {/* Layered Architecture Diagram */}
       <Card className="glass-card">
         <CardContent className="p-6">
-          <h2 className="text-lg font-semibold mb-6 text-center">HiClaw 分层架构</h2>
+          <h2 className="text-lg font-semibold mb-6 text-center">AgentTeams 分层架构</h2>
 
           <div className="relative">
             {/* Main Layers Column */}

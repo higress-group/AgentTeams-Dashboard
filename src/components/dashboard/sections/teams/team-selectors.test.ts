@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import {
   filterTeams,
   getAvailableWorkers,

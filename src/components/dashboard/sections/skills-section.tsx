@@ -16,8 +16,8 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useManagers } from '@/hooks/use-agentteams-managers';
 import { useSearch } from '@/lib/search-context';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { WORKER_PHASE_BADGE_CLASSES, MANAGER_PHASE_BADGE_CLASSES } from '@/lib/phase-colors';

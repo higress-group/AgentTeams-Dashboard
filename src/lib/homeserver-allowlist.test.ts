@@ -66,7 +66,7 @@ describe('validateHomeserverUrl', () => {
 
   it('rejects blocked suffix (cluster.local)', () => {
     expect(() => validateHomeserverUrl('https://matrix.svc.cluster.local')).toThrow(HomeserverValidationError);
-    expect(() => validateHomeserverUrl('https://hiclaw-controller.hiclaw-system.svc.cluster.local')).toThrow(
+    expect(() => validateHomeserverUrl('https://agentteams-controller.agentteams-system.svc.cluster.local')).toThrow(
       HomeserverValidationError
     );
   });

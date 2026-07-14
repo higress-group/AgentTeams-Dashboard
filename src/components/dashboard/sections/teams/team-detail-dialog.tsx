@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge } from '@/components/dashboard/phase-badge';
 import { TeamHealthPanel } from './team-health-panel';
-import type { TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import { getWorkersForTeam } from './team-selectors';
 
 const DETAIL_FIELDS: Array<[string, (_t: TeamResponse) => string]> = [

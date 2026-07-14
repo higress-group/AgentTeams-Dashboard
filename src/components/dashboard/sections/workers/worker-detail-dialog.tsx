@@ -6,7 +6,7 @@ import { PhaseBadge, RuntimeBadge } from '@/components/dashboard/phase-badge';
 import { HealthRing } from '@/components/dashboard/health-ring';
 import { useAgentHealth } from '@/hooks/use-agent-health';
 import { RUNTIME_LABELS } from '@/lib/phase-colors';
-import type { WorkerResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse } from '@/lib/agentteams-api';
 
 const DETAIL_FIELDS: Array<[string, (_w: WorkerResponse) => string]> = [
   ['名称', (w) => w.name],

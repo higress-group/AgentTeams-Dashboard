@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-const ENSURE_AI_KEY = 'hiclaw-ensure-ai-done';
+const ENSURE_AI_KEY = 'agentteams-ensure-ai-done';
 
 /**
  * One-time hook: on first dashboard load, ensure the Higress AI gateway
@@ -20,7 +20,7 @@ export function useEnsureAiGateway() {
     }
     attempted.current = true;
 
-    fetch('/api/hiclaw/setup/ensure-ai', { method: 'POST' })
+    fetch('/api/agentteams/setup/ensure-ai', { method: 'POST' })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {

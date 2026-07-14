@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useModels } from '@/hooks/use-hiclaw-models';
+import { useModels } from '@/hooks/use-agentteams-models';
 
 interface ModelSelectorProps {
   value?: string;

@@ -278,7 +278,7 @@ export function legacyToA2uiMessages(
     return [
       {
         version: 'v0.9' as const,
-        createSurface: { surfaceId, catalogId: 'hiclaw-chat' },
+        createSurface: { surfaceId, catalogId: 'agentteams-chat' },
       },
       {
         version: 'v0.9' as const,
@@ -303,7 +303,7 @@ export function legacyToA2uiMessages(
   return [
     {
       version: 'v0.9' as const,
-      createSurface: { surfaceId, catalogId: 'hiclaw-chat' },
+      createSurface: { surfaceId, catalogId: 'agentteams-chat' },
     },
     {
       version: 'v0.9' as const,
@@ -345,7 +345,7 @@ export function thinkingToA2uiMessages(
   return [
     {
       version: 'v0.9' as const,
-      createSurface: { surfaceId, catalogId: 'hiclaw-chat' },
+      createSurface: { surfaceId, catalogId: 'agentteams-chat' },
     },
     {
       version: 'v0.9' as const,

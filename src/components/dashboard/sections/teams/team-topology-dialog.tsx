@@ -1,7 +1,7 @@
 'use client';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import { TeamTopologyDiagram } from './team-topology';
 
 export function TeamTopologyDialog({

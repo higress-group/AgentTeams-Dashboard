@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
 import {
   useCreateWorker,
   useDeleteWorker,
@@ -20,17 +20,17 @@ import {
   useSleepWorker,
   useEnsureReadyWorker,
   useUpdateWorker,
-} from '@/hooks/use-hiclaw-mutations';
+} from '@/hooks/use-agentteams-mutations';
 import { useSearch } from '@/lib/search-context';
-import { hiclawApi } from '@/lib/hiclaw-api';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { agentteamsApi } from '@/lib/agentteams-api';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useViewMode } from '@/lib/use-view-mode';
 import { RUNTIME_LABELS } from '@/lib/phase-colors';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { ConfirmDeleteDialog } from '@/components/dashboard/confirm-delete-dialog';
 import { toast } from 'sonner';
-import type { CreateWorkerRequest, UpdateWorkerRequest, WorkerResponse } from '@/lib/hiclaw-api';
+import type { CreateWorkerRequest, UpdateWorkerRequest, WorkerResponse } from '@/lib/agentteams-api';
 import { SORT_OPTIONS, ITEMS_PER_PAGE, type SortKey } from './workers/worker-types';
 import {
   computeRuntimeDist,
@@ -117,7 +117,7 @@ function EmptyState({ hasQuery, onCreate }: { hasQuery: boolean; onCreate: () =>
 
 export function WorkersSection() {
   const { data: workers, isLoading, isError, refetch, isRefetching } = useWorkers();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const { searchQuery } = useSearch();
   const createWorker = useCreateWorker();
   const deleteWorker = useDeleteWorker();
@@ -197,7 +197,7 @@ export function WorkersSection() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hiclaw-workers-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `agentteams-workers-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success('Workers 数据已导出');
@@ -223,7 +223,7 @@ export function WorkersSection() {
       if (!file) return;
       setUploading(true);
       try {
-        await hiclawApi.uploadPackage(file);
+        await agentteamsApi.uploadPackage(file);
         setUploadOpen(false);
       } finally {
         setUploading(false);

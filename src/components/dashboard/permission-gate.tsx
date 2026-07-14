@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useHumans } from '@/hooks/use-hiclaw-humans';
+import { useHumans } from '@/hooks/use-agentteams-humans';
 import { checkPermission, type Permission } from '@/lib/rbac-engine';
 import { useMatrixStore } from '@/lib/matrix-store';
 

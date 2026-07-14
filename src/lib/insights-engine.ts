@@ -1,7 +1,7 @@
 // Insights Engine for Overview Dashboard
 // Automatically detects anomalies and generates actionable insights
 
-import type { WorkerResponse, TeamResponse, ManagerResponse, InfrastructureInfo } from '@/lib/hiclaw-api';
+import type { WorkerResponse, TeamResponse, ManagerResponse, InfrastructureInfo } from '@/lib/agentteams-api';
 
 export interface Insight {
   id: string;
@@ -28,7 +28,7 @@ export function computeInsights(
       severity: 'critical',
       category: 'connectivity',
       message: 'Controller 未连接',
-      detail: '无法连接到 HiClaw Controller，请检查网络和配置',
+      detail: '无法连接到 AgentTeams Controller，请检查网络和配置',
     });
   }
 

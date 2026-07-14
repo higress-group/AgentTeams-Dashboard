@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { useLogs } from '@/hooks/use-hiclaw-logs';
+import { useLogs } from '@/hooks/use-agentteams-logs';
 
 const COMPONENTS = [
   { value: 'controller', label: 'Controller' },

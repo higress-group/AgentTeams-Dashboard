@@ -1,8 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useVersion } from './use-hiclaw-version';
-import { useClusterStatus } from './use-hiclaw-cluster-status';
+import { useVersion } from './use-agentteams-version';
+import { useClusterStatus } from './use-agentteams-cluster-status';
 import { apiUrl } from '@/lib/api-base';
 import type { DeploymentMode } from '@/components/dashboard/nav-items';
 
@@ -12,7 +12,7 @@ interface ModeResponse {
 }
 
 async function fetchMode(): Promise<ModeResponse> {
-  const res = await fetch(apiUrl('/api/hiclaw/mode'));
+  const res = await fetch(apiUrl('/api/agentteams/mode'));
   if (!res.ok) throw new Error('Failed to fetch deployment mode');
   return res.json();
 }
@@ -25,7 +25,7 @@ export function useDeploymentMode() {
 
   // Always consult the mode API to check for env var override (highest priority)
   const { data: fallbackMode, isLoading: fallbackLoading } = useQuery<ModeResponse>({
-    queryKey: ['hiclaw-mode'],
+    queryKey: ['agentteams-mode'],
     queryFn: fetchMode,
     refetchInterval: false,
     retry: 1,
@@ -34,7 +34,7 @@ export function useDeploymentMode() {
 
   const isLoading = versionLoading || clusterLoading || fallbackLoading;
 
-  // Env var (via /api/hiclaw/mode with source='env') overrides controller's kubeMode
+  // Env var (via /api/agentteams/mode with source='env') overrides controller's kubeMode
   if (fallbackMode?.source === 'env') {
     const mode = fallbackMode.mode;
     return { mode, isKube: mode === 'k8s', isEmbedded: mode === 'embedded', isLoading } as const;

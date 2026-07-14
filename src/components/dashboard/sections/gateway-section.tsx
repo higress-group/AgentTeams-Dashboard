@@ -33,9 +33,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { useConsumers } from '@/hooks/use-hiclaw-consumers';
-import { useCreateConsumer, useDeleteConsumer } from '@/hooks/use-hiclaw-mutations';
-import { useAiRoutes, useDeleteAiRoute } from '@/hooks/use-hiclaw-models';
+import { useConsumers } from '@/hooks/use-agentteams-consumers';
+import { useCreateConsumer, useDeleteConsumer } from '@/hooks/use-agentteams-mutations';
+import { useAiRoutes, useDeleteAiRoute } from '@/hooks/use-agentteams-models';
 
 export function GatewaySection() {
   const { data: consumers, isLoading: consumersLoading } = useConsumers();

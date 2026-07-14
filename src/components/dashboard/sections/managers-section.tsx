@@ -12,12 +12,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useManagers } from '@/hooks/use-hiclaw-managers';
-import { useWorkers } from '@/hooks/use-hiclaw-workers';
-import { useTeams } from '@/hooks/use-hiclaw-teams';
-import { useCreateManager, useDeleteManager, useUpdateManager } from '@/hooks/use-hiclaw-mutations';
+import { useManagers } from '@/hooks/use-agentteams-managers';
+import { useWorkers } from '@/hooks/use-agentteams-workers';
+import { useTeams } from '@/hooks/use-agentteams-teams';
+import { useCreateManager, useDeleteManager, useUpdateManager } from '@/hooks/use-agentteams-mutations';
 import { useSearch } from '@/lib/search-context';
-import { useHiClawStore } from '@/lib/hiclaw-store';
+import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useViewMode } from '@/lib/use-view-mode';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { SectionHeader } from '@/components/dashboard/section-header';
@@ -29,7 +29,7 @@ import type {
   TeamResponse,
   UpdateManagerRequest,
   WorkerResponse,
-} from '@/lib/hiclaw-api';
+} from '@/lib/agentteams-api';
 import { SORT_OPTIONS, type SortKey } from './managers/manager-types';
 import {
   filterManagers,
@@ -91,7 +91,7 @@ export function ManagersSection() {
   const { data: workers } = useWorkers();
   const { data: teams } = useTeams();
   const { searchQuery } = useSearch();
-  const { isConnected } = useHiClawStore();
+  const { isConnected } = useAgentTeamsStore();
   const createManager = useCreateManager();
   const deleteManager = useDeleteManager();
   const updateManager = useUpdateManager();
@@ -123,7 +123,7 @@ export function ManagersSection() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `hiclaw-managers-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `agentteams-managers-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success('Managers 数据已导出');

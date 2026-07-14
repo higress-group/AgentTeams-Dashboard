@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
-import type { WorkerResponse, TeamResponse, ManagerResponse } from '@/lib/hiclaw-api';
+import type { WorkerResponse, TeamResponse, ManagerResponse } from '@/lib/agentteams-api';
 
 interface TopologyNode {
   id: string;

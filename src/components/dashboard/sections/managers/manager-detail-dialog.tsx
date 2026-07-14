@@ -6,7 +6,7 @@ import { StatusDot } from '@/components/dashboard/status-dot';
 import { PhaseBadge, RuntimeBadge } from '@/components/dashboard/phase-badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RUNTIME_LABELS, WORKER_PHASE_BADGE_CLASSES } from '@/lib/phase-colors';
-import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/hiclaw-api';
+import type { ManagerResponse, TeamResponse, WorkerResponse } from '@/lib/agentteams-api';
 import { getManagedTeams, getManagedWorkers, getManagerSkills } from './manager-selectors';
 
 const DETAIL_FIELDS: Array<[string, (_m: ManagerResponse) => string]> = [

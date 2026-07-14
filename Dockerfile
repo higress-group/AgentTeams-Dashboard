@@ -2,13 +2,13 @@
 # TaDashboard - Production Dockerfile (Next.js standalone)
 # ============================================================
 # Build:
-#   docker build -t hiclaw-dashboard:latest .
+#   docker build -t agentteams-dashboard:latest .
 # Run:
 #   docker run -p 3000:3000 \
-#     -e HICLAW_CONTROLLER_URL=http://hiclaw-controller:8090 \
-#     -e HICLAW_AI_GATEWAY_ADMIN_URL=http://hiclaw-controller:8001 \
-#     -e NEXT_PUBLIC_MATRIX_API_URL=http://matrix-local.hiclaw.io:6167 \
-#     hiclaw-dashboard:latest
+#     -e AGENTTEAMS_CONTROLLER_URL=http://agentteams-controller:8090 \
+#     -e AGENTTEAMS_AI_GATEWAY_ADMIN_URL=http://agentteams-controller:8001 \
+#     -e NEXT_PUBLIC_MATRIX_API_URL=http://matrix-local.agentteams.io:6167 \
+#     agentteams-dashboard:latest
 
 FROM node:20-alpine AS builder
 WORKDIR /app
@@ -19,8 +19,8 @@ ARG NEXT_PUBLIC_BASE_PATH=
 ENV NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
 
 # Optional build-time default for the browser-side controller URL.
-ARG NEXT_PUBLIC_HICLAW_CONTROLLER_URL=
-ENV NEXT_PUBLIC_HICLAW_CONTROLLER_URL=${NEXT_PUBLIC_HICLAW_CONTROLLER_URL}
+ARG NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL=
+ENV NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL=${NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL}
 
 # Install native deps
 ARG APK_MIRROR=mirrors.aliyun.com

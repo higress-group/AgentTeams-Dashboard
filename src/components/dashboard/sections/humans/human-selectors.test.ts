@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { HumanResponse } from '@/lib/hiclaw-api';
+import type { HumanResponse } from '@/lib/agentteams-api';
 import {
   computePhaseStats,
   filterHumans,

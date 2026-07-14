@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useMatrixLogin } from '@/hooks/use-matrix';
-import { useInfrastructure } from '@/hooks/use-hiclaw-infrastructure';
+import { useInfrastructure } from '@/hooks/use-agentteams-infrastructure';
 
 export function MatrixLoginForm({ onLoginSuccess }: { onLoginSuccess?: () => void }) {
   const [username, setUsername] = useState('');
@@ -42,7 +42,7 @@ export function MatrixLoginForm({ onLoginSuccess }: { onLoginSuccess?: () => voi
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Homeserver 地址</label>
             <Input
-              placeholder="http://matrix-local.hiclaw.io:18080"
+              placeholder="http://matrix-local.agentteams.io:18080"
               value={effectiveHomeserverUrl}
               onChange={(e) => setHomeserverUrl(e.target.value)}
               className="h-9 text-sm bg-background/50"
@@ -101,7 +101,7 @@ export function MatrixLoginForm({ onLoginSuccess }: { onLoginSuccess?: () => voi
 
         <div className="mt-4 p-3 rounded-lg bg-muted/50">
           <p className="text-[10px] text-muted-foreground">
-            提示: HiClaw 的 Human 用户可以作为 Matrix 账号登录。用户名即 Human 名称，初始密码由 Controller 创建时生成。
+            提示: AgentTeams 的 Human 用户可以作为 Matrix 账号登录。用户名即 Human 名称，初始密码由 Controller 创建时生成。
           </p>
         </div>
       </CardContent>
