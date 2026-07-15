@@ -2933,6 +2933,19 @@ _start_dashboard() {
         return 0
     fi
 
+    # Dashboard requires the embedded architecture (controller container).
+    # In legacy all-in-one mode the controller API is not available.
+    if [ "${AGENTTEAMS_USE_EMBEDDED:-0}" != "1" ]; then
+        log "Skipping Dashboard: requires embedded architecture (agentteams-controller), not available in legacy mode."
+        log "Use Quick Start (embedded) mode to enable TaDashboard."
+        return 0
+    fi
+
+    if ! ${DOCKER_CMD} ps --format '{{.Names}}' | grep -q "^agentteams-controller$"; then
+        log "Skipping Dashboard: agentteams-controller container not found."
+        return 0
+    fi
+
     AGENTTEAMS_PORT_DASHBOARD="${AGENTTEAMS_PORT_DASHBOARD:-13000}"
     AGENTTEAMS_DASHBOARD_IMAGE="${AGENTTEAMS_DASHBOARD_IMAGE:-${AGENTTEAMS_DASHBOARD_REGISTRY:-registry.cn-hangzhou.aliyuncs.com}/agentteams/agentteams:${AGENTTEAMS_VERSION}}"
     AGENTTEAMS_AI_GATEWAY_ADMIN_URL="${AGENTTEAMS_AI_GATEWAY_ADMIN_URL:-}"
@@ -2958,8 +2971,8 @@ _start_dashboard() {
     # Build env args
     local _dash_env=()
     _dash_env+=(-e "AGENTTEAMS_CONTROLLER_URL=http://agentteams-controller:8090")
-    _dash_env+=(-e "NEXT_PUBLIC_MATRIX_API_URL=http://agentteams-manager:6167")
-    _dash_env+=(-e "MATRIX_HOMESERVER_ALLOWLIST=agentteams-manager,matrix-local.agentteams.io,matrix.org")
+    _dash_env+=(-e "NEXT_PUBLIC_MATRIX_API_URL=http://agentteams-controller:6167")
+    _dash_env+=(-e "MATRIX_HOMESERVER_ALLOWLIST=agentteams-controller,matrix-local.agentteams.io,matrix.org")
     _dash_env+=(-e "NEXT_PUBLIC_BASE_PATH=")
     [ -n "${AGENTTEAMS_AI_GATEWAY_ADMIN_URL:-}" ] && _dash_env+=(-e "AGENTTEAMS_AI_GATEWAY_ADMIN_URL=${AGENTTEAMS_AI_GATEWAY_ADMIN_URL}")
     [ -n "${AGENTTEAMS_AUTH_TOKEN:-}" ] && _dash_env+=(-e "AGENTTEAMS_AUTH_TOKEN=${AGENTTEAMS_AUTH_TOKEN}")
@@ -2971,13 +2984,16 @@ _start_dashboard() {
         fi
     fi
 
-    resolve_port_prefix
+    # Build port prefix (local-only vs public)
+    local _dash_prefix=""
+    [ "${AGENTTEAMS_LOCAL_ONLY:-1}" = "1" ] && _dash_prefix="127.0.0.1:"
+
     ${DOCKER_CMD} run -d \
         --name "${DASHBOARD_CONTAINER}" \
         --network agentteams-net \
         --network-alias dashboard.agentteams.io \
         --restart unless-stopped \
-        -p "${_port_prefix}${AGENTTEAMS_PORT_DASHBOARD}:3000" \
+        -p "${_dash_prefix}${AGENTTEAMS_PORT_DASHBOARD}:3000" \
         "${_dash_env[@]}" \
         "${AGENTTEAMS_DASHBOARD_IMAGE}"
 
@@ -3841,9 +3857,6 @@ CREDEOF
             log "$(msg install.welcome_msg.poll_unavailable)"
         fi
 
-        # ── Start Dashboard (optional) ────────────────────────────────────
-        _start_dashboard
-
     else
         # ============================================================
         # Legacy architecture: all-in-one manager container
@@ -3944,6 +3957,9 @@ CREDEOF
         fi
     fi
     unset _port_prefix
+
+    # ── Start Dashboard (optional) ────────────────────────────────────
+    _start_dashboard
 
     # Apply Podman autostart if selected and environment matches
     if [ "${DOCKER_CMD}" = "podman" ] && [ "${AGENTTEAMS_PODMAN_AUTOSTART:-0}" = "1" ]; then

@@ -55,21 +55,19 @@ jobs:
       - name: Extract metadata
         id: meta
         run: |
-          SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
-          echo "sha_short=${SHA_SHORT}" >> $GITHUB_OUTPUT
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            VERSION="${{ github.ref_name }}"
           elif [[ "${{ github.ref }}" == refs/heads/main ]]; then
-            echo "version=latest" >> $GITHUB_OUTPUT
+            VERSION="latest"
           else
             VERSION="${{ inputs.version }}"
             if [ -z "${VERSION}" ]; then
               VERSION="latest"
             fi
-            echo "version=${VERSION}" >> $GITHUB_OUTPUT
           fi
-          IS_PRERELEASE=$(echo "${{ steps.meta.outputs.version }}" | grep -qiE -- '-(rc|beta|alpha|pre|preview|dev|snapshot)(\\.[0-9]+)?$' && echo 1 || echo 0)
-          if [ "$IS_PRERELEASE" = "1" ] || [ "${{ steps.meta.outputs.version }}" = "latest" ]; then
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+          if echo "${VERSION}" | grep -qiE '-(rc|beta|alpha|pre|preview|dev|snapshot)(\.[0-9]+)?$' || [ "${VERSION}" = "latest" ]; then
             echo "push_latest=0" >> $GITHUB_OUTPUT
           else
             echo "push_latest=1" >> $GITHUB_OUTPUT
