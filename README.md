@@ -89,6 +89,7 @@ docker run -p 3000:3000 \
 | `AGENTTEAMS_CONTROLLER_URL` | AgentTeams Controller 地址（服务端代理用） | `http://agentteams-controller.agentteams-system:8090` |
 | `NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL` | 浏览器端 Controller URL（可选） | — |
 | `NEXT_PUBLIC_MATRIX_API_URL` | Matrix Homeserver 地址 | — |
+| `MATRIX_HOMESERVER_ALLOWLIST` | Matrix 代理允许的 homeserver 主机名（逗号分隔，设置后排他生效） | — |
 | `AGENTTEAMS_AUTH_TOKEN` | Controller 认证 Token | — |
 | `AGENTTEAMS_AUTH_TOKEN_FILE` | Token 文件路径（支持轮转） | — |
 | `DATABASE_URL` | SQLite 数据库路径 | `file:./db/dashboard.db` |
@@ -116,8 +117,9 @@ docker run -p 3000:3000 \
 ├── install/                  # AgentTeams 集成安装脚本
 ├── public/                   # 静态资源
 ├── Dockerfile
+├── Makefile                  # 多架构 Docker 构建/推送
 ├── next.config.ts
-├── tailwind.config.ts
+├── vitest.config.ts
 └── package.json
 ```
 
@@ -132,6 +134,7 @@ docker run -p 3000:3000 \
 | `npm start` | 启动生产服务器 |
 | `npm run lint` | ESLint 检查 |
 | `npm run typecheck` | TypeScript 类型检查 |
+| `npm test` | 运行 vitest 测试套件 |
 
 ---
 
