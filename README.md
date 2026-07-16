@@ -1,76 +1,87 @@
-# AgentTeams-Dashboard
+<div align="center">
+  <img src="public/agentteams-logo.svg" alt="AgentTeams Logo" width="110" />
 
-> AgentTeams 的 Web 管理面板
+  # AgentTeams Dashboard
 
-AgentTeams-Dashboard 是一个轻量级 **Next.js** Web 界面，用于可视化管理 [AgentTeams](https://github.com/agentscope-ai/AgentTeams) 集群中的 Worker、Team、Human、Manager 等资源，同时集成 Matrix 聊天能力。
+  **A lightweight web console for managing AgentTeams clusters — Workers, Teams, Humans, Managers and infrastructure, with integrated Matrix chat.**
 
----
+  [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-## 技术栈
-
-- **框架**：Next.js 16 + React 19 + TypeScript
-- **样式**：Tailwind CSS v4 + shadcn/ui
-- **状态管理**：Zustand + TanStack Query
-- **运行时**：Node.js 20+
-- **部署**：Docker，Next.js standalone 输出
-
----
-
-## 功能模块
-
-| 模块 | 说明 |
-|------|------|
-| **Overview** | 全局概览：活跃 Worker、Team、Matrix 房间数、资源状态 |
-| **Workers** | Worker 全生命周期管理：查看、唤醒、休眠、确保就绪、删除 |
-| **Teams** | Team 管理：成员、关联 Worker、Human、详情弹窗 |
-| **Humans** | Human 资源 CRUD：卡片/表格视图、权限级别、房间关联 |
-| **Managers** | Manager 管理：模型配置、欢迎消息、协调团队/Worker |
-| **K8s** | Kubernetes CRD 资源卡片展示、YAML/JSON 预览 |
-| **Infrastructure** | 基础设施状态：Controller、Matrix、各组件健康度 |
-| **Chat** | Matrix 聊天集成：房间列表、成员、消息收发 |
-| **Security** | 权限矩阵、访问控制、安全策略展示 |
-| **Skills** | Skill/MCP 资源管理 |
-| **Architecture** | 架构图与组件关系说明 |
+  [![Build Dashboard Image](https://github.com/higress-group/TaDashboard/actions/workflows/build.yml/badge.svg)](https://github.com/higress-group/TaDashboard/actions/workflows/build.yml)
+  [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+  [![React](https://img.shields.io/badge/React-19-149eca?logo=react)](https://react.dev/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+  [![Docker](https://img.shields.io/badge/Docker-ready-2496ed?logo=docker&logoColor=white)](./Dockerfile)
+</div>
 
 ---
 
-## 快速开始
+## ✨ Overview
 
-### 作为 AgentTeams 组件安装（推荐）
+AgentTeams Dashboard is a **Next.js** web UI for visually managing [AgentTeams](https://github.com/agentscope-ai/AgentTeams) cluster resources — Workers, Teams, Humans and Managers — with built-in Matrix chat, topology views and RBAC/audit tooling. It can be deployed standalone or embedded into an existing AgentTeams installation with a one-line install script.
 
-如果你已安装 [AgentTeams](https://github.com/agentscope-ai/AgentTeams)，可以一键添加 Dashboard：
+## 🚀 Features
+
+| Module | Description |
+|--------|-------------|
+| **Overview** | Cluster at a glance: active Workers, Teams, Matrix rooms, resource status |
+| **Workers** | Full lifecycle management: view, wake, sleep, ensure-ready, delete |
+| **Teams** | Team management: members, linked Workers/Humans, detail dialogs |
+| **Humans** | Human CRUD: card/table views, permission levels, room association |
+| **Managers** | Manager management: model configuration, welcome messages, team coordination |
+| **K8s** | Kubernetes CRD resource cards with YAML/JSON preview |
+| **Infrastructure** | Infra health: Controller, Matrix and component status |
+| **Chat** | Matrix chat integration: room list, members, rich message rendering (A2UI) |
+| **Security** | Permission matrix, access control and security policy views |
+| **Skills** | Skill / MCP resource management |
+| **Architecture** | Architecture diagram and component relationships |
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 16 + React 19 + TypeScript 5
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **State**: Zustand + TanStack Query
+- **Runtime**: Node.js 20+
+- **Deployment**: Docker, Next.js standalone output
+
+## 📦 Quick Start
+
+### Install as an AgentTeams component (recommended)
+
+If you already have [AgentTeams](https://github.com/agentscope-ai/AgentTeams) installed, add the Dashboard with one command:
 
 ```bash
-# 独立安装脚本
+# Install
 bash install/agentteams-dashboard.sh
 
-# 卸载
+# Uninstall
 bash install/agentteams-dashboard.sh uninstall
 ```
 
-默认端口 `13000`，安装后访问 `http://127.0.0.1:13000/`。
+Default port is `13000` — visit `http://127.0.0.1:13000/` after installation.
 
-详细集成说明见 [`install/AGENTTEAMS_PATCH.md`](install/AGENTTEAMS_PATCH.md)。
+See [`install/AGENTTEAMS_PATCH.md`](install/AGENTTEAMS_PATCH.md) for detailed integration notes.
 
-### 独立运行
+### Run standalone
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm install
 
-# 配置环境变量
+# Configure environment
 cp .env.example .env
-# 编辑 .env 设置 AGENTTEAMS_CONTROLLER_URL 和 NEXT_PUBLIC_MATRIX_API_URL
+# Edit .env: set AGENTTEAMS_CONTROLLER_URL and NEXT_PUBLIC_MATRIX_API_URL
 
-# 开发模式
+# Development
 npm run dev
 
-# 生产构建
+# Production
 npm run build
 npm start
 ```
 
-### Docker 构建
+### Docker
 
 ```bash
 docker build -t agentteams-dashboard:latest .
@@ -80,89 +91,89 @@ docker run -p 3000:3000 \
   agentteams-dashboard:latest
 ```
 
----
+## ⚙️ Configuration
 
-## 环境变量
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `AGENTTEAMS_CONTROLLER_URL` | AgentTeams Controller endpoint (server-side proxy) | `http://agentteams-controller.agentteams-system:8090` |
+| `NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL` | Browser-facing Controller URL (optional) | — |
+| `NEXT_PUBLIC_MATRIX_API_URL` | Matrix Homeserver endpoint | — |
+| `MATRIX_HOMESERVER_ALLOWLIST` | Comma-separated homeserver hostnames allowed through the Matrix proxy (exclusive once set) | — |
+| `AGENTTEAMS_AUTH_TOKEN` | Controller auth token | — |
+| `AGENTTEAMS_AUTH_TOKEN_FILE` | Token file path (supports rotation) | — |
+| `DATABASE_URL` | SQLite database path | `file:./db/dashboard.db` |
+| `NEXT_PUBLIC_BASE_PATH` | URL base path (embedded deployment) | `/dashboard` |
 
-| 变量 | 说明 | 默认值 |
-|------|------|--------|
-| `AGENTTEAMS_CONTROLLER_URL` | AgentTeams Controller 地址（服务端代理用） | `http://agentteams-controller.agentteams-system:8090` |
-| `NEXT_PUBLIC_AGENTTEAMS_CONTROLLER_URL` | 浏览器端 Controller URL（可选） | — |
-| `NEXT_PUBLIC_MATRIX_API_URL` | Matrix Homeserver 地址 | — |
-| `MATRIX_HOMESERVER_ALLOWLIST` | Matrix 代理允许的 homeserver 主机名（逗号分隔，设置后排他生效） | — |
-| `AGENTTEAMS_AUTH_TOKEN` | Controller 认证 Token | — |
-| `AGENTTEAMS_AUTH_TOKEN_FILE` | Token 文件路径（支持轮转） | — |
-| `DATABASE_URL` | SQLite 数据库路径 | `file:./db/dashboard.db` |
-| `NEXT_PUBLIC_BASE_PATH` | URL 基础路径（嵌入部署时用） | `/dashboard` |
+## 🏗 Architecture
 
----
+The browser never talks to the AgentTeams Controller or the Matrix Homeserver directly — every request goes through the Next.js API route proxy layer:
 
-## 项目结构
+```
+┌──────────────┐      ┌───────────────────────────┐      ┌────────────────────────┐
+│   Browser    │─────▶│  Next.js API Routes       │─────▶│ AgentTeams Controller  │
+│  (React UI)  │◀─────│  /api/agentteams/*        │◀─────│ (Workers/Teams/...)    │
+└──────────────┘      │  /api/matrix/*            │      └────────────────────────┘
+                      └────────────┬──────────────┘
+                                   │
+                                   ▼
+                      ┌───────────────────────────┐
+                      │   Matrix Homeserver       │
+                      └───────────────────────────┘
+```
+
+- `proxy-helper.ts` handles request forwarding, auth header injection, timeouts and error normalization.
+- **Auth**: in k3s, the Dashboard accesses the Controller with a projected ServiceAccount token. The token is re-read on every request, so short-lived token rotation works out of the box.
+- **Security**: Matrix access tokens are passed from the frontend; the homeserver proxy enforces a strict hostname allowlist and blocks private-network targets (SSRF protection).
+
+## 📁 Project Structure
 
 ```
 ├── src/
 │   ├── app/
-│   │   ├── api/              # 代理 API（agentteams + matrix）
+│   │   ├── api/              # Proxy API routes (agentteams + matrix)
 │   │   ├── globals.css
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components/
-│   │   ├── dashboard/        # 面板业务组件
-│   │   │   └── sections/     # 各功能区域
-│   │   ├── ui/               # shadcn/ui 基础组件（22 个）
-│   │   ├── auth/             # 登录组件
-│   │   └── setup/            # 初始化向导
-│   ├── hooks/                # TanStack Query Hooks
-│   └── lib/                  # 工具函数、API 客户端、Store
-├── install/                  # AgentTeams 集成安装脚本
-├── public/                   # 静态资源
+│   │   ├── dashboard/        # Dashboard business components
+│   │   │   └── sections/     # Feature sections
+│   │   ├── ui/               # shadcn/ui primitives
+│   │   ├── auth/             # Login components
+│   │   └── setup/            # Setup wizard
+│   ├── hooks/                # TanStack Query hooks
+│   └── lib/                  # Utilities, API client, stores
+├── install/                  # AgentTeams integration install scripts
+├── public/                   # Static assets
 ├── Dockerfile
-├── Makefile                  # 多架构 Docker 构建/推送
+├── Makefile                  # Multi-arch Docker build/push
 ├── next.config.ts
 ├── vitest.config.ts
 └── package.json
 ```
 
----
+## 📜 Scripts
 
-## 可用脚本
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start the dev server (port 3000) |
+| `npm run build` | Build the standalone production bundle |
+| `npm start` | Start the production server |
+| `npm run lint` | ESLint checks |
+| `npm run typecheck` | TypeScript type checking |
+| `npm test` | Run the vitest test suite |
 
-| 脚本 | 说明 |
-|------|------|
-| `npm run dev` | 启动开发服务器（端口 3000） |
-| `npm run build` | 构建 standalone 产物 |
-| `npm start` | 启动生产服务器 |
-| `npm run lint` | ESLint 检查 |
-| `npm run typecheck` | TypeScript 类型检查 |
-| `npm test` | 运行 vitest 测试套件 |
+## 🧪 Quality
 
----
+- **Unit tests** with vitest + Testing Library (150+ tests, `npm test`)
+- **Lint-clean** ESLint configuration (`npm run lint`)
+- **Type-safe** with strict TypeScript (`npm run typecheck`)
+- **Reproducible builds** via `npm ci` + lockfile and multi-arch Docker images (`make help`)
 
-## 核心设计
+## 🤝 Related Projects
 
-### 代理层
+- [AgentTeams](https://github.com/agentscope-ai/AgentTeams) — multi-agent collaboration runtime
+- [AgentTeams Controller](https://github.com/higress-group/agentteams) — the Controller
 
-- 前端不直接访问 AgentTeams Controller 或 Matrix Homeserver
-- 所有请求通过 Next.js API Route 代理：
-  - `/api/agentteams/*` → AgentTeams Controller
-  - `/api/matrix/*` → Matrix Homeserver
-- `proxy-helper.ts` 负责请求转发、认证头注入、超时与错误处理
+## 📄 License
 
-### 认证
-
-- Dashboard 在 k3s 中通过 projected ServiceAccount Token 访问 Controller
-- Token 每次请求时重新读取，支持短时效 Token 自动轮转
-- Matrix 访问 Token 通过前端传入
-
----
-
-## 许可证
-
-本项目属于 higress-group，具体许可证请参考仓库根目录授权文件。
-
----
-
-## 相关仓库
-
-- [AgentTeams](https://github.com/agentscope-ai/AgentTeams) — 多智能体协作运行时
-- [AgentTeams Controller](https://github.com/higress-group/agentteams) — Controller
+This project belongs to higress-group. Please refer to the license file in the repository root for details.
