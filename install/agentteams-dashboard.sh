@@ -287,8 +287,9 @@ detect_runtime_env() {
   AGENTTEAMS_OPENAI_BASE_URL=$(echo "${env_out}" | sed -n 's/^AGENTTEAMS_OPENAI_BASE_URL=//p')
   AGENTTEAMS_DEFAULT_MODEL=$(echo "${env_out}" | sed -n 's/^AGENTTEAMS_DEFAULT_MODEL=//p')
 
-  # The controller writes the CLI token to /var/run/agentteams/cli-token.
-  AGENTTEAMS_AUTH_TOKEN=$(${DOCKER_CMD} exec "${ctrl_container}" sh -c 'cat /var/run/agentteams/cli-token 2>/dev/null' | tr -d '\n' || true)
+  # The controller writes the CLI token to /var/run/hiclaw/cli-token
+  # (older builds used /var/run/agentteams/cli-token).
+  AGENTTEAMS_AUTH_TOKEN=$(${DOCKER_CMD} exec "${ctrl_container}" sh -c 'cat /var/run/hiclaw/cli-token 2>/dev/null || cat /var/run/agentteams/cli-token 2>/dev/null' | tr -d '\n' || true)
 
   # Always use the internal Docker-network Higress Console URL; a host IP saved
   # in an old env file is often unreachable from inside the dashboard container.

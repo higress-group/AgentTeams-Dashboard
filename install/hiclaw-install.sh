@@ -2970,6 +2970,17 @@ _start_dashboard() {
 
     # Build env args
     local _dash_env=()
+
+    # The dashboard authenticates its API proxy calls to the controller with the
+    # controller's admin CLI token (minted at controller startup and written to
+    # /var/run/hiclaw/cli-token; older builds used /var/run/agentteams/cli-token).
+    # Auto-detect it when the caller did not provide one — without it every
+    # dashboard data API returns 401 and workers/teams/rooms appear empty.
+    if [ -z "${AGENTTEAMS_AUTH_TOKEN:-}" ] && ${DOCKER_CMD} ps --format '{{.Names}}' | grep -q "^agentteams-controller$"; then
+        AGENTTEAMS_AUTH_TOKEN=$(${DOCKER_CMD} exec agentteams-controller sh -c 'cat /var/run/hiclaw/cli-token 2>/dev/null || cat /var/run/agentteams/cli-token 2>/dev/null' | tr -d '\n' || true)
+        [ -z "${AGENTTEAMS_AUTH_TOKEN}" ] && log "WARNING: Could not read controller auth token (cli-token); dashboard API calls will be unauthenticated."
+    fi
+
     _dash_env+=(-e "AGENTTEAMS_CONTROLLER_URL=http://agentteams-controller:8090")
     _dash_env+=(-e "NEXT_PUBLIC_MATRIX_API_URL=http://agentteams-controller:6167")
     _dash_env+=(-e "MATRIX_HOMESERVER_ALLOWLIST=agentteams-controller,matrix-local.agentteams.io,matrix.org")
