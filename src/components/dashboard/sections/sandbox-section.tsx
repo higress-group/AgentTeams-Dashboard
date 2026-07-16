@@ -3,12 +3,9 @@
 import { useState, useCallback } from 'react';
 import {
   FlaskConical,
-  Copy,
-  Play,
   Trash2,
   Loader2,
   Bot,
-  MessageSquare,
 } from 'lucide-react';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

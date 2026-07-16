@@ -64,6 +64,8 @@ export function StorageSection() {
   const { data: buckets, isLoading: bucketsLoading } = useBuckets();
   const [bucket, setBucket] = useState<string>('');
   const [prefix, setPrefix] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   // Reset selections when bucket changes
   const handleBucketChange = useCallback((b: string) => {
     setBucket(b);
@@ -83,8 +85,6 @@ export function StorageSection() {
   const [uploading, setUploading] = useState(false);
   const [showNewBucket, setShowNewBucket] = useState(false);
   const [newBucketName, setNewBucketName] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
 
   const selectedBucketName = useMemo(() => bucket, [bucket]);
 

@@ -92,8 +92,6 @@ function parseCustomBlocks(content: string): ContentPart[] {
 }
 
 export function MarkdownMessage({ content, formattedContent, msgType, mediaUrl, mediaInfo, homeserver }: MarkdownMessageProps) {
-  const source = formattedContent || content;
-
   // Resolve mxc:// URL to HTTP URL via Matrix media API
   const resolvedMediaUrl = useMemo(() => {
     if (!mediaUrl) return undefined;
@@ -201,7 +199,7 @@ export function MarkdownMessage({ content, formattedContent, msgType, mediaUrl, 
           const language = className?.replace('language-', '');
           const code = String(children).replace(/\n$/, '');
           if (className?.includes('language-')) {
-            return <CodeBlock language={language} children={code} />;
+            return <CodeBlock language={language}>{code}</CodeBlock>;
           }
           return (
             <code className="bg-muted px-1 py-0.5 rounded text-xs" {...props}>

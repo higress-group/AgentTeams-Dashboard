@@ -22,7 +22,6 @@ import {
   Crown,
   UserPlus,
   MessageCircle,
-  Eye,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -49,9 +48,15 @@ function useRefreshCountdown(intervalMs: number) {
   const [countdown, setCountdown] = useState(() => intervalMs / 1000);
   const startTimeRef = useRef(Date.now());
 
+  // Restart the cycle when the interval changes (adjust state during render)
+  const [prevIntervalMs, setPrevIntervalMs] = useState(intervalMs);
+  if (prevIntervalMs !== intervalMs) {
+    setPrevIntervalMs(intervalMs);
+    setCountdown(intervalMs / 1000);
+  }
+
   useEffect(() => {
     startTimeRef.current = Date.now();
-    setCountdown(intervalMs / 1000);
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current;

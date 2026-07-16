@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useWorkers } from '@/hooks/use-agentteams-workers';
 import { useTeams } from '@/hooks/use-agentteams-teams';
 import { useManagers } from '@/hooks/use-agentteams-managers';
@@ -20,10 +20,10 @@ import { RoomTopology } from './chat/room-topology';
 import { MatrixStatusBanner } from './chat/matrix-status-banner';
 
 export function ChatSection() {
-  const { data: workers, isLoading: workersLoading, refetch: refetchWorkers } = useWorkers();
-  const { data: teams, isLoading: teamsLoading, refetch: refetchTeams } = useTeams();
-  const { data: managers, isLoading: managersLoading, refetch: refetchManagers } = useManagers();
-  const { isLoading: humansLoading, refetch: refetchHumans } = useHumans();
+  const { data: workers, isLoading: workersLoading } = useWorkers();
+  const { data: teams, isLoading: teamsLoading } = useTeams();
+  const { data: managers, isLoading: managersLoading } = useManagers();
+  const { isLoading: humansLoading } = useHumans();
   const { isConnected } = useAgentTeamsStore();
   const { isLoggedIn, userId, logout } = useMatrixStore();
 
@@ -33,13 +33,6 @@ export function ChatSection() {
 
   const isLoading = workersLoading || teamsLoading || managersLoading || humansLoading;
   const hasError = !isConnected;
-
-  const handleRefresh = useCallback(() => {
-    refetchWorkers();
-    refetchTeams();
-    refetchManagers();
-    refetchHumans();
-  }, [refetchWorkers, refetchTeams, refetchManagers, refetchHumans]);
 
   const rooms = useMemo(() => buildRooms(workers, teams, managers), [workers, teams, managers]);
   const selectedRoom = useMemo(

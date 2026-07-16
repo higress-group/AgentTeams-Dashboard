@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Server, Container, HardDrive, FileText, Brain } from 'lucide-react';
 import { useDeploymentMode } from '@/hooks/use-deployment-mode';
 import { InfrastructureSection } from './infrastructure-section';
@@ -33,11 +33,10 @@ export function OpsSection() {
   const [activeTab, setActiveTab] = useState(visibleTabs[0]?.id || '');
 
   // Reset active tab when mode changes and current tab is no longer visible
-  useEffect(() => {
-    if (visibleTabs.length > 0 && !visibleTabs.some((t) => t.id === activeTab)) {
-      setActiveTab(visibleTabs[0].id);
-    }
-  }, [visibleTabs, activeTab]);
+  // (self-correcting state adjustment during render)
+  if (visibleTabs.length > 0 && !visibleTabs.some((t) => t.id === activeTab)) {
+    setActiveTab(visibleTabs[0].id);
+  }
 
   const currentTab = visibleTabs.find((t) => t.id === activeTab) || visibleTabs[0];
   const ActiveComponent = currentTab?.component;

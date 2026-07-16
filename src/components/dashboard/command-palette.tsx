@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
-import { Bot, Users, Crown, UserCheck, Search, ArrowRight } from 'lucide-react';
+import { Bot, Users, Crown, UserCheck, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { PhaseBadge } from '@/components/dashboard/phase-badge';
 import type { WorkerResponse, TeamResponse, ManagerResponse, HumanResponse } from '@/lib/agentteams-api';
 
 export interface SearchResult {
@@ -142,9 +141,12 @@ export function CommandPalette({
   const [selectedIdx, setSelectedIdx] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // Reset selection when the result count changes (adjust state during render)
+  const [prevResultCount, setPrevResultCount] = useState(results.length);
+  if (prevResultCount !== results.length) {
+    setPrevResultCount(results.length);
     setSelectedIdx(0);
-  }, [results.length]);
+  }
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
