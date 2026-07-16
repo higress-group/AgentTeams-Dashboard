@@ -481,11 +481,14 @@ export const agentteamsApi = {
     return Array.isArray(result) ? result : (result as { buckets: BucketResponse[] }).buckets ?? [];
   },
 
-  listObjects: (bucket: string, prefix?: string) => {
+  listObjects: async (bucket: string, prefix?: string) => {
     const query = prefix ? `?prefix=${encodeURIComponent(prefix)}` : '';
-    return proxyRequest<StorageObject[]>(`/storage/buckets/${encodeURIComponent(bucket)}/objects${query}`, {
-      method: 'GET',
-    });
+    const result = await proxyRequest<StorageObject[] | { objects: StorageObject[] }>(
+      `/storage/buckets/${encodeURIComponent(bucket)}/objects${query}`,
+      { method: 'GET' }
+    );
+    if (!result || typeof result !== 'object') return [];
+    return Array.isArray(result) ? result : (result as { objects: StorageObject[] }).objects ?? [];
   },
 
   deleteObject: (bucket: string, key: string) =>
