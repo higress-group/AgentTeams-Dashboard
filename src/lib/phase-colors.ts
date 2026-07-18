@@ -27,7 +27,7 @@ export const MANAGER_PHASE_COLORS: Record<string, string> = {
 };
 
 export const RUNTIME_COLORS: Record<string, string> = {
-  openclaw: '#f97316',
+  openclaw: '#14b8a6',
   copaw: '#10b981',
   hermes: '#06b6d4',
   openhuman: '#8b5cf6',

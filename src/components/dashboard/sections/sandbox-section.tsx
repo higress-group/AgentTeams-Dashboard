@@ -161,7 +161,7 @@ export function SandboxSection() {
               {sandboxWorkers.map((name) => (
                 <div key={name} className="flex items-center justify-between p-2 rounded bg-background/50">
                   <div className="flex items-center gap-2">
-                    <Bot className="w-4 h-4 text-orange-500" />
+                    <Bot className="w-4 h-4 text-emerald-500" />
                     <span className="text-xs font-medium font-mono">{name}</span>
                     <Badge variant="secondary" className="text-[9px]">沙箱</Badge>
                   </div>

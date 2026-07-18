@@ -322,7 +322,7 @@ export function OverviewSection() {
             value={activeWorkers}
             label="活跃 Workers"
             icon={Bot}
-            color="text-orange-500"
+            color="text-emerald-500"
             sub={
               workers && workers.length > 0 ? (
                 <div className="space-y-0.5">
@@ -448,7 +448,7 @@ export function OverviewSection() {
                       <RechartsTooltip />
                       <Legend />
                       <Bar dataKey="ready" name="就绪 Workers" fill="#10b981" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="total" name="总 Workers" fill="#f97316" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="total" name="总 Workers" fill="#14b8a6" radius={[2, 2, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -469,7 +469,7 @@ export function OverviewSection() {
           <Card className="glass-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Activity className="w-4 h-4 text-orange-500" />
+                <Activity className="w-4 h-4 text-emerald-500" />
                 操作动态
               </CardTitle>
             </CardHeader>

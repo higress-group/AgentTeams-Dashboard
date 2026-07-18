@@ -55,14 +55,14 @@ function HtmlContent({ html }: { html: string }) {
   return (
     <div
       className="html-content prose prose-sm dark:prose-invert max-w-none
-        [&_a]:text-orange-600 [&_a]:hover:underline
+        [&_a]:text-emerald-600 [&_a]:hover:underline
         [&_img]:max-w-full [&_img]:max-h-64 [&_img]:rounded-lg
         [&_pre]:bg-muted/50 [&_pre]:rounded-lg [&_pre]:p-3
         [&_code]:bg-muted/50 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded
         [&_table]:border-collapse [&_table]:border [&_table]:border-border
         [&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-1 [&_th]:bg-muted
         [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1
-        [&_blockquote]:border-l-4 [&_blockquote]:border-orange-500/50 [&_blockquote]:pl-4 [&_blockquote]:italic
+        [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-500/50 [&_blockquote]:pl-4 [&_blockquote]:italic
         [&_ul]:list-disc [&_ul]:pl-4
         [&_ol]:list-decimal [&_ol]:pl-4
         [&_hr]:border-border [&_hr]:my-2"
@@ -107,7 +107,7 @@ const markdownComponents = {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-orange-600 hover:underline"
+        className="text-emerald-600 hover:underline"
       >
         {children}
       </a>
@@ -128,7 +128,7 @@ const markdownComponents = {
   },
   blockquote({ children }: React.BlockquoteHTMLAttributes<HTMLElement>) {
     return (
-      <blockquote className="border-l-4 border-orange-500/50 pl-4 italic my-2">
+      <blockquote className="border-l-4 border-emerald-500/50 pl-4 italic my-2">
         {children}
       </blockquote>
     );

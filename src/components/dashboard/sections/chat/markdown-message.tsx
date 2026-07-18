@@ -146,7 +146,7 @@ export function MarkdownMessage({ content, formattedContent, msgType, mediaUrl, 
           href={resolvedMediaUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-sm text-orange-600 hover:underline"
+          className="flex items-center gap-2 text-sm text-emerald-600 hover:underline"
         >
           <span>📎</span>
           <span>{content}</span>
@@ -168,14 +168,14 @@ export function MarkdownMessage({ content, formattedContent, msgType, mediaUrl, 
                 key={idx}
                 dangerouslySetInnerHTML={{ __html: part.text }}
                 className="[&>p]:mb-1 [&>br]:block
-                  [&_a]:text-orange-600 [&_a]:hover:underline
+                  [&_a]:text-emerald-600 [&_a]:hover:underline
                   [&_img]:max-w-full [&_img]:max-h-64 [&_img]:rounded-lg
                   [&_pre]:bg-muted/50 [&_pre]:rounded-lg [&_pre]:p-3
                   [&_code]:bg-muted/50 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded
                   [&_table]:border-collapse [&_table]:border [&_table]:border-border
                   [&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-1 [&_th]:bg-muted
                   [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1
-                  [&_blockquote]:border-l-4 [&_blockquote]:border-orange-500/50 [&_blockquote]:pl-4 [&_blockquote]:italic"
+                  [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-500/50 [&_blockquote]:pl-4 [&_blockquote]:italic"
               />
             );
           }
@@ -230,7 +230,7 @@ export function MarkdownMessage({ content, formattedContent, msgType, mediaUrl, 
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-orange-600 hover:underline"
+              className="text-emerald-600 hover:underline"
             >
               {children}
             </a>
@@ -251,7 +251,7 @@ export function MarkdownMessage({ content, formattedContent, msgType, mediaUrl, 
         },
         blockquote({ children }) {
           return (
-            <blockquote className="border-l-4 border-orange-500/50 pl-4 italic my-2">
+            <blockquote className="border-l-4 border-emerald-500/50 pl-4 italic my-2">
               {children}
             </blockquote>
           );

@@ -388,7 +388,7 @@ export function StorageSection() {
                 {bucket && filteredObjects.some((o) => !o.isPrefix) && (
                   <button onClick={toggleSelectAll} className="shrink-0">
                     {filteredObjects.filter((o) => !o.isPrefix).every((o) => selectedKeys.has(o.key)) ? (
-                      <CheckSquare className="w-4 h-4 text-orange-500" />
+                      <CheckSquare className="w-4 h-4 text-emerald-500" />
                     ) : (
                       <Square className="w-4 h-4 text-muted-foreground/50" />
                     )}
@@ -429,7 +429,7 @@ export function StorageSection() {
                   {!obj.isPrefix && (
                     <button onClick={() => toggleSelect(obj.key)}>
                       {selectedKeys.has(obj.key) ? (
-                        <CheckSquare className="w-4 h-4 text-orange-500" />
+                        <CheckSquare className="w-4 h-4 text-emerald-500" />
                       ) : (
                         <Square className="w-4 h-4 text-muted-foreground/50" />
                       )}
@@ -438,7 +438,7 @@ export function StorageSection() {
                 </TableCell>
                 <TableCell className="font-mono text-xs">
                   <button
-                    className="flex items-center gap-2 hover:text-orange-600"
+                    className="flex items-center gap-2 hover:text-emerald-600"
                     onClick={() => handleObjectClick(obj)}
                     disabled={!obj.isPrefix}
                   >

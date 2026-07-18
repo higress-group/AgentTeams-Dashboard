@@ -55,7 +55,7 @@ export function OpsSection() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-3 py-2.5 text-sm transition-colors border-b-2 -mb-px ${
                 isActive
-                  ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-medium'
+                  ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-medium'
                   : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
               }`}
             >

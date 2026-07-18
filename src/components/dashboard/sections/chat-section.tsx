@@ -56,7 +56,7 @@ export function ChatSection() {
       {/* Compact header bar */}
       <div className="shrink-0 px-3 py-1.5 border-b border-border flex items-center justify-between bg-card/30">
         <div className="flex items-center gap-2">
-          <MessageSquare className="w-4 h-4 text-orange-500" />
+          <MessageSquare className="w-4 h-4 text-emerald-500" />
           <h2 className="text-sm font-semibold">Matrix 聊天</h2>
           <span className="text-[10px] text-muted-foreground hidden sm:inline">实时通信与人机协同</span>
         </div>

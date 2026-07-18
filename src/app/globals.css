@@ -123,7 +123,7 @@
   @apply bg-white/30 dark:bg-slate-800/30 backdrop-blur-md;
 }
 .mesh-gradient {
-  background: linear-gradient(135deg, #f97316 0%, #ef4444 25%, #8b5cf6 50%, #06b6d4 75%, #10b981 100%);
+  background: linear-gradient(135deg, #059669 0%, #10b981 25%, #14b8a6 50%, #06b6d4 75%, #0ea5e9 100%);
 }
 .hover-lift {
   @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;

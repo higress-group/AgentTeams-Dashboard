@@ -22,7 +22,7 @@ const ENTITY_ICONS = {
 } as const;
 
 const ENTITY_COLORS = {
-  worker: 'text-orange-500',
+  worker: 'text-emerald-500',
   team: 'text-emerald-500',
   manager: 'text-violet-500',
   human: 'text-cyan-500',

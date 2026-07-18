@@ -130,7 +130,7 @@ export function WorkerEditDialog({
           <Button
             onClick={onSubmit}
             disabled={isPending}
-            className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
           >
             {isPending ? '保存中...' : '保存'}
           </Button>
