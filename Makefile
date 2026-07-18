@@ -1,7 +1,7 @@
 # ============================================================
-# TaDashboard Makefile
+# agentteams-dashboard Makefile
 # ============================================================
-# Build, test, and push the TaDashboard Docker image.
+# Build, test, and push the agentteams-dashboard Docker image.
 #
 # Usage:
 #   make build              # Build native-arch image locally
@@ -49,7 +49,7 @@ all: build
 # ---------- Build ----------
 
 build: ## Build native-arch Docker image locally
-	@echo "==> Building TaDashboard: $(LOCAL_IMAGE)"
+	@echo "==> Building agentteams-dashboard: $(LOCAL_IMAGE)"
 	docker build $(PLATFORM_FLAG) $(DOCKER_BUILD_ARGS) \
 		-t $(LOCAL_IMAGE) \
 		.
@@ -84,12 +84,12 @@ endif
 # ---------- Push (multi-arch, default) ----------
 
 push: buildx-setup ## Build + push multi-arch image (amd64 + arm64)
-	@echo "==> Building + pushing multi-arch TaDashboard: $(IMAGE_TAG) [$(MULTIARCH_PLATFORMS)]"
+	@echo "==> Building + pushing multi-arch agentteams-dashboard: $(IMAGE_TAG) [$(MULTIARCH_PLATFORMS)]"
 ifeq ($(IS_PODMAN),1)
 	-podman manifest rm $(IMAGE_TAG) 2>/dev/null
 	@# use comma as separator workaround for foreach
 	@IFS=',' ; for plat in $(MULTIARCH_PLATFORMS); do \
-		echo "  -> Building TaDashboard for $$plat..."; \
+		echo "  -> Building agentteams-dashboard for $$plat..."; \
 		podman build --platform $$plat \
 			$(DOCKER_BUILD_ARGS) \
 			--manifest $(IMAGE_TAG) \
@@ -114,7 +114,7 @@ endif
 
 push-native: tag ## Push native-arch image only (dev, overwrites multi-arch!)
 	@echo "WARNING: Pushing native-arch only — this overwrites multi-arch manifests!"
-	@echo "==> Pushing TaDashboard: $(IMAGE_TAG)"
+	@echo "==> Pushing agentteams-dashboard: $(IMAGE_TAG)"
 	docker push $(IMAGE_TAG)
 ifeq ($(PUSH_LATEST),yes)
 	docker push $(IMAGE):latest

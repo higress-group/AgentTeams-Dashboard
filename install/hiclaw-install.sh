@@ -46,7 +46,7 @@
 #   AGENTTEAMS_PORT_ELEMENT_WEB   Host port for Element Web direct access (default: 18088)
 #   AGENTTEAMS_PORT_MANAGER_CONSOLE  Host port for Manager console (default: 18888)
 #   AGENTTEAMS_WORKER_IDLE_TIMEOUT  Worker idle timeout in minutes (default: 720, i.e. 12 hours)
-#   AGENTTEAMS_DASHBOARD              Install TaDashboard management UI (default: 1)
+#   AGENTTEAMS_DASHBOARD              Install agentteams-dashboard management UI (default: 1)
 #   AGENTTEAMS_PORT_DASHBOARD         Dashboard host port (default: 13000)
 #   AGENTTEAMS_DASHBOARD_IMAGE        Override dashboard image
 #   AGENTTEAMS_AI_GATEWAY_ADMIN_URL   Higress Console URL for shared auth (auto-detected)
@@ -834,8 +834,8 @@ msg() {
         "install.welcome_msg.poll_unavailable.zh") text="提示: agentteams-manager 内未找到 hiclaw CLI，跳过 welcome 等待（旧镜像？）" ;;
         "install.welcome_msg.poll_unavailable.en") text="Note: hiclaw CLI not found inside agentteams-manager; skipping welcome wait (old image?)" ;;
         # --- Dashboard wizard ---
-        "dash.prompt.zh")        text="是否安装 TaDashboard 管理面板?" ;;
-        "dash.prompt.en")        text="Install TaDashboard management UI?" ;;
+        "dash.prompt.zh")        text="是否安装 agentteams-dashboard 管理面板?" ;;
+        "dash.prompt.en")        text="Install agentteams-dashboard management UI?" ;;
         "dash.port_prompt.zh")   text="Dashboard 端口号" ;;
         "dash.port_prompt.en")   text="Dashboard port" ;;
         "dash.image_prompt.zh")  text="Dashboard 镜像" ;;
@@ -851,8 +851,8 @@ msg() {
         "dash.summary.zh")       text="Dashboard 配置: 端口=%s 镜像=%s" ;;
         "dash.summary.en")       text="Dashboard config: port=%s image=%s" ;;
         # --- Dashboard success ---
-        "success.dashboard.zh") text="  TaDashboard 管理面板: http://localhost:%s/" ;;
-        "success.dashboard.en") text="  TaDashboard: http://localhost:%s/" ;;
+        "success.dashboard.zh") text="  agentteams-dashboard 管理面板: http://localhost:%s/" ;;
+        "success.dashboard.en") text="  agentteams-dashboard: http://localhost:%s/" ;;
         # --- Final output panel ---
         "success.title.zh") text="=== AgentTeams Manager 已启动！===" ;;
         "success.title.en") text="=== AgentTeams Manager Started! ===" ;;
@@ -2937,7 +2937,7 @@ _start_dashboard() {
     # In legacy all-in-one mode the controller API is not available.
     if [ "${AGENTTEAMS_USE_EMBEDDED:-0}" != "1" ]; then
         log "Skipping Dashboard: requires embedded architecture (agentteams-controller), not available in legacy mode."
-        log "Use Quick Start (embedded) mode to enable TaDashboard."
+        log "Use Quick Start (embedded) mode to enable agentteams-dashboard."
         return 0
     fi
 
@@ -2952,7 +2952,7 @@ _start_dashboard() {
     local DASHBOARD_CONTAINER="agentteams-dashboard"
 
     log ""
-    log "Starting TaDashboard..."
+    log "Starting agentteams-dashboard..."
 
     # Remove existing dashboard container if present
     if ${DOCKER_CMD} ps -a --format '{{.Names}}' | grep -qx "${DASHBOARD_CONTAINER}"; then
@@ -3274,7 +3274,7 @@ AGENTTEAMS_WORKSPACE_DIR=${AGENTTEAMS_WORKSPACE_DIR:-}
 # Host directory sharing
 AGENTTEAMS_HOST_SHARE_DIR=${AGENTTEAMS_HOST_SHARE_DIR:-}
 
-# TaDashboard (management UI)
+# agentteams-dashboard (management UI)
 AGENTTEAMS_DASHBOARD=${AGENTTEAMS_DASHBOARD:-1}
 AGENTTEAMS_PORT_DASHBOARD=${AGENTTEAMS_PORT_DASHBOARD:-13000}
 AGENTTEAMS_DASHBOARD_IMAGE=${AGENTTEAMS_DASHBOARD_IMAGE:-${AGENTTEAMS_DASHBOARD_REGISTRY:-registry.cn-hangzhou.aliyuncs.com}/agentteams/agentteams:${AGENTTEAMS_VERSION}}

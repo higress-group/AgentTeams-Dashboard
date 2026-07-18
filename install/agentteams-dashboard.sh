@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# agentteams-dashboard.sh — Install / upgrade / uninstall TaDashboard
+# agentteams-dashboard.sh — Install / upgrade / uninstall agentteams-dashboard
 # as an optional component of an existing AgentTeams deployment.
 #
 # Usage:
@@ -153,11 +153,11 @@ prompt_yes_no() {
 wizard() {
   echo ""
   echo -e "${CYAN}========================================${NC}"
-  echo -e "${CYAN}  TaDashboard Installation Wizard${NC}"
+  echo -e "${CYAN}  agentteams-dashboard Installation Wizard${NC}"
   echo -e "${CYAN}========================================${NC}"
   echo ""
 
-  prompt_yes_no AGENTTEAMS_DASHBOARD "Install TaDashboard?" "1"
+  prompt_yes_no AGENTTEAMS_DASHBOARD "Install agentteams-dashboard?" "1"
   if [ "${AGENTTEAMS_DASHBOARD}" != "1" ]; then
     info "Dashboard installation skipped."
     exit 0
@@ -372,7 +372,7 @@ recreate_container() {
 print_success() {
   echo ""
   echo -e "${GREEN}========================================${NC}"
-  echo -e "${GREEN}  TaDashboard ${1:-installed} successfully!${NC}"
+  echo -e "${GREEN}  agentteams-dashboard ${1:-installed} successfully!${NC}"
   echo -e "${GREEN}========================================${NC}"
   echo ""
   local bind_host="0.0.0.0"
@@ -412,7 +412,7 @@ do_update() {
   load_env
 
   echo ""
-  info "Updating TaDashboard..."
+  info "Updating agentteams-dashboard..."
   info "  Port:        ${AGENTTEAMS_PORT_DASHBOARD}"
   info "  Image:       ${AGENTTEAMS_DASHBOARD_IMAGE}"
   info "  Controller:  ${AGENTTEAMS_CONTROLLER_URL}"

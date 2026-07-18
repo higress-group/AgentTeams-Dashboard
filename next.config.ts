@@ -8,8 +8,8 @@ const devOrigins = process.env.ALLOWED_DEV_ORIGINS
 // monkeycode-ai.online preview domain pattern
 devOrigins.push(".monkeycode-ai.online");
 
-// Base path for embedding TaDashboard as a sub-application (e.g. /dashboard).
-// When empty/unset, TaDashboard runs at the root as a standalone app.
+// Base path for embedding agentteams-dashboard as a sub-application (e.g. /dashboard).
+// When empty/unset, agentteams-dashboard runs at the root as a standalone app.
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const nextConfig: NextConfig = {

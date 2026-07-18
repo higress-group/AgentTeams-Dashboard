@@ -1,5 +1,5 @@
 # ============================================================
-# TaDashboard - Production Dockerfile (Next.js standalone)
+# agentteams-dashboard - Production Dockerfile (Next.js standalone)
 # ============================================================
 # Build:
 #   docker build -t agentteams-dashboard:latest .
