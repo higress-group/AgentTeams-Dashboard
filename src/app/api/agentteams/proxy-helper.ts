@@ -43,7 +43,7 @@ function getDefaultControllerUrl(): string {
   return (
     process.env.AGENTTEAMS_CONTROLLER_URL ||
     process.env.AGENTTEAMS_API_URL ||
-    'http://agentteams-controller.agentteams-system:8090'
+    'http://agentteams-controller:8090'
   );
 }
 

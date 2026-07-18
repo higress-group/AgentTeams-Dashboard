@@ -55,6 +55,17 @@ const runtimeInfo = [
     color: 'text-violet-500',
     bgColor: 'bg-violet-500/10 border-violet-500/20',
   },
+  {
+    name: 'QwenPaw',
+    key: 'qwenpaw',
+    desc: '千问专用运行时，基于 Qwen 大模型的优化 Agent 框架。适合 Qwen 生态的 Agent 场景。',
+    features: ['千问优化', '工具调用', '流式推理', '多轮对话'],
+    language: 'Python',
+    models: ['Qwen', 'Qwen-Max', 'Qwen-Plus'],
+    useCases: ['千问 Agent', '工具集成', '推理加速'],
+    color: 'text-amber-500',
+    bgColor: 'bg-amber-500/10 border-amber-500/20',
+  },
 ];
 
 export function RuntimeSection() {
@@ -66,7 +77,7 @@ export function RuntimeSection() {
   }, [queryClient]);
 
   const runtimeCounts = useMemo(() => {
-    const counts: Record<string, number> = { openclaw: 0, copaw: 0, hermes: 0, openhuman: 0 };
+    const counts: Record<string, number> = { openclaw: 0, copaw: 0, hermes: 0, openhuman: 0, qwenpaw: 0 };
     workers?.forEach((w) => {
       if (counts[w.runtime] !== undefined) counts[w.runtime]++;
     });

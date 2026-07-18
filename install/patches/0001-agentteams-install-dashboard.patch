@@ -11,13 +11,13 @@ Add agentteams-dashboard as an optional component in the AgentTeams installation
 - Bilingual messages (zh/en)
 - LAN-accessible by default (bind 0.0.0.0)
 ---
- install/agentteams-install.sh | 114 +++++++++++++++++++++++++++++++++++++-
+ install/hiclaw-install.sh | 114 +++++++++++++++++++++++++++++++++++++-
  1 file changed, 113 insertions(+), 1 deletion(-)
 
-diff --git a/install/agentteams-install.sh b/install/agentteams-install.sh
+diff --git a/install/hiclaw-install.sh b/install/hiclaw-install.sh
 index 45da943..ac81570 100755
---- a/install/agentteams-install.sh
-+++ b/install/agentteams-install.sh
+--- a/install/hiclaw-install.sh
++++ b/install/hiclaw-install.sh
 @@ -46,6 +46,10 @@
  #   AGENTTEAMS_PORT_ELEMENT_WEB   Host port for Element Web direct access (default: 18088)
  #   AGENTTEAMS_PORT_MANAGER_CONSOLE  Host port for Manager console (default: 18888)
@@ -66,7 +66,7 @@ index 45da943..ac81570 100755
      COPAW_WORKER_IMAGE="${AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/agentteams-copaw-worker:${AGENTTEAMS_VERSION}}"
      HERMES_WORKER_IMAGE="${AGENTTEAMS_INSTALL_HERMES_WORKER_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/agentteams-hermes-worker:${AGENTTEAMS_VERSION}}"
      EMBEDDED_IMAGE="${AGENTTEAMS_INSTALL_EMBEDDED_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/agentteams-embedded:${AGENTTEAMS_VERSION}}"
-+    DASHBOARD_IMAGE="${AGENTTEAMS_INSTALL_DASHBOARD_IMAGE:-${AGENTTEAMS_REGISTRY}/higress/agentteams-dashboard:${AGENTTEAMS_VERSION}}"
++    DASHBOARD_IMAGE="${AGENTTEAMS_INSTALL_DASHBOARD_IMAGE:-${AGENTTEAMS_REGISTRY}/agentteams/agentteams-dashboard:${AGENTTEAMS_VERSION}}"
 +    AGENTTEAMS_AI_GATEWAY_ADMIN_URL="${AGENTTEAMS_AI_GATEWAY_ADMIN_URL:-}"
      # CoPaw Worker introduced in v1.0.4; Hermes Worker introduced in v1.1.0
      if [ -z "${AGENTTEAMS_INSTALL_COPAW_WORKER_IMAGE:-}" ] && _ver_lt "${AGENTTEAMS_VERSION}" "v1.0.4"; then

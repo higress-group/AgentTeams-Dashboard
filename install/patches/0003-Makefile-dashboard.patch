@@ -31,7 +31,7 @@ index 24afbcd..bd61e8d 100644
          verify wait-ready wait-ready-embedded \
          generate sync-crds check-crd-sync \
          status logs \
-@@ -168,6 +170,10 @@ build-embedded: build-agentteams-controller ## Build embedded all-in-one controller
+@@ -168,6 +170,10 @@ build-embedded: build-hiclaw-controller ## Build embedded all-in-one controller
  		-t $(LOCAL_EMBEDDED) \
  		.
  
@@ -61,7 +61,7 @@ index 24afbcd..bd61e8d 100644
 +uninstall-dashboard: ## Uninstall agentteams-dashboard
 +	@bash $(DASHBOARD_CONTEXT)/install/agentteams-dashboard.sh uninstall
  
- push-manager: push-agentteams-controller buildx-setup ## Build + push multi-arch Manager image (OpenClaw)
+ push-manager: push-hiclaw-controller buildx-setup ## Build + push multi-arch Manager image (OpenClaw)
  	@echo "==> Building + pushing multi-arch Manager: $(MANAGER_TAG) [$(MULTIARCH_PLATFORMS)]"
 -- 
 2.52.0

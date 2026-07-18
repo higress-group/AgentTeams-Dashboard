@@ -219,7 +219,8 @@ export function SkillsSection() {
         if (runtime.includes('openclaw')) managerSkills.push('task_assignment', 'worker_coordination');
         else if (runtime.includes('copaw')) managerSkills.push('team_formation', 'conflict_resolution');
         else if (runtime.includes('hermes')) managerSkills.push('message_routing', 'realtime_coordination');
-        else if (runtime.includes('openhuman')) managerSkills.push('human_approval', 'escalation');
+         else if (runtime.includes('openhuman')) managerSkills.push('human_approval', 'escalation');
+         else if (runtime.includes('qwenpaw')) managerSkills.push('qwen_optimization', 'tool_integration');
         else managerSkills.push('coordination');
       }
       managerSkills.forEach((skillName) => {

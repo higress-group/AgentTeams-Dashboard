@@ -46,7 +46,7 @@ export function SandboxSection() {
       const base = workers?.find((w) => w.name === baseWorker);
       await createWorker.mutateAsync({
         name: `sandbox-${sandboxName.trim()}`,
-        runtime: (base?.runtime as 'openclaw' | 'copaw' | 'hermes' | 'openhuman') || 'openclaw',
+        runtime: (base?.runtime as 'openclaw' | 'copaw' | 'hermes' | 'openhuman' | 'qwenpaw') || 'openclaw',
         model: base?.model,
         skills: base?.skills,
       });

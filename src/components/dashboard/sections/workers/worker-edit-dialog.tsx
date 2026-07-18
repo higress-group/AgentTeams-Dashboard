@@ -72,6 +72,7 @@ export function WorkerEditDialog({
                 <SelectItem value="copaw">CoPaw</SelectItem>
                 <SelectItem value="hermes">Hermes</SelectItem>
                 <SelectItem value="openhuman">OpenHuman</SelectItem>
+                <SelectItem value="qwenpaw">QwenPaw</SelectItem>
               </SelectContent>
             </Select>
           </div>

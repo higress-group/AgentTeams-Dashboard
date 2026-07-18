@@ -8,7 +8,7 @@ import { apiUrl } from '@/lib/api-base';
 
 export type WorkerPhase = 'Pending' | 'Running' | 'Sleeping' | 'Updating' | 'Stopped' | 'Failed' | 'Ready';
 export type WorkerState = 'Running' | 'Sleeping' | 'Stopped';
-export type WorkerRuntime = 'openclaw' | 'copaw' | 'hermes' | 'openhuman';
+export type WorkerRuntime = 'openclaw' | 'copaw' | 'hermes' | 'openhuman' | 'qwenpaw';
 export type TeamPhase = 'Pending' | 'Active' | 'Degraded' | 'Failed';
 export type HumanPhase = 'Pending' | 'Active' | 'Failed';
 export type ManagerPhase = 'Running' | 'Pending' | 'Failed';
