@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { ArrowUpDown, Bot, CheckSquare, Download, FileCode, LayoutGrid, List, Plus, Square, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -154,12 +154,9 @@ export function WorkersSection() {
   );
   const runtimeDist = useMemo(() => computeRuntimeDist(workers), [workers]);
 
-  // Reset to first page when filters change (adjust state during render)
-  const [prevFilters, setPrevFilters] = useState({ searchQuery, sortKey });
-  if (prevFilters.searchQuery !== searchQuery || prevFilters.sortKey !== sortKey) {
-    setPrevFilters({ searchQuery, sortKey });
+  useEffect(() => {
     setCurrentPage(1);
-  }
+  }, [searchQuery, sortKey]);
 
   const toggleSelect = useCallback((name: string) => {
     setSelectedWorkers((prev) => {
@@ -318,7 +315,7 @@ export function WorkersSection() {
             </Button>
             <Button
               size="sm"
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
               onClick={() => setCreateOpen(true)}
             >
               <Plus className="w-4 h-4 mr-1" aria-hidden="true" />

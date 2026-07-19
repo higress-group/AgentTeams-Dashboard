@@ -7,7 +7,8 @@ import remarkMath from 'remark-math';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import rehypeKatex from 'rehype-katex';
-import { Copy, Check } from 'lucide-react';
+import { sanitizeHtml } from '@/lib/utils';
+import { Copy, Check, ChevronDown, ChevronRight } from 'lucide-react';
 import {
   parseA2uiContent,
   legacyToA2uiMessages,
@@ -46,6 +47,30 @@ function CodeBlock({ language, children }: { language?: string; children: string
   );
 }
 
+// ─── HTML Renderer Component ─────────────────────────────────────────────────
+
+function HtmlContent({ html }: { html: string }) {
+  const sanitized = useMemo(() => sanitizeHtml(html), [html]);
+
+  return (
+    <div
+      className="html-content prose prose-sm dark:prose-invert max-w-none
+        [&_a]:text-emerald-600 [&_a]:hover:underline
+        [&_img]:max-w-full [&_img]:max-h-64 [&_img]:rounded-lg
+        [&_pre]:bg-muted/50 [&_pre]:rounded-lg [&_pre]:p-3
+        [&_code]:bg-muted/50 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded
+        [&_table]:border-collapse [&_table]:border [&_table]:border-border
+        [&_th]:border [&_th]:border-border [&_th]:px-2 [&_th]:py-1 [&_th]:bg-muted
+        [&_td]:border [&_td]:border-border [&_td]:px-2 [&_td]:py-1
+        [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-500/50 [&_blockquote]:pl-4 [&_blockquote]:italic
+        [&_ul]:list-disc [&_ul]:pl-4
+        [&_ol]:list-decimal [&_ol]:pl-4
+        [&_hr]:border-border [&_hr]:my-2"
+      dangerouslySetInnerHTML={{ __html: sanitized }}
+    />
+  );
+}
+
 // ─── Markdown Renderer Component ─────────────────────────────────────────────
 
 const markdownComponents = {
@@ -53,7 +78,7 @@ const markdownComponents = {
     const language = className?.replace('language-', '');
     const code = String(children).replace(/\n$/, '');
     if (className?.includes('language-')) {
-      return <CodeBlock language={language}>{code}</CodeBlock>;
+      return <CodeBlock language={language} children={code} />;
     }
     return (
       <code className="bg-muted px-1 py-0.5 rounded text-xs" {...props}>
@@ -82,7 +107,7 @@ const markdownComponents = {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-primary hover:underline"
+        className="text-emerald-600 hover:underline"
       >
         {children}
       </a>
@@ -103,7 +128,7 @@ const markdownComponents = {
   },
   blockquote({ children }: React.BlockquoteHTMLAttributes<HTMLElement>) {
     return (
-      <blockquote className="border-l-4 border-primary/50 pl-4 italic my-2">
+      <blockquote className="border-l-4 border-emerald-500/50 pl-4 italic my-2">
         {children}
       </blockquote>
     );

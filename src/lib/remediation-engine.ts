@@ -2,6 +2,7 @@
 // Executes automatic actions when policy violations are detected
 
 import type { PolicyViolation } from './policy-engine';
+import type { WorkerResponse } from '@/lib/agentteams-api';
 
 export interface RemediationAction {
   id: string;

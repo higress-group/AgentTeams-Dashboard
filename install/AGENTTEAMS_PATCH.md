@@ -1,6 +1,6 @@
 # AgentTeams Integration Patches
 
-This document describes how to integrate AgentTeams-Dashboard into the AgentTeams installation scripts.
+This document describes how to integrate agentteams-dashboard into the AgentTeams installation scripts.
 
 ## Option A: Standalone Install (Recommended for existing installations)
 
@@ -20,9 +20,9 @@ Apply the patches in `install/patches/` to the AgentTeams repository.
 
 ```bash
 cd /path/to/AgentTeams
-git apply /path/to/AgentTeams-Dashboard/install/patches/0001-agentteams-install-dashboard.patch
-git apply /path/to/AgentTeams-Dashboard/install/patches/0002-agentteams-verify-dashboard.patch
-git apply /path/to/AgentTeams-Dashboard/install/patches/0003-Makefile-dashboard.patch
+git apply /path/to/agentteams-dashboard/install/patches/0001-agentteams-install-dashboard.patch
+git apply /path/to/agentteams-dashboard/install/patches/0002-agentteams-verify-dashboard.patch
+git apply /path/to/agentteams-dashboard/install/patches/0003-Makefile-dashboard.patch
 ```
 
 ### Regenerate Patches
@@ -30,11 +30,11 @@ git apply /path/to/AgentTeams-Dashboard/install/patches/0003-Makefile-dashboard.
 The patch files are generated from a working AgentTeams branch. To update them:
 
 ```bash
-# 1. Edit the AgentTeams files directly (install/agentteams-install.sh,
-#    install/agentteams-verify.sh, Makefile) to add or modify Dashboard integration.
+# 1. Edit the AgentTeams files directly (install/hiclaw-install.sh,
+#    install/hiclaw-verify.sh, Makefile) to add or modify Dashboard integration.
 # 2. Commit each file separately with a descriptive message.
 # 3. Generate patches:
-git format-patch HEAD~3 -o /path/to/AgentTeams-Dashboard/install/patches/
+git format-patch HEAD~3 -o /path/to/agentteams-dashboard/install/patches/
 # 4. Rename the generated files to the canonical names if necessary:
 #    0001-agentteams-install-dashboard.patch
 #    0002-agentteams-verify-dashboard.patch
@@ -45,7 +45,7 @@ git format-patch HEAD~3 -o /path/to/AgentTeams-Dashboard/install/patches/
 
 The patches make the following changes:
 
-#### 1. `install/agentteams-install.sh`
+#### 1. `install/hiclaw-install.sh`
 
 - Add documented environment variables near the top (with other `AGENTTEAMS_` vars):
   - `AGENTTEAMS_DASHBOARD` — install Dashboard (default: 1)
@@ -62,14 +62,15 @@ The patches make the following changes:
 - Print the Dashboard URL in the success banner when Dashboard is enabled.
 - Persist Dashboard variables in the generated `.env` file.
 
-#### 2. `install/agentteams-verify.sh`
+#### 2. `install/hiclaw-verify.sh`
 
 - Read `AGENTTEAMS_PORT_DASHBOARD` from the Manager container env.
 - Add a 7th check that verifies Dashboard is accessible on its configured port.
+- Also checks `agentteams-controller` container for Dashboard port in embedded mode.
 
 #### 3. `Makefile`
 
-- Add `DASHBOARD_CONTEXT ?= ./AgentTeams-Dashboard/`.
+- Add `DASHBOARD_CONTEXT ?= ./agentteams-dashboard/`.
 - Add `install-dashboard`, `update-dashboard`, and `uninstall-dashboard` to `.PHONY`.
 - Add a `build-dashboard` target.
 - Add `install-dashboard`, `update-dashboard`, and `uninstall-dashboard` targets.

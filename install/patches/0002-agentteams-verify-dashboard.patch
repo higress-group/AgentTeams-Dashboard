@@ -1,18 +1,18 @@
 From 6379ea3d9c44d0d49afe509d1764d5685f06c6d1 Mon Sep 17 00:00:00 2001
-From: AgentTeams-Dashboard <dashboard@agentteams.io>
+From: agentteams-dashboard <dashboard@agentteams.io>
 Date: Sun, 5 Jul 2026 21:02:06 +0800
 Subject: [PATCH 2/3] feat(verify): add Dashboard health check
 
 Add a 7th check to the post-install verification script that verifies
 the Dashboard container is running and responding on its configured port.
 ---
- install/agentteams-verify.sh | 17 +++++++++++++++++
+ install/hiclaw-verify.sh | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
 
-diff --git a/install/agentteams-verify.sh b/install/agentteams-verify.sh
+diff --git a/install/hiclaw-verify.sh b/install/hiclaw-verify.sh
 index bc761fa..558e596 100755
---- a/install/agentteams-verify.sh
-+++ b/install/agentteams-verify.sh
+--- a/install/hiclaw-verify.sh
++++ b/install/hiclaw-verify.sh
 @@ -59,8 +59,10 @@ fi
  container_env=$("${DOCKER_CMD}" exec "${CONTAINER}" printenv 2>/dev/null) || container_env=""
  PORT_GATEWAY=$(echo "$container_env" | grep ^AGENTTEAMS_PORT_GATEWAY= | cut -d= -f2-)

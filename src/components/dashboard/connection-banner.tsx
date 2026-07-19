@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { WifiOff, Settings, RefreshCw, Clock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,25 +18,31 @@ export function ConnectionBanner() {
   } = useAgentTeamsStore();
 
   const intervalSec = Math.round(reconnectInterval / 1000);
-  const [countdown, setCountdown] = useState(intervalSec);
+  const startTimeRef = useRef<number | null>(null);
+  const [, setTick] = useState(0);
 
-  // Tick every second when disconnected, recomputing the countdown from
-  // elapsed time (start time stays local to the effect — no refs in render)
+  // Tick every second when disconnected
   useEffect(() => {
     if (isConnected || !autoReconnect) {
       return undefined;
     }
 
-    const startTime = Date.now();
+    startTimeRef.current = Date.now();
 
     const timer = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const remaining = intervalSec - (elapsed % intervalSec);
-      setCountdown(remaining === intervalSec ? intervalSec : remaining);
+      setTick((t) => t + 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isConnected, autoReconnect, intervalSec]);
+  }, [isConnected, autoReconnect, reconnectInterval]);
+
+  // Compute countdown from elapsed time
+  const countdown = (() => {
+    if (isConnected || !autoReconnect || !startTimeRef.current) return 0;
+    const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+    const remaining = intervalSec - (elapsed % intervalSec);
+    return remaining === intervalSec ? intervalSec : remaining;
+  })();
 
   const handleRetry = useCallback(() => {
     checkConnection();

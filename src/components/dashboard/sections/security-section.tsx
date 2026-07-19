@@ -153,7 +153,7 @@ function AccessMatrix({ humans, teams, workers }: {
                     <div className="flex flex-wrap gap-1">
                       {row.accessibleWorkers.slice(0, 3).map((w) => (
                         <Badge key={w} variant="outline" className="text-[10px]">
-                          <Bot className="w-2.5 h-2.5 mr-0.5 text-primary" />
+                          <Bot className="w-2.5 h-2.5 mr-0.5 text-emerald-500" />
                           {w}
                         </Badge>
                       ))}
@@ -328,7 +328,7 @@ export function SecuritySection() {
             icon: AlertTriangle,
             title: '安全策略',
             desc: 'Worker 状态管控（唤醒/休眠/停止），容器管理策略，防止未授权行为。',
-            color: 'text-primary',
+            color: 'text-emerald-500',
           },
         ].map((item, i) => (
           <motion.div
@@ -513,8 +513,8 @@ export function SecuritySection() {
             所有外部 API 凭证由 Higress 网关统一管理，Worker 无需直接持有 API Key，实现凭证零暴露。
           </p>
           <div className="flex items-center justify-center gap-2 py-4 flex-wrap text-sm">
-            <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
-              <AlertTriangle className="w-4 h-4 text-primary" />
+            <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <AlertTriangle className="w-4 h-4 text-emerald-500" />
               <span>Worker 请求</span>
             </div>
             <ArrowRight className="w-4 h-4 text-muted-foreground" />

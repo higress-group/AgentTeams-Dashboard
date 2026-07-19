@@ -161,31 +161,31 @@ export function ArchitectureSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <div className="p-4 rounded-xl bg-primary/10 border-2 border-primary/30">
+                <div className="p-4 rounded-xl bg-emerald-500/10 border-2 border-emerald-500/30">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Bot className="w-5 h-5 text-primary" />
-                      <span className="font-semibold text-primary dark:text-primary">执行层</span>
+                      <Bot className="w-5 h-5 text-emerald-500" />
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">执行层</span>
                     </div>
-                    <Badge variant="outline" className="text-[10px] border-primary/30 text-primary dark:text-primary">
+                    <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
                       Workers
                     </Badge>
                   </div>
                   <div className="flex gap-3 flex-wrap">
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/60 text-sm">
-                      <Cpu className="w-4 h-4 text-primary" />
+                      <Cpu className="w-4 h-4 text-emerald-500" />
                       <span>OpenClaw</span>
                     </div>
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/60 text-sm">
-                      <Cpu className="w-4 h-4 text-primary" />
+                      <Cpu className="w-4 h-4 text-emerald-500" />
                       <span>CoPaw</span>
                     </div>
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/60 text-sm">
-                      <Cpu className="w-4 h-4 text-primary" />
+                      <Cpu className="w-4 h-4 text-emerald-500" />
                       <span>Hermes</span>
                     </div>
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/60 text-sm">
-                      <Cpu className="w-4 h-4 text-primary" />
+                      <Cpu className="w-4 h-4 text-emerald-500" />
                       <span>OpenHuman</span>
                     </div>
                   </div>
@@ -262,7 +262,7 @@ export function ArchitectureSection() {
             icon: Bot,
             title: '弹性伸缩',
             desc: 'Worker 可按需唤醒/休眠，Team 动态组建，Manager 自动协调。',
-            color: 'text-primary',
+            color: 'text-emerald-500',
           },
         ].map((item, i) => (
           <motion.div
@@ -309,8 +309,8 @@ export function ArchitectureSection() {
               <span>Team</span>
             </div>
             <span className="text-muted-foreground">→</span>
-            <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
-              <Bot className="w-4 h-4 text-primary" />
+            <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <Bot className="w-4 h-4 text-emerald-500" />
               <span>Workers</span>
             </div>
             <span className="text-muted-foreground">→</span>

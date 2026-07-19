@@ -19,8 +19,8 @@ const runtimeInfo = [
     language: 'Go + Python',
     models: ['GPT-4', 'Claude-3', '通义千问', 'DeepSeek'],
     useCases: ['通用 Agent', '内容生成', '代码助手', '数据分析'],
-    color: 'text-primary',
-    bgColor: 'bg-primary/10 border-primary/20',
+    color: 'text-emerald-500',
+    bgColor: 'bg-emerald-500/10 border-emerald-500/20',
   },
   {
     name: 'CoPaw',
@@ -55,6 +55,17 @@ const runtimeInfo = [
     color: 'text-violet-500',
     bgColor: 'bg-violet-500/10 border-violet-500/20',
   },
+  {
+    name: 'QwenPaw',
+    key: 'qwenpaw',
+    desc: '千问专用运行时，基于 Qwen 大模型的优化 Agent 框架。适合 Qwen 生态的 Agent 场景。',
+    features: ['千问优化', '工具调用', '流式推理', '多轮对话'],
+    language: 'Python',
+    models: ['Qwen', 'Qwen-Max', 'Qwen-Plus'],
+    useCases: ['千问 Agent', '工具集成', '推理加速'],
+    color: 'text-amber-500',
+    bgColor: 'bg-amber-500/10 border-amber-500/20',
+  },
 ];
 
 export function RuntimeSection() {
@@ -66,7 +77,7 @@ export function RuntimeSection() {
   }, [queryClient]);
 
   const runtimeCounts = useMemo(() => {
-    const counts: Record<string, number> = { openclaw: 0, copaw: 0, hermes: 0, openhuman: 0 };
+    const counts: Record<string, number> = { openclaw: 0, copaw: 0, hermes: 0, openhuman: 0, qwenpaw: 0 };
     workers?.forEach((w) => {
       if (counts[w.runtime] !== undefined) counts[w.runtime]++;
     });
@@ -223,13 +234,13 @@ export function RuntimeSection() {
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold mb-4">选择指南</h2>
           <div className="space-y-3 text-sm">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
-              <Code className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+              <Code className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
               <div>
                 <p className="font-medium">通用 Agent 任务</p>
                 <p className="text-xs text-muted-foreground">选择 OpenClaw — 最灵活的运行时，支持多模型和 MCP Server 集成</p>
               </div>
-              <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
             </div>
             <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
               <Layers className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />

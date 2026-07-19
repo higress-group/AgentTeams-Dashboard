@@ -17,7 +17,6 @@ import { useCreateHuman, useDeleteHuman, useUpdateHuman } from '@/hooks/use-agen
 import { useSearch } from '@/lib/search-context';
 import { useAgentTeamsStore } from '@/lib/agentteams-store';
 import { useViewMode } from '@/lib/use-view-mode';
-import { isUnsupportedEndpointError } from '@/lib/api-error';
 import { ApiErrorState } from '@/components/dashboard/api-error-state';
 import { SectionHeader } from '@/components/dashboard/section-header';
 import { ConfirmDeleteDialog } from '@/components/dashboard/confirm-delete-dialog';
@@ -145,7 +144,6 @@ export function HumansSection() {
   }, [deleteTarget, deleteHuman]);
 
   const openEdit = useCallback((human: HumanResponse) => {
-    updateHuman.reset();
     setEditHuman(human);
     setEditForm({
       name: human.name,
@@ -156,13 +154,12 @@ export function HumansSection() {
       accessibleWorkers: human.accessibleWorkers || [],
       note: human.note || '',
     });
-  }, [updateHuman]);
+  }, []);
 
   const closeEdit = useCallback(() => {
-    updateHuman.reset();
     setEditHuman(null);
     setEditForm({});
-  }, [updateHuman]);
+  }, []);
 
   const handleUpdate = useCallback(() => {
     if (!editHuman) return;
@@ -173,12 +170,6 @@ export function HumansSection() {
       { onSuccess: closeEdit },
     );
   }, [editForm, editHuman, updateHuman, closeEdit]);
-
-  // AgentTeams v1.2.0-beta.1 has no PUT /api/v1/humans/{name} (405):
-  // surface a clear message in the dialog instead of the raw API error.
-  const editErrorMessage = isUnsupportedEndpointError(updateHuman.error)
-    ? '当前 Controller 版本（v1.2.0-beta.1）不支持编辑 Human，请通过删除后重建的方式修改'
-    : null;
 
   if (isError && !isConnected) {
     return <ApiErrorState />;
@@ -205,7 +196,7 @@ export function HumansSection() {
             </Button>
             <Button
               size="sm"
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
               onClick={() => setCreateOpen(true)}
             >
               <Plus className="w-4 h-4 mr-1" aria-hidden="true" />
@@ -292,7 +283,6 @@ export function HumansSection() {
         value={editForm}
         onChange={setEditForm}
         isPending={updateHuman.isPending}
-        errorMessage={editErrorMessage}
         onOpenChange={(open) => !open && closeEdit()}
         onSubmit={handleUpdate}
       />

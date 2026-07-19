@@ -27,7 +27,7 @@ GITHUB_USER="$1"
 REPO_NAME="AgentTeams"
 FORK_URL="https://github.com/${GITHUB_USER}/${REPO_NAME}.git"
 UPSTREAM_URL="https://github.com/agentscope-ai/${REPO_NAME}.git"
-BRANCH_NAME="feat/integrate-agentteams-dashboard"
+BRANCH_NAME="feat/integrate-tadashboard"
 WORK_DIR="/tmp/agentteams-pr-${GITHUB_USER}"
 
 # ---------- 颜色定义 ----------
@@ -136,15 +136,15 @@ commit_changes() {
         return 0
     fi
     
-    git commit -m "feat(install): integrate AgentTeams-Dashboard as optional component
+    git commit -m "feat(install): integrate agentteams-dashboard as optional component
 
-Add AgentTeams-Dashboard as an optional component in the AgentTeams installation:
+Add agentteams-dashboard as an optional component in the AgentTeams installation:
 - Dashboard wizard step with port, image, and Higress Console URL config
 - Auto-detect Higress Console URL for shared authentication
 - Dashboard container startup after embedded controller
 - Bilingual messages (zh/en)
 - LAN-accessible by default (bind 0.0.0.0)
-- Add verification check in agentteams-verify.sh
+- Add verification check in hiclaw-verify.sh
 - Add Makefile targets: install-dashboard, update-dashboard, uninstall-dashboard
 
 Environment variables:
@@ -153,7 +153,7 @@ Environment variables:
 - AGENTTEAMS_DASHBOARD_IMAGE (default: agentteams-dashboard:latest) - Dashboard image
 - AGENTTEAMS_AI_GATEWAY_ADMIN_URL (auto-detected) - Higress Console URL
 
-Co-authored-by: AgentTeams-Dashboard <dashboard@agentteams.io>"
+Co-authored-by: agentteams-dashboard <dashboard@agentteams.io>"
     
     ok "更改已提交"
 }
@@ -178,13 +178,13 @@ create_pr() {
     
     local pr_body="## 描述
 
-将 AgentTeams-Dashboard 作为可选组件集成到 AgentTeams 安装脚本中。
+将 agentteams-dashboard 作为可选组件集成到 AgentTeams 安装脚本中。
 
-AgentTeams-Dashboard 是一个基于 Next.js 的 Web 管理面板，用于可视化管理 AgentTeams 集群中的 Worker、Team、Human、Manager 等资源，同时集成 Matrix 聊天能力。
+agentteams-dashboard 是一个基于 Next.js 的 Web 管理面板，用于可视化管理 AgentTeams 集群中的 Worker、Team、Human、Manager 等资源，同时集成 Matrix 聊天能力。
 
 ## 变更内容
 
-### 1. \`install/agentteams-install.sh\`
+### 1. \`install/hiclaw-install.sh\`
 - 添加 Dashboard 安装向导步骤 (\`step_dashboard\`)
 - 支持配置端口号（默认 13000）、镜像名称、Higress Console URL
 - 自动检测 Higress Console URL 实现共用登录
@@ -192,7 +192,7 @@ AgentTeams-Dashboard 是一个基于 Next.js 的 Web 管理面板，用于可视
 - 支持中英文双语消息
 - 默认绑定 0.0.0.0 支持局域网访问
 
-### 2. \`install/agentteams-verify.sh\`
+### 2. \`install/hiclaw-verify.sh\`
 - 添加 Dashboard 可访问性检查
 - 验证 HTTP 200 响应
 
@@ -214,13 +214,13 @@ AgentTeams-Dashboard 是一个基于 Next.js 的 Web 管理面板，用于可视
 
 \`\`\`bash
 # 1. 安装 AgentTeams（包含 Dashboard）
-bash install/agentteams-install.sh
+bash install/hiclaw-install.sh
 
 # 2. 验证 Dashboard 可访问
 curl -s http://localhost:13000/ | head -5
 
 # 3. 验证安装脚本
-bash install/agentteams-verify.sh
+bash install/hiclaw-verify.sh
 
 # 4. 使用 Makefile
 make install-dashboard
@@ -240,10 +240,10 @@ make uninstall-dashboard
 
 ## 相关链接
 
-- AgentTeams-Dashboard 仓库: https://github.com/higress-group/AgentTeams-Dashboard
+- agentteams-dashboard 仓库: https://github.com/nillikechatchat/agentteams-dashboard
 - A2UI 协议: https://a2ui.org/
-- 安装脚本: https://github.com/higress-group/AgentTeams-Dashboard/blob/main/install/agentteams-dashboard.sh
-- 集成文档: https://github.com/higress-group/AgentTeams-Dashboard/blob/main/install/AGENTTEAMS_PATCH.md"
+- 安装脚本: https://github.com/nillikechatchat/agentteams-dashboard/blob/main/install/agentteams-dashboard.sh
+- 集成文档: https://github.com/nillikechatchat/agentteams-dashboard/blob/main/install/AGENTTEAMS_PATCH.md"
     
     # 尝试使用 gh CLI 创建 PR
     if command -v gh &>/dev/null; then
@@ -251,7 +251,7 @@ make uninstall-dashboard
             --repo "agentscope-ai/${REPO_NAME}" \
             --head "${GITHUB_USER}:${BRANCH_NAME}" \
             --base "main" \
-            --title "feat(install): integrate AgentTeams-Dashboard as optional component" \
+            --title "feat(install): integrate agentteams-dashboard as optional component" \
             --body "${pr_body}"
         
         ok "PR 已创建"
@@ -262,7 +262,7 @@ make uninstall-dashboard
         echo "https://github.com/agentscope-ai/${REPO_NAME}/compare/main...${GITHUB_USER}:${BRANCH_NAME}"
         echo ""
         echo "PR 标题:"
-        echo "feat(install): integrate AgentTeams-Dashboard as optional component"
+        echo "feat(install): integrate agentteams-dashboard as optional component"
         echo ""
         echo "PR 内容已保存到: ${WORK_DIR}/pr-body.md"
         
@@ -274,7 +274,7 @@ make uninstall-dashboard
 # ---------- 主流程 ----------
 main() {
     echo "=========================================="
-    echo "  AgentTeams 集成 AgentTeams-Dashboard PR 提交工具"
+    echo "  AgentTeams 集成 agentteams-dashboard PR 提交工具"
     echo "=========================================="
     echo ""
     

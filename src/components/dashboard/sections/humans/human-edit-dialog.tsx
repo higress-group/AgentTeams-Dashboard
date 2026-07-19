@@ -3,7 +3,6 @@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -29,7 +28,6 @@ export function HumanEditDialog({
   value,
   onChange,
   isPending,
-  errorMessage,
   onOpenChange,
   onSubmit,
 }: {
@@ -38,7 +36,6 @@ export function HumanEditDialog({
   value: HumanEditForm;
   onChange: (_next: HumanEditForm) => void;
   isPending: boolean;
-  errorMessage?: string | null;
   onOpenChange: (_open: boolean) => void;
   onSubmit: () => void;
 }) {
@@ -48,12 +45,6 @@ export function HumanEditDialog({
         <DialogHeader>
           <DialogTitle>编辑 Human - {humanName}</DialogTitle>
         </DialogHeader>
-        {errorMessage && (
-          <div className="flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-muted-foreground">
-            <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" aria-hidden="true" />
-            <p>{errorMessage}</p>
-          </div>
-        )}
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label>显示名称</Label>
@@ -137,7 +128,7 @@ export function HumanEditDialog({
           <Button
             onClick={onSubmit}
             disabled={isPending}
-            className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
           >
             {isPending ? '更新中...' : '更新'}
           </Button>

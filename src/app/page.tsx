@@ -23,38 +23,47 @@ export default function Home() {
   const [auth, setAuth] = useState<AuthState>({ status: 'loading' });
   const [setup, setSetup] = useState<SetupState>({ status: 'loading' });
 
-  useEffect(() => {
-    let cancelled = false;
-
-    // Session check on mount; when authenticated, chain the setup-status check.
-    // All setState calls happen in promise callbacks (external system → React).
-    fetch(apiUrl('/api/auth/session'), { credentials: 'same-origin' })
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        if (!data.authenticated) {
-          setAuth({ status: 'unauthenticated' });
-          return;
-        }
-        setAuth({ status: 'authenticated', username: data.username });
-        fetch(apiUrl('/api/agentteams/setup/status/'), { credentials: 'same-origin' })
-          .then((res) => res.json().catch(() => ({})))
-          .then((sdata) => {
-            if (cancelled) return;
-            setSetup({ status: sdata.setupRequired ? 'required' : 'complete' });
-          })
-          .catch(() => {
-            if (!cancelled) setSetup({ status: 'complete' });
-          });
-      })
-      .catch(() => {
-        if (!cancelled) setAuth({ status: 'unauthenticated' });
+  const checkSession = async () => {
+    try {
+      const res = await fetch(apiUrl('/api/auth/session'), {
+        credentials: 'same-origin',
       });
+      const data = await res.json();
+      if (data.authenticated) {
+        setAuth({ status: 'authenticated', username: data.username });
+      } else {
+        setAuth({ status: 'unauthenticated' });
+      }
+    } catch {
+      setAuth({ status: 'unauthenticated' });
+    }
+  };
 
-    return () => {
-      cancelled = true;
-    };
+  const checkSetup = async () => {
+    try {
+      const res = await fetch(apiUrl('/api/agentteams/setup/status/'), {
+        credentials: 'same-origin',
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.setupRequired) {
+        setSetup({ status: 'required' });
+      } else {
+        setSetup({ status: 'complete' });
+      }
+    } catch {
+      setSetup({ status: 'complete' });
+    }
+  };
+
+  useEffect(() => {
+    checkSession();
   }, []);
+
+  useEffect(() => {
+    if (auth.status === 'authenticated') {
+      checkSetup();
+    }
+  }, [auth.status]);
 
   const handleLoginSuccess = () => {
     window.location.reload();
@@ -66,7 +75,7 @@ export default function Home() {
 
   if (auth.status === 'unauthenticated') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
         <LoginPage onLoginSuccess={handleLoginSuccess} />
       </ThemeProvider>
     );
@@ -74,14 +83,14 @@ export default function Home() {
 
   if (setup.status === 'required') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
         <SetupWizard onComplete={() => window.location.reload()} />
       </ThemeProvider>
     );
   }
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
       <QueryProvider>
         <SearchProvider>
           <AgentTeamsDashboard />

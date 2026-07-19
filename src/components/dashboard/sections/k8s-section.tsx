@@ -155,7 +155,7 @@ function CRDCard({
   const kindConfig: Record<string, { icon: typeof Bot; color: string;   extraInfo: (_r: CRDResource) => React.ReactNode }> = {
     Worker: {
       icon: Bot,
-      color: 'text-primary',
+      color: 'text-emerald-500',
       extraInfo: (r) => {
         const w = r.raw as WorkerResponse;
         return (
@@ -409,7 +409,7 @@ export function K8sSection() {
   }
 
   const crdTypes = [
-    { kind: 'Worker', count: crdCounts.Worker, icon: Bot, color: 'text-primary', bgColor: 'bg-primary/10' },
+    { kind: 'Worker', count: crdCounts.Worker, icon: Bot, color: 'text-emerald-500', bgColor: 'bg-emerald-500/10' },
     { kind: 'Team', count: crdCounts.Team, icon: Users, color: 'text-emerald-500', bgColor: 'bg-emerald-500/10' },
     { kind: 'Human', count: crdCounts.Human, icon: UserCheck, color: 'text-cyan-500', bgColor: 'bg-cyan-500/10' },
     { kind: 'Manager', count: crdCounts.Manager, icon: Crown, color: 'text-violet-500', bgColor: 'bg-violet-500/10' },
@@ -425,7 +425,7 @@ export function K8sSection() {
         actions={
           <Button
             size="sm"
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
             onClick={() => setCreateHumanOpen(true)}
           >
             <Plus className="w-4 h-4 mr-1" />
@@ -630,7 +630,7 @@ export function K8sSection() {
             <Button
               onClick={handleCreateHuman}
               disabled={!newHuman.name || !newHuman.displayName || createHuman.isPending}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
             >
               {createHuman.isPending ? '创建中...' : '创建'}
             </Button>

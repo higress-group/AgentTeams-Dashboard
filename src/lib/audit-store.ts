@@ -27,7 +27,7 @@ let eventCounter = 0;
 
 export const useAuditStore = create<AuditState>()(
   persist(
-    (set, _get) => ({
+    (set, get) => ({
       events: [],
 
       addEvent: (event) => {

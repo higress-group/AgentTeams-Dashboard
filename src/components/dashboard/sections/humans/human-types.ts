@@ -16,6 +16,6 @@ export const PERMISSION_LABELS: Record<number, string> = {
 
 export const PERMISSION_BADGE_CLASSES: Record<number, string> = {
   1: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-  2: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+  2: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
   3: 'bg-red-500/10 text-red-600 dark:text-red-400',
 };

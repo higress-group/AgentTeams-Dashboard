@@ -43,7 +43,7 @@ function SkillCard({ skill, isExpanded, onToggle }: {
   onToggle: () => void;
 }) {
   const categoryColors: Record<string, string> = {
-    '协调': 'bg-primary/10 text-primary dark:text-primary',
+    '协调': 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
     '监控': 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400',
     '处理': 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
     '容错': 'bg-red-500/10 text-red-600 dark:text-red-400',
@@ -93,7 +93,7 @@ function SkillCard({ skill, isExpanded, onToggle }: {
         <div className="flex flex-wrap gap-1 mt-1.5">
           {skill.workers.slice(0, 3).map((w) => (
             <Badge key={w.name} variant="outline" className="text-[10px] gap-1">
-              <Bot className="w-2.5 h-2.5 text-primary" />
+              <Bot className="w-2.5 h-2.5 text-emerald-500" />
               {w.name}
             </Badge>
           ))}
@@ -121,7 +121,7 @@ function SkillCard({ skill, isExpanded, onToggle }: {
             {skill.workers.length > 0 && (
               <div className="p-2 rounded-md bg-muted/30">
                 <p className="text-[10px] text-muted-foreground font-medium mb-1 flex items-center gap-1">
-                  <Bot className="w-3 h-3 text-primary" />
+                  <Bot className="w-3 h-3 text-emerald-500" />
                   使用此技能的 Workers
                 </p>
                 <div className="flex flex-wrap gap-1">
@@ -219,7 +219,8 @@ export function SkillsSection() {
         if (runtime.includes('openclaw')) managerSkills.push('task_assignment', 'worker_coordination');
         else if (runtime.includes('copaw')) managerSkills.push('team_formation', 'conflict_resolution');
         else if (runtime.includes('hermes')) managerSkills.push('message_routing', 'realtime_coordination');
-        else if (runtime.includes('openhuman')) managerSkills.push('human_approval', 'escalation');
+         else if (runtime.includes('openhuman')) managerSkills.push('human_approval', 'escalation');
+         else if (runtime.includes('qwenpaw')) managerSkills.push('qwen_optimization', 'tool_integration');
         else managerSkills.push('coordination');
       }
       managerSkills.forEach((skillName) => {
@@ -395,7 +396,7 @@ export function SkillsSection() {
       {workerSkillMap.size > 0 && (
         <div>
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Bot className="w-5 h-5 text-primary" />
+            <Bot className="w-5 h-5 text-emerald-500" />
             Worker 技能映射
             <Badge variant="outline" className="text-[10px]">{workerSkillMap.size} Workers</Badge>
           </h2>
@@ -411,7 +412,7 @@ export function SkillsSection() {
                 <Card className="glass-card hover-lift">
                   <CardContent className="p-3">
                     <div className="flex items-center gap-2 mb-2">
-                      <Bot className="w-4 h-4 text-primary" />
+                      <Bot className="w-4 h-4 text-emerald-500" />
                       <span className="font-medium text-sm">{workerName}</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -497,7 +498,7 @@ export function SkillsSection() {
                         <div className="flex flex-wrap gap-1">
                           {mcp.workers.map((w) => (
                             <Badge key={w} variant="secondary" className="text-[10px]">
-                              <Bot className="w-2.5 h-2.5 mr-1 text-primary" />
+                              <Bot className="w-2.5 h-2.5 mr-1 text-emerald-500" />
                               {w}
                             </Badge>
                           ))}
